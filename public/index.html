@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nice website</title>
+</head>
+<body>
+    <h3>register form</h3>
+    <form action="/api/user/register" method="post">
+        <input type="text" name="name" id="name"><br>
+        <input type="text" name="email" id="email"><br>
+        <input type="password" name="password" id="password"><br>
+        <button type="submit">register</button><br>
+    </form>
+    <br>
+    <h3>login form</h3>
+    <form action="/api/user/login" method="post">
+        <input type="text" name="email" id="email"><br>
+        <input type="password" name="password" id="password"><br>
+        <button type="submit">login</button><br>
+    </form>
+
+    <script src="index.js"></script>
+</body>
+</html>
