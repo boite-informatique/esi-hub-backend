@@ -5,21 +5,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>nice website</title>
+    <style>
+        input {
+            display: block;
+        }
+    </style>
 </head>
 <body>
+    <a href="/private">private route for users only</a>
     <h3>register form</h3>
     <form action="/api/user/register" method="post">
-        <input type="text" name="name" id="name"><br>
-        <input type="text" name="email" id="email"><br>
-        <input type="password" name="password" id="password"><br>
-        <button type="submit">register</button><br>
+        <label for="name">name : </label>
+        <input type="text" name="name" id="name">
+        <label for="email">email : </label>
+        <input type="text" name="email" id="email">
+        <label for="password">password : </label>
+        <input type="password" name="password" id="password">
+        <button type="submit">register</button>
     </form>
     <br>
     <h3>login form</h3>
     <form action="/api/user/login" method="post">
-        <input type="text" name="email" id="email"><br>
-        <input type="password" name="password" id="password"><br>
-        <button type="submit">login</button><br>
+        <label for="email">email : </label>
+        <input type="text" name="email" id="email">
+        <label for="password">password : </label>
+        <input type="password" name="password" id="password">
+        <button type="submit">login</button>
     </form>
 
     <script src="index.js"></script>

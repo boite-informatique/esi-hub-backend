@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended : false}));
 
 //routes
-app.get('/private', authorize, (req, res) => res.json({status : "success, user authorized"}));
+app.get('/private', authorize, (req, res) => res.json({status : "success used logged in", user : req.user}));
 app.use('/api/user',  require('./routes/userRoute'));
 app.use('/api/announcement', require('./routes/announceRoute'));
 
