@@ -11,7 +11,12 @@ const announceSchema = new mongoose.Schema({
         required : true
     },
     tags : {
-        type: String,
+        type: Array,
+        required : true,
+        default : null
+    },
+    visibility : {
+        type : Array,
         required : true,
         default : null
     }

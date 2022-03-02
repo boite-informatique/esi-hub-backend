@@ -9,6 +9,7 @@ const registerUser = asyncHandler( async (req, res) => {
     // Check if account already exists
     let checkUser = await User.findOne({email});
     if (checkUser) {
+        res.status(400);
         throw new Error('Account already exists');
     }
 
@@ -22,7 +23,7 @@ const registerUser = asyncHandler( async (req, res) => {
         password: hashedPassword
     })
 
-    res.json({
+    res.status(201).json({
         name : user.name,
         email : user.email
     });
@@ -31,27 +32,18 @@ const registerUser = asyncHandler( async (req, res) => {
 const loginUser = asyncHandler( async (req, res) => {
     let {email, password} = req.body;
 
-    if (!email || !password) {
-        throw new Error('Enter all fields');
-    }
-
     //find user in database
 
     const user = await User.findOne({email});
 
-    if(!user) {
-        throw new Error('Email incorrect');
-    }
-
-    const pass = await bcrypt.compare(password, user.password);
-
-    if (!pass) {
+    if(!user || !await bcrypt.compare(password, user.password)) {
+        res.status(400);
         throw new Error('Email or password incorrect');
     }
 
     //in case user found
 
-    res.json({
+    res.status(200).json({
         _id : user.id,
         name: user.name,
         email: user.email,
@@ -64,7 +56,7 @@ const updateUser = asyncHandler(async (req, res) => {
     //verify if the user is authorized to modify users
 
     if(req.params.id !== req.user._id) {
-        res.status(201);
+        res.status(401);
         throw new Error('Unauthorized modification of data');
     }
     //get data to modify from body
@@ -85,6 +77,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req,res) => {
     if (!req.user.roles.includes('admin')) {
+        res.status(401);
         throw new Error('Unauthorized, you need to be an admin')
     }
 
@@ -106,5 +99,6 @@ const generateToken = (id) => {
 module.exports = {
     registerUser,
     loginUser,
-    updateUser
+    updateUser,
+    deleteUser
 }
