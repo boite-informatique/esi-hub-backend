@@ -60,13 +60,51 @@ const loginUser = asyncHandler( async (req, res) => {
     })
 })
 
+const updateUser = asyncHandler(async (req, res) => {
+    //verify if the user is authorized to modify users
+
+    if(req.params.id !== req.user._id) {
+        res.status(201);
+        throw new Error('Unauthorized modification of data');
+    }
+    //get data to modify from body
+    const {password} = req.body;
+
+    //find user
+    const user = await User.findById(req.params.id);
+
+    //hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
+    //save user
+    await user.save();
+    res.status(200);
+    res.json(user);
+})
+
+const deleteUser = asyncHandler(async (req,res) => {
+    if (!req.user.roles.includes('admin')) {
+        throw new Error('Unauthorized, you need to be an admin')
+    }
+
+    const user = await User.findById(req.body.id);
+
+    await user.delete();
+
+    res.status(200).json({
+        id : req.body.id
+    });
+
+})
 
 const generateToken = (id) => {
-    return jwt.sign({id}, 'lmfao');
+    return jwt.sign({id}, process.env.JWT_SECRET);
 }
 
 
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    updateUser
 }

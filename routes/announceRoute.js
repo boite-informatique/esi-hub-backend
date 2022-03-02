@@ -3,7 +3,7 @@ const {
     createAnnouncement,
     updateAnnouncement,
     deleteAnnouncement
-} = require('../controllers/announceRoutes');
+} = require('../controllers/announceController');
 
 router.post('/', createAnnouncement);
 router.put('/:id', updateAnnouncement);
