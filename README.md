@@ -9,6 +9,9 @@ men 3andek
 
     cd esi-hub
     npm install
+### Rename .env file
+    mv .env.example .env
+
 ### Run development script
 
     npm run dev
