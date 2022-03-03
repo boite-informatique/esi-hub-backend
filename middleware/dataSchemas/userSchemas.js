@@ -15,7 +15,15 @@ const loginSchema = joi.object().keys({
   password: joi.string().min(6).max(32).required()
 }).options(options)
 
+const updateSchema = joi.object().keys({
+  email: joi.string().email().default(''),
+  name: joi.string().min(3).max(30).default(''),
+  password: joi.string().min(6).max(32).default(''),
+  roles : joi.array().items(joi.string()).default(null)
+}).options(options)
+
 module.exports = {
   registerSchema,
-  loginSchema
+  loginSchema,
+  updateSchema
 }

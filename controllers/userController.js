@@ -24,6 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
   })
 
   res.status(201).json({
+    id : user._id,
     name: user.name,
     email: user.email
   })
@@ -44,7 +45,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // in case user found
 
   res.status(200).json({
-    _id: user.id,
+    id: user.id,
     name: user.name,
     email: user.email,
     roles: user.roles,
@@ -54,25 +55,42 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
   // verify if the user is authorized to modify users
+  const isAdmin = req.user.roles.includes('admin')
 
-  if (req.params.id !== req.user._id) {
+  if (req.params.id !== req.user._id && !isAdmin) {
     res.status(401)
-    throw new Error('Unauthorized modification of data')
+    throw new Error('Unauthorized operation, you have to login as target user or admin')
   }
-  // get data to modify from body
-  const { password } = req.body
+  // get data from request body
+  const {body} = req
 
   // find user
   const user = await User.findById(req.params.id)
+  
+  // strip role modification if not admin
+  body.roles = isAdmin ? body.roles : null
 
-  // hash new password
-  const salt = await bcrypt.genSalt(10)
-  user.password = await bcrypt.hash(password, salt)
+  // hash password if new password is set
+  if (body.password) {
+    const salt = await bcrypt.genSalt(10)
+    body.password = await bcrypt.hash(body.password, salt)
+  }
 
   // save user
+  for (let key in user) {
+    if (body[key]) {
+      user[key] = body[key]
+    }
+  }
+
   await user.save()
-  res.status(200)
-  res.json(user)
+  res.status(200).json({
+    id : user._id,
+    name : user.name,
+    email : user.email,
+    roles : user.roles
+  })
+  
 })
 
 const deleteUser = asyncHandler(async (req, res) => {
