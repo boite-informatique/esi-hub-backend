@@ -22,6 +22,8 @@ app.use('/api/announcement', require('./routes/announceRoute'))
 // error handling
 app.use(errorHandler)
 
+// unknown routes
+app.get('/*', (req, res) => res.send('woah this page doesnt exist'));
 // server port
 
 app.listen(PORT, () => console.log(`server running on ${PORT}`))
