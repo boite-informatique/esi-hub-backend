@@ -7,10 +7,7 @@ const {
   deleteAnnouncement
 } = require('../controllers/announceController')
 
-router.get('/', getAnnouncementAll)
-router.get('/:id', getAnnouncementId)
-router.post('/', createAnnouncement)
-router.put('/:id', updateAnnouncement)
-router.delete('/:id', deleteAnnouncement)
+router.route('/').get(getAnnouncementAll).post(createAnnouncement)
+router.route('/:id').get(getAnnouncementId).put(updateAnnouncement).delete(deleteAnnouncement)
 
 module.exports = router

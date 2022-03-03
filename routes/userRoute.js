@@ -2,7 +2,8 @@ const router = require('express').Router()
 const {
   registerUser,
   loginUser,
-  updateUser
+  updateUser,
+  deleteUser
 } = require('../controllers/userController')
 const { registerSchema, loginSchema } = require('../middleware/dataSchemas/userSchemas')
 const dataValidator = require('../middleware/dataValidation')
@@ -12,10 +13,5 @@ router.post('/register', dataValidator(registerSchema), registerUser)
 
 router.post('/login', dataValidator(loginSchema), loginUser)
 
-router.get('/', (req, res) => {
-  res.send(req.headers.authorization)
-})
-
-router.put('/:id', authorize, updateUser)
-
+router.route('/:id').put(authorize, updateUser).delete(authorize, deleteUser)
 module.exports = router
