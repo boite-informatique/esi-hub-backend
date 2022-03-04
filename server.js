@@ -7,14 +7,19 @@ require('./db')() // connects to database
 const errorHandler = require('./middleware/errorHandler')
 const authorize = require('./middleware/authorize')
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const res = require('express/lib/response')
+
 
 // middlewares
 app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors());
+app.use(cookieParser());
 
 // routes
+
 app.get('/private', authorize, (req, res) => res.json({ status: 'success used logged in', user: req.user }))
 app.use('/api/user', require('./routes/userRoute'))
 app.use('/api/announcement', require('./routes/announceRoute'))

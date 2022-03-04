@@ -43,13 +43,12 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   // in case user found
-
+  res.cookie(token, generateToken(user._id), {httpOnly : true, sameSite : strict})
   res.status(200).json({
-    id: user.id,
+    id: user._id,
     name: user.name,
     email: user.email,
     roles: user.roles,
-    accessToken: generateToken(user.id)
   })
 })
 
