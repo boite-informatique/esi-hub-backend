@@ -1,34 +1,38 @@
-// import packages and initialize app
+// import packages
 const express = require('express')
-const app = express()
-require('dotenv').config() // use environmental variables
-const PORT = process.env.PORT || 3000
-require('./db')() // connects to database
+const http = require('http')
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
 const errorHandler = require('./middleware/errorHandler')
-const authorize = require('./middleware/authorize')
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const res = require('express/lib/response')
 
+// initialize server
+const app = express()
+
+const server = http.createServer(app)
+require('dotenv').config()                  // use environmental variables
+require('./db')()                           // connect to database
+require('./socketio')(server)               // use socket.io
+
+// render static website
+app.use(express.static('./public/'))
 
 // middlewares
-app.use(express.static('public'))
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(cors());
-app.use(cookieParser());
+app.use(express.urlencoded({extended : true}))
+app.use(cors())
+app.use(cookieParser())
 
 // routes
-
-app.get('/private', authorize, (req, res) => res.json({ status: 'success used logged in', user: req.user}))
 app.use('/api/user', require('./routes/userRoute'))
-app.use('/api/announcement', require('./routes/announceRoute'))
+app.use('/api/announcements', require('./routes/announceRoute'))
+app.use('/api/groups', require('./routes/groupRoute'))
 
 // error handling
 app.use(errorHandler)
 
 // unknown routes
-app.get('/*', (req, res) => res.send('woah this page doesnt exist'));
-// server port
+app.use('/*', (req, res) => res.send('woah this page doesnt exist'))
 
-app.listen(PORT, () => console.log(`server running on ${PORT}`))
+// server port
+const PORT = process.env.PORT || 3000
+server.listen(PORT, () => console.log(`server running on http://localhost:${PORT}`))

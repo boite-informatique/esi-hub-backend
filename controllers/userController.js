@@ -24,7 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
   })
 
   res.status(201).json({
-    id : user._id,
+    id: user._id,
     name: user.name,
     email: user.email
   })
@@ -43,31 +43,31 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   // in case user found
-  res.cookie('token', generateToken(user._id), {httpOnly : true, sameSite : true})
+  res.cookie('token', generateToken(user._id), { httpOnly: true, sameSite: true })
   res.status(200).json({
     id: user._id,
     name: user.name,
     email: user.email,
-    roles: user.roles,
+    groups: user.groups
   })
 })
 
 const updateUser = asyncHandler(async (req, res) => {
   // verify if the user is authorized to modify users
-  const isAdmin = req.user.roles.includes('admin')
+  const isAdmin = req.user.groups.includes('admin')
 
   if (req.params.id !== req.user._id && !isAdmin) {
     res.status(401)
     throw new Error('Unauthorized operation, you have to login as target user or admin')
   }
   // get data from request body
-  const {body} = req
+  const { body } = req
 
   // find user
   const user = await User.findById(req.params.id)
-  
+
   // strip role modification if not admin
-  body.roles = isAdmin ? body.roles : null
+  body.groups = isAdmin ? body.groups : null
 
   // hash password if new password is set
   if (body.password) {
@@ -76,7 +76,7 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   // save user
-  for (let key in user) {
+  for (const key in user) {
     if (body[key]) {
       user[key] = body[key]
     }
@@ -84,16 +84,15 @@ const updateUser = asyncHandler(async (req, res) => {
 
   await user.save()
   res.status(200).json({
-    id : user._id,
-    name : user.name,
-    email : user.email,
-    roles : user.roles
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    groups: user.groups
   })
-  
 })
 
 const deleteUser = asyncHandler(async (req, res) => {
-  if (!req.user.roles.includes('admin')) {
+  if (!req.user.groups.includes('admin')) {
     res.status(401)
     throw new Error('Unauthorized, you need to be an admin')
   }

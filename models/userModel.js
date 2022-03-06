@@ -13,12 +13,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  roles: {
-    type: Array,
+  groups: {
+    type: [mongoose.Schema.Types.ObjectId],
     required: true,
-    default: ['student']
+    ref : 'Group'
   }
 
-}, { timestamps: true })
+})
 
 module.exports = mongoose.model('User', userSchema)
