@@ -1,24 +1,29 @@
 const mongoose = require('mongoose')
 
 const announceSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
+  tite : {
+    type: String,
+    required : true
   },
-  text: {
+  body: {
     type: String,
     required: true
   },
   tags: {
     type: [String],
     required: true,
-    default: null
+    default: []
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
   },
   visibility: {
-    type: [String],
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Group',
     required: true,
-    default: null
+    default: []
   }
 }, { timestamps: true })
 

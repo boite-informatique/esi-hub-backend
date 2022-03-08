@@ -3,7 +3,8 @@ const {
   registerUser,
   loginUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getUsers
 } = require('../controllers/userController')
 const { registerSchema, loginSchema, updateSchema } = require('../middleware/dataSchemas/userSchemas')
 const dataValidator = require('../middleware/dataValidation')
@@ -15,5 +16,5 @@ router.post('/login', dataValidator(loginSchema), loginUser)
 
 router.route('/:id').put(authorize, dataValidator(updateSchema), updateUser).delete(authorize, deleteUser)
 
-router.post('/testjoi', dataValidator(updateSchema), (req, res) => res.json(req.body))
+router.get('/', getUsers)
 module.exports = router

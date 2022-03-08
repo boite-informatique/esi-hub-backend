@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const messageSchema = new mongoose.Schema({
+  text: {
+    type: String,
+    required: true
+  },
   room: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -10,11 +14,8 @@ const messageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'User'
-  },
-  text: {
-    type: String,
-    required: true
   }
+  
 }, { timestamps: true })
 
 module.exports = mongoose.model('Message', announceSchema)

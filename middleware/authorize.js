@@ -15,6 +15,8 @@ module.exports = asyncHandler(async (req, res, next) => {
     throw new Error('Unauthorized, expired token')
   }
 
-  req.user = await User.findById(decoded.id).select('-password')
+  req.user = await User.findById(decoded.id).select('-password -__v').populate('groups', 'name')
+  req.user.groups = req.user.groups.map(e => {return e.name})
+  req.admin = req.user.groups.include('admin')
   next()
 })

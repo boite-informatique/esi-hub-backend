@@ -14,9 +14,9 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   groups: {
-    type: [mongoose.Schema.Types.ObjectId],
+    type: [{type : mongoose.Schema.Types.ObjectId, ref : 'Group'}],
     required: true,
-    ref : 'Group'
+    default: []
   }
 
 })

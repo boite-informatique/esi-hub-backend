@@ -5,9 +5,10 @@ const groupSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  parent: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Group'
+  path : {
+    type : String,
+    required : true,
+    default : ','
   }
 })
 

@@ -19,7 +19,7 @@ const updateSchema = joi.object().keys({
   email: joi.string().email().default(''),
   name: joi.string().min(3).max(30).default(''),
   password: joi.string().min(6).max(32).default(''),
-  roles : joi.array().items(joi.string()).default(null)
+  groups : joi.array().items(joi.string()).default([])
 }).options(options)
 
 module.exports = {
