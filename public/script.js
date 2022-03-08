@@ -19,7 +19,6 @@ msgForm.addEventListener('submit', e => {
 socket.on('chatMessage', msg => {
   const div = document.createElement('div');
   div.style.color = msg.color
-  msgForm.target[0].value = ''
   div.innerHTML = msg.username + ' : ' + msg.msg
   document.querySelector('ul').insertBefore(div, document.querySelector('ul').firstChild);
 })
