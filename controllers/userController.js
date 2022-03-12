@@ -4,10 +4,10 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body
+  const {body} = req
 
   // Check if account already exists
-  const checkUser = await User.findOne({ email })
+  const checkUser = await User.findOne({ email : body.email })
   if (checkUser) {
     res.status(400)
     throw new Error('Account already exists')
@@ -15,19 +15,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // hash password and create account
   const salt = await bcrypt.genSalt(10)
-  const hashedPassword = await bcrypt.hash(password, salt)
+  body.password = await bcrypt.hash(body.password, salt)
 
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword
-  })
-
-  res.status(201).json({
-    id: user._id,
-    name: user.name,
-    email: user.email
-  })
+  const user = await User.create(body)
+  await user.populate('groups')
+  res.status(201).json(user)
 })
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -43,7 +35,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   // in case user found
-  res.cookie('token', generateToken(user._id), { httpOnly: true, sameSite: true })
+  res.cookie('token', generateToken(user._id), { httpOnly: true, sameSite: false })
   const {groups} = await user.populate('groups', 'name')
   res.status(200).json({name: user.name, email : user.email, groups})
 })
@@ -115,6 +107,16 @@ const getUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users)
 })
 
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password -createdAt -updatedAt -__v').populate('groups', 'name')
+
+  if (!user) {
+    res.status(404)
+    throw new Error('user doesnt exist')
+  }
+
+  res.status(200).json(user)
+})
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET)
 }
@@ -124,5 +126,6 @@ module.exports = {
   loginUser,
   updateUser,
   deleteUser,
-  getUsers
+  getUsers,
+  getCurrentUser
 }

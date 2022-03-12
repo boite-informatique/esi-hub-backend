@@ -7,7 +7,8 @@ const options = {
 const registerSchema = joi.object().keys({
   name: joi.string().min(3).max(30).required(),
   email: joi.string().email().required(),
-  password: joi.string().min(6).max(32).required()
+  password: joi.string().min(6).max(32).required(),
+  groups : joi.array().items(joi.string()).default([])
 }).options(options)
 
 const loginSchema = joi.object().keys({

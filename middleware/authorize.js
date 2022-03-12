@@ -16,7 +16,6 @@ module.exports = asyncHandler(async (req, res, next) => {
   }
 
   req.user = await User.findById(decoded.id).select('-password -__v').populate('groups', 'name')
-  req.user.groups = req.user.groups.map(e => {return e.name})
-  req.admin = req.user.groups.include('admin')
+  req.admin = req.user.groups.includes('admin')
   next()
 })

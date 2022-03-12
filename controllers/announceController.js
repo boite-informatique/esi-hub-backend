@@ -8,9 +8,22 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
   let announcements
   if (tags) {
     tags = tags.split(',')
-    announcements = await Announcement.find({ tags: { $in: tags }, visibility : { $in: req.user.groups, $or : [] }})
+    announcements = await Announcement.find({
+      tags : {$in : tags},
+      $or : [
+        {visibility : []},
+        {user : req.user._id},
+        {visibility : {$elemMatch : {$in : req.user.groups}}}
+      ]
+    })
   } else {
-    announcements = await Announcement.find({visibility : { $in: req.user.groups, $or : [] }})
+    announcements = await Announcement.find({
+      $or : [
+        {visibility : []},
+        {user : req.user._id},
+        {visibility : {$elemMatch : {$in : req.user.groups}}}
+      ]
+    })
   }
 
   if (announcements.length === 0) {
@@ -22,7 +35,14 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 
 const getAnnouncementId = asyncHandler(async (req, res) => {
 
-  const announcement = await Announcement.findOne({_id : req.params.id, visibility : {$in : req.user.groups, $or : []}})
+  const announcement = await Announcement.findOne({
+    _id : req.params.id,
+    $or : [
+      {visibility : []},
+      {user : req.user._id},
+      {visibility : {$elemMatch : {$in : req.user.groups}}}
+    ]
+  })
 
   if (!announcement) {
     res.status(404)
