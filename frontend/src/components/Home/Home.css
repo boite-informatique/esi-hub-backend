@@ -1,0 +1,21 @@
+.home h1{
+    margin-top: 200px;
+    margin-left: 700px;
+    color: blueviolet;
+}
+
+.home h3{
+    margin-left: 660px;
+    color: rgb(122, 64, 197);
+}
+
+button{
+    
+    margin-left: 700px;
+  
+}
+
+.btn{
+    text-decoration: underline;
+}
+
