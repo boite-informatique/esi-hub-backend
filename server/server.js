@@ -14,7 +14,7 @@ require('./db')()                           // connect to database
 require('./socketio')(server)               // use socket.io
 
 // render static website
-app.use(express.static('./public/'))
+app.use(express.static('../frontend/build'))
 
 // middlewares
 app.use(express.json())
