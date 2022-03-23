@@ -28,7 +28,8 @@ const LoginForm = () => {
            const accessToken = response?.data.accessToken;
             const roles = response?.data.roles;
             setAuth({user, pwd , roles , accessToken })
-            setSuccess(true);
+            if (response?.status === 200 ){setSuccess(true)}
+            
             setPwd('');
 
           }catch(err) {
