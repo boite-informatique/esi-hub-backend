@@ -21,9 +21,11 @@ const doc = ({user}) => {
       </span>
     </p>
     <p className='command'>Hello {user} start having fun ...</p>
-    <Link to="/"><button>Go to Home</button> </Link>
+    
   </div>
+  
 </div>
+<Link to="/"><button>Go to Home</button> </Link>
     </div>
   )
 }

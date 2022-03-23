@@ -1,6 +1,6 @@
 import React from "react";
 import './LoginForm.css'
-import { useState , useEffect , useRef , useContext } from "react";
+import { useState , useEffect , useContext } from "react";
 import AuthContext from "../../context/AuthProvider";
 import Background from "../Background/Background";
 import Doc from "../Doc";
@@ -40,6 +40,7 @@ const LoginForm = () => {
               setErr('unothorized');
             }else {
               setErr('Login failed');
+              alert(err);
             }
 
           }
