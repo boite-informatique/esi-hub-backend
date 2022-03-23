@@ -7,7 +7,7 @@ men 3andek
     git clone https://github.com/ricin9/esi-hub.git
 ### Install dependencies
 
-    cd esi-hub
+    cd esi-hub/server
     npm install
 ### Rename .env file
     mv .env.example .env
