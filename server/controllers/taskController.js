@@ -60,58 +60,51 @@ const createTask = asyncHandler(async (req, res) => {
   res.status(201).json(taskObj)
 })
 
-// const updateTask = asyncHandler(async (req, res) => {
-//   const {body} = req
+const updateTask = asyncHandler(async (req, res) => {
 
-//   // search for the task
+  const task = await Task.findById(req.params.id).populate('workspace', 'members')
 
-//   const task = Task.findById(req.params.id)
+  if (!task) {
+    res.status(404)
+    throw new Error('Task not found')
+  }
 
-//   if (!task) {
-//     res.status(400)
-//     throw new Error('Task doesn\'t exist')
-//   }
+  if(!task.workspace.members.includes(req.user._id)) {
+    res.status(401)
+    throw new Error('You don\'t have access to this workspace')
+  }
 
-//   // search if task matches the user
+  // updating the task
 
-//   if (!req.admin && !task.members.includes(req.user._id)) {
-//     res.status(401)
-//     throw new Error('Unauthorized, you can\'t change this task')
-//   }
+  await task.update(body)
 
-//   // updating the task
+  res.status(200).json(task)
+})
 
-//   await task.update(body)
+const deleteTask = asyncHandler(async (req, res) => {
+  const task = await Task.findById(req.params.id).populate('workspace', 'members')
 
-//   res.status(200).json(task)
-// })
+  if (!task) {
+    res.status(404)
+    throw new Error('Task not found')
+  }
 
-// const deleteTask = asyncHandler(async (req, res) => {
-//   const task = Task.findById(req.params.id)
+  if(!task.workspace.members.includes(req.user._id)) {
+    res.status(401)
+    throw new Error('You don\'t have access to this workspace')
+  }
 
-//   if (!task) {
-//     res.status(400)
-//     throw new Error('Task doesn\'t exist')
-//   }
+  // updating the task
 
-//   // search if task matches the user
+  await task.remove()
 
-//   if (!req.admin && !task.members.includes(req.user._id)) {
-//     res.status(401)
-//     throw new Error('Unauthorized, you can\'t change this task')
-//   }
-
-//   // deleting the task
-
-//   await task.remove()
-
-//   res.status(200).json({ id: task._id })
-// })
+  res.status(200)
+})
 
 module.exports = {
   getTaskAll,
   getTaskId,
   createTask,
-  // updateTask,
-  // deleteTask
+  updateTask,
+  deleteTask
 }
