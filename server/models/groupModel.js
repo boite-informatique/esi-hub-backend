@@ -8,7 +8,7 @@ const groupSchema = new mongoose.Schema({
   path : {
     type : String,
     required : true,
-    default : ','
+    default : '/'
   }
 })
 
