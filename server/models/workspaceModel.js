@@ -1,4 +1,4 @@
-const {Schema, Model} = require('mongoose')
+const {Schema, model} = require('mongoose')
 
 const workspaceSchema = new Schema({
   name : {
@@ -11,14 +11,11 @@ const workspaceSchema = new Schema({
     required : false
   },
 
-  members : {
-    type : [{
-      type : Schema.Types.ObjectId,
-      ref : true,
-      required : true
-    }],
+  members : [{
+    type : Schema.Types.ObjectId,
+    ref : 'Task',
     required : true
-  }
+  }]
 })
 
-module.exports = Model('Workspace', workspaceSchema)
+module.exports = model('Workspace', workspaceSchema)
