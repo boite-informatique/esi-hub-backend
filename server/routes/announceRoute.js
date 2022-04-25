@@ -10,6 +10,7 @@ router.get('/', c.getAnnouncementAll)
 router.get('/:id', c.getAnnouncementId)
 router.post('/', dataValidator(createSchema), c.createAnnouncement)
 router.put('/:id', dataValidator(updateSchema), c.updateAnnouncement)
+router.put('/:id/read', c.markAsRead)
 router.delete('/:id', c.deleteAnnouncement)
 
 module.exports = router
