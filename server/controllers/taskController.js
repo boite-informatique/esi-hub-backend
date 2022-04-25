@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
-const Workspace = require('../models/workspaceModel')
-const Task = require('../models/taskModel')
+const Workspace = require('../models/task/workspaceModel')
+const Task = require('../models/task/taskModel')
 
 const getTaskAll = asyncHandler(async (req, res) => {
 
