@@ -2,6 +2,9 @@ const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv').config()
+const {emailVerification} = require('../config/general.json')
+const sendEmail = require('../utilities/email')
 
 const registerUser = asyncHandler(async (req, res) => {
   const {body} = req
@@ -35,9 +38,21 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   // in case user found
-  res.cookie('token', generateToken(user._id), { httpOnly: true, sameSite: false })
-  const {groups} = await user.populate('groups', 'name')
-  res.status(200).json({name: user.name, email : user.email, groups})
+  // check if user is verified
+
+  
+
+  if (!emailVerification || user.verified) {
+    res.cookie('token', generateToken(user._id), { httpOnly: true, sameSite: false })
+    const {groups} = await user.populate('groups', 'name')
+    res.status(200).json({_id : user._id, name: user.name, email : user.email, groups})
+  } else {
+    // unverified
+    res.status(200).json({unverified : true, user : {
+      _id : user._id, name: user.name, email : user.email, groups
+    }})
+  }
+  
 })
 
 const updateUser = asyncHandler(async (req, res) => {
@@ -117,6 +132,54 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
   res.status(200).json(user)
 })
+
+const verifyAccount = asyncHandler(async (req, res) => {
+  const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET)
+
+  if (!decoded) {
+    res.status(401)
+    throw new Error('Unauthorized, expired token')
+  }
+
+  const user = await User.findById(decoded.id)
+  
+  if (!user) {
+    res.status(404)
+    throw new Error('User not found')
+  }
+
+  user.verified = true
+  await user.save()
+
+  res.status(200).redirect('/login')
+})
+
+const verifyAccountSend = asyncHandler(async (req, res) => {
+  const {email} = req.body
+
+  if (!email) {
+    res.status(400)
+    throw new Error('You must enter an "email" field')
+  }
+
+  const user = await User.findOne({email})
+  
+  if (!user) {
+    res.status(404)
+    throw new Error('User not found')
+  }
+
+  if (user.verified) {
+    res.status(400)
+    throw new Error('User already verified')
+  }
+
+  const token = jwt.sign({ id : user.id }, process.env.JWT_SECRET_EMAIL_VERIFICATION, {expiresIn : '60m'})
+
+  sendEmail(user.email, token)
+  res.status(200).json({status : "Success, awaiting email verification", expiresIn : '60 minutes'})
+})
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET)
 }

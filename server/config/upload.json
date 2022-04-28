@@ -1,0 +1,5 @@
+{
+  "destination" : "",
+  "acceptedExtensions" : ["png", "jpg", "jpeg", "gif", "pdf", "rtf", "txt", "doc", "docx", "mp3", "ogg", "wav", "zip", "mp4", "avi", "mkv"],
+  "maxSize" : 20
+}

@@ -1,0 +1,6 @@
+{
+  "domain" : "esi-hub.dz",
+  "emailVerification" : false,
+  "allowAnnouncementDeletion" : -1,
+  "adminGroup" : "<id>"
+}

@@ -10,4 +10,8 @@ router.put('/:id', authorize, dataValidator(updateSchema), c.updateUser)
 router.delete('/:id', authorize, c.deleteUser)
 router.get('/', c.getUsers)
 router.get('/current', authorize, c.getCurrentUser)
+
+// verify account
+router.get('/verifyAccount/:token', c.verifyAccount)
+router.post('/verifyAccount', c.verifyAccountSend)
 module.exports = router
