@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
     type : Boolean,
     required: true,
     default : false
+  },
+  avatar : {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : 'File',
+    required : false
   }
 
 })

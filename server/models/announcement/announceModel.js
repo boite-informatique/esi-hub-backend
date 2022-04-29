@@ -24,7 +24,13 @@ const announceSchema = new mongoose.Schema({
     ref: 'Group',
     required: true,
     default: []
-  }
+  },
+  attachments : [{
+    type :mongoose.Schema.Types.ObjectId,
+    ref : 'File',
+    required : false,
+    max : 8
+  }]
 }, { timestamps: true })
 
 module.exports = mongoose.model('Announcement', announceSchema)
