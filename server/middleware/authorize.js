@@ -28,7 +28,7 @@ module.exports = asyncHandler(async (req, res, next) => {
     token = accessToken
   }
 
-  req.user = jwt.verify(token, process.env.JWT_SECRET)
+  req.user = jwt.decode(token)
   next()
 })
 
