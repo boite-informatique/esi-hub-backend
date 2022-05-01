@@ -1,21 +1,50 @@
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
+const { generateAccessToken } = require('../controllers/userController')
 
 module.exports = asyncHandler(async (req, res, next) => {
-  // check if token exists
-  if (!req.cookies.token) {
+  const {accessToken, refreshToken} = req.cookies
+
+  // check if there is a refresh token
+  if (!refreshToken) {
     res.status(401)
-    throw new Error('Unauthorized, no token')
+    throw new Error('Unauthorized, no refresh token')
   }
 
-  const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
-  if (!decoded) {
-    res.status(401)
-    throw new Error('Unauthorized, expired token')
+  let token
+  // check if access token exists and is valid
+  if (!accessToken || !jwt.verify(accessToken, process.env.JWT_SECRET)) {
+    const user = await getUser(refreshToken)
+
+    if (!user) {
+      res.status(401)
+      throw new Error('Unauthorized, invalid refresh token')
+    }
+
+    token = generateAccessToken(user)
+    res.cookie('accessToken', token, {httpOnly : false, sameSite : true})
+  } else {
+    token = accessToken
   }
 
-  req.user = await User.findById(decoded.id).select('-password -__v').populate('groups', 'name')
-  req.admin = req.user.groups.includes('admin')
+  req.user = jwt.verify(token, process.env.JWT_SECRET)
   next()
 })
+
+const getUser = async (refreshToken) => {
+  // returns user if found and refresh token is valid, null otherwise
+  const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET)
+
+  if (!decoded) {
+   return null 
+  }
+
+  const user = await User.findById(decoded.id)
+
+  if (!user) {
+    return null
+  }
+
+  return user.refreshTokens.includes(refreshToken) ? user : null
+}

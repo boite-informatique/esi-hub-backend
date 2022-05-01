@@ -1,9 +1,11 @@
 const nodemailer = require("nodemailer");
 const jsonfile = require('jsonfile')
 
+/*
+for some reason jsonfile cant read these files
 const config = jsonfile.readFileSync('../config/mail.json')
 const {domain} = jsonfile.readFileSync('../config/general.json')
-
+*/
 async function main() {
 
   let transporter = nodemailer.createTransport({

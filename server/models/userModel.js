@@ -27,7 +27,11 @@ const userSchema = new mongoose.Schema({
     type : mongoose.Schema.Types.ObjectId,
     ref : 'File',
     required : false
-  }
+  },
+  refreshTokens : [{
+    type : String,
+    required : false
+  }]
 
 })
 

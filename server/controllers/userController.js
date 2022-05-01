@@ -40,16 +40,25 @@ const loginUser = asyncHandler(async (req, res) => {
   // in case user found
   // check if user is verified
 
-  
-
   if (!emailVerification || user.verified) {
-    res.cookie('token', generateToken(user._id), { httpOnly: true, sameSite: false })
-    const {groups} = await user.populate('groups', 'name')
-    res.status(200).json({_id : user._id, name: user.name, email : user.email, groups})
+    await user.populate('groups', 'name')
+
+    // generate a refresh token
+    const refreshToken = generateRefreshToken(user)
+    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : true })
+
+    // push new refresh token to user's tokens
+    user.refreshTokens.push(refreshToken)
+    await user.save()
+
+    // generate an access token
+    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: true })
+
+    res.status(200).json({_id : user._id, name: user.name, email : user.email, groups: user.groups})
   } else {
     // unverified
     res.status(200).json({unverified : true, user : {
-      _id : user._id, name: user.name, email : user.email, groups
+      _id : user._id, name: user.name, email : user.email, groups : user.groups
     }})
   }
   
@@ -180,8 +189,25 @@ const verifyAccountSend = asyncHandler(async (req, res) => {
   res.status(200).json({status : "Success, awaiting email verification", expiresIn : '60 minutes'})
 })
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET)
+const generateRefreshToken = (user) => {
+  return jwt.sign({ id : user.id }, process.env.JWT_SECRET, {expiresIn : '365d'})
+}
+
+const generateAccessToken = (user) => {
+  if (!user.populated('groups')) {
+    user.populate('groups', 'name')
+    .then(res => {return})
+    .catch(err => {throw new Error(err)})
+  }
+  return jwt.sign({
+    id : user.id,
+    groups : user.groups,
+    isAdmin : user.groups.some(group => group.name.toLowerCase() === 'admin')
+  },
+  process.env.JWT_SECRET,
+  {
+    expiresIn : '5m'
+  })
 }
 
 module.exports = {
@@ -190,5 +216,8 @@ module.exports = {
   updateUser,
   deleteUser,
   getUsers,
-  getCurrentUser
+  getCurrentUser,
+  generateAccessToken,
+  verifyAccount,
+  verifyAccountSend
 }
