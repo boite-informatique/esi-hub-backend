@@ -31,7 +31,7 @@ app.use('/api/group', require('./routes/groupRoute'))
 app.use(errorHandler)
 
 // unknown routes
-app.use('/*', (req, res) => res.send('woah this page doesnt exist'))
+app.use('/*', (req, res) => res.status(404).send('woah this page doesnt exist'))
 
 // server port
 const PORT = process.env.PORT || 3000
