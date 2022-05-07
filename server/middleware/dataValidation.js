@@ -6,7 +6,7 @@ module.exports = (schema) => {
 
     if (error) {
       throw new Error(error.details.map(i => {
-        return i.message.replace(/['"]/g, '').replace(/^\w/, c => c.toUpperCase())
+        return ' ' + i.message.replace(/['"]/g, '').replace(/^\w/, c => c.toUpperCase())
       }))
     }
 

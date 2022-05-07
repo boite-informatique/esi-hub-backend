@@ -33,7 +33,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email })
 
   if (!user || !await bcrypt.compare(password, user.password)) {
-    res.status(400)
+    res.status(404)
     throw new Error('Email or password incorrect')
   }
 
@@ -45,21 +45,20 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // generate a refresh token
     const refreshToken = generateRefreshToken(user)
-    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : true })
+    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : false })
 
     // push new refresh token to user's tokens
     user.refreshTokens.push(refreshToken)
     await user.save()
 
     // generate an access token
-    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: true })
-
-    res.status(200).json({_id : user._id, name: user.name, email : user.email, groups: user.groups})
+    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: false })
+    const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
+    res.status(200).json(output)
   } else {
     // unverified
-    res.status(200).json({unverified : true, user : {
-      _id : user._id, name: user.name, email : user.email, groups : user.groups
-    }})
+    const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
+    res.status(200).json(output)
   }
   
 })
@@ -132,14 +131,15 @@ const getUsers = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select('-password -createdAt -updatedAt -__v').populate('groups', 'name')
+  const user = await User.findById(req.user._id).select('-password -updatedAt -__v').populate('groups', 'name')
 
   if (!user) {
     res.status(404)
     throw new Error('user doesnt exist')
   }
 
-  res.status(200).json(user)
+  const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
+  res.status(200).json(output)
 })
 
 const verifyAccount = asyncHandler(async (req, res) => {
