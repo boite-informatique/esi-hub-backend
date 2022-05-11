@@ -4,40 +4,43 @@ const Announcement = require('../models/announcement/announceModel')
 const Announcement_User = require('../models/announcement/announcement_user')
 
 const getAnnouncementAll = asyncHandler(async (req, res) => {
-
-  let {tags} = req.query
+  let {tags, limit} = req.query
   let announcements
   if (tags) {
     tags = tags.split(',')
     announcements = await Announcement.find({
-      tags : {$in : tags},
+      tags : {$elemMatch : {$in : tags}},
       $or : [
         {visibility : []},
-        {user : req.user._id},
+        {user : req.user.id},
         {visibility : {$elemMatch : {$in : req.user.groups}}}
       ]
-    }).
-    cursor().
-    eachAsync(async (doc) => {
-      const read = await Announcement_User.findOne({user : req.user.id, announcement : doc})
-      doc.read = read ? true : false
     })
+    .limit(limit)
+    .populate('user', 'name avatar')
+//     .cursor()
+//     .eachAsync(async (doc) => {
+//       const read = await Announcement_User.findOne({user : req.user.id, announcement : doc})
+//       doc.read = read ? true : false
+//     })
   } else {
     announcements = await Announcement.find({
       $or : [
         {visibility : []},
-        {user : req.user._id},
+        {user : req.user.id},
         {visibility : {$elemMatch : {$in : req.user.groups}}}
       ]
-    }).
-    cursor().
-    eachAsync(async (doc) => {
-      const read = await Announcement_User.findOne({user : req.user.id, announcement : doc})
-      doc.read = read ? true : false
     })
-  }
+    .limit(limit)
+    .populate('user', 'name avatar')
+//     .cursor()
+//     .eachAsync(async (doc) => {
+//       const read = await Announcement_User.findOne({user : req.user.id, announcement : doc})
+//       doc.read = read ? true : false
+//     })
 
-  if (announcements.length === 0) {
+  }
+  if (!announcements || announcements.length === 0) {
     res.status(404)
     throw new Error('Announcement(s) not found')
   }
@@ -53,7 +56,7 @@ const getAnnouncementId = asyncHandler(async (req, res) => {
       {user : req.user._id},
       {visibility : {$elemMatch : {$in : req.user.groups}}}
     ]
-  })
+  }).populate('user','name avatar')
 
   if (!announcement) {
     res.status(404)
@@ -72,7 +75,7 @@ const createAnnouncement = asyncHandler(async (req, res) => {
 
   // create and save announcement
   const announcementObj = new Announcement(body)
-  announcementObj.user = req.user._id
+  announcementObj.user = req.user.id
 
   await announcementObj.save()
   res.status(201).json(announcementObj)

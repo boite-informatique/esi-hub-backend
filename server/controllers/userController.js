@@ -20,9 +20,15 @@ const registerUser = asyncHandler(async (req, res) => {
   const salt = await bcrypt.genSalt(10)
   body.password = await bcrypt.hash(body.password, salt)
 
+  body.verified = true
+
   const user = await User.create(body)
   await user.populate('groups')
-  res.status(201).json(user)
+
+
+  const  {__v, password, updatedAt, refreshTokens, ...output} = user._doc
+
+  res.status(201).json(output)
 })
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -45,14 +51,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // generate a refresh token
     const refreshToken = generateRefreshToken(user)
-    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : false })
+    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : true })
 
     // push new refresh token to user's tokens
     user.refreshTokens.push(refreshToken)
     await user.save()
 
     // generate an access token
-    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: false })
+    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: true })
     const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
     res.status(200).json(output)
   } else {
@@ -131,7 +137,7 @@ const getUsers = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select('-password -updatedAt -__v').populate('groups', 'name')
+  const user = await User.findById(req.user.id).select('-password -updatedAt -__v').populate('groups', 'name')
 
   if (!user) {
     res.status(404)
@@ -202,7 +208,7 @@ const generateAccessToken = (user) => {
   return jwt.sign({
     id : user.id,
     groups : user.groups,
-    isAdmin : user.groups.some(group => group.name.toLowerCase() === 'admin')
+    isAdmin : user.groups.some(group => group.name === 'admin')
   },
   process.env.JWT_SECRET,
   {

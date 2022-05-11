@@ -2,7 +2,7 @@ const multer = require('multer')
 const path = require('path')
 const jsonfile = require('jsonfile')
 
-const config = jsonfile.readFileSync('../config/upload.json')
+//const config = jsonfile.readFileSync('../config/upload.json')
 
 // define multer disk storage
 
@@ -22,7 +22,7 @@ const upload = multer({
   storage : storage,
   limits : {
     fileSize : 20 * 1024 * 1024 // 20 MB per file
-  },
+  }/*,
   fileFilter : function(req, file, cb) {
     // check file type
     const ext = path.extname(file.originalname)
@@ -31,5 +31,7 @@ const upload = multer({
     } else {
       cb(new Error('File extension not accepted'))
     }
-  }
+  }*/
 })
+
+module.exports = upload

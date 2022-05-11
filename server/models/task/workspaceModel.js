@@ -13,7 +13,7 @@ const workspaceSchema = new Schema({
 
   members : [{
     type : Schema.Types.ObjectId,
-    ref : 'Task',
+    ref : 'User',
     required : true
   }]
 })

@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler')
 const Group = require('../models/groupModel')
 
 const getGroups = asyncHandler(async (req, res) => {
-  const groups = await Group.find().select('name path').sort({path : -1})
+  const groups = await Group.find({name : {$ne : 'admin'}}).select('name path').sort({path : -1})
 
   if (groups.length === 0) {
     res.status(404)

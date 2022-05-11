@@ -3,7 +3,7 @@ const c = require('../controllers/announceController')
 const authorize = require('../middleware/authorize')
 const dataValidator = require('../middleware/dataValidation')
 const {createSchema, updateSchema} = require('../middleware/dataSchemas/announceSchemas')
-
+const upload = require('../utilities/fileUpload')
 
 router.use(authorize)
 router.get('/', c.getAnnouncementAll)

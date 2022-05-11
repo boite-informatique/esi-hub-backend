@@ -14,8 +14,12 @@ module.exports = asyncHandler(async (req, res, next) => {
 
   let token
   // check if access token exists and is valid
-  if (!accessToken || !jwt.verify(accessToken, process.env.JWT_SECRET)) {
+
+  jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decoded) => {
+    if (err) {
+
     const user = await getUser(refreshToken)
+
 
     if (!user) {
       res.status(401)
@@ -23,13 +27,16 @@ module.exports = asyncHandler(async (req, res, next) => {
     }
 
     token = generateAccessToken(user)
-    res.cookie('accessToken', token, {httpOnly : false, sameSite : true})
-  } else {
-    token = accessToken
-  }
 
-  req.user = jwt.decode(token)
-  next()
+    res.cookie('accessToken', token, {httpOnly : false, sameSite : true})
+
+    req.user = jwt.decode(token)
+    next()
+    } else {
+      req.user = decoded
+      next()
+    }
+  })
 })
 
 const getUser = async (refreshToken) => {
