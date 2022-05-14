@@ -141,7 +141,7 @@ const deleteAnnouncement = asyncHandler(async (req, res) => {
 
 	// search if announcement matches the user or if the user is admin
 
-	if (announcement.user == req.user.id || req.user.isAdmin) {
+	if (!announcement.user == req.user.id || !req.user.isAdmin) {
 		res.status(401)
 		throw new Error("Unauthorized, you can't change this announcement")
 	}
