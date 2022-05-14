@@ -1,0 +1,40 @@
+[
+  {
+    "name" : "student",
+    "children" : [
+      {
+        "name" : "1cpi",
+        "children" : [
+        {
+          "name" : "g1"
+        },
+        {
+          "name" : "g2"
+        }
+      ]},
+      {
+        "name" : "2cpi"
+      },
+      {
+        "name" : "1sc"
+      },
+      {
+        "name" : "2sc"
+      }
+    ]
+  },
+  {
+    "name" : "teacher"
+  },
+  {
+    "name" : "club",
+    "children" : [
+      {
+        "name" : "alphabit"
+      },
+      {
+        "name" : "ingeniums"
+      }
+    ]
+  }
+]

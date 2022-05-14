@@ -51,6 +51,8 @@ const uploadController = async (req, res, next) => {
 
 	const savedFiles = await File.insertMany(files)
 
+	req.body = JSON.parse(req.body.data)
+
 	// change files info to file id in req.files array
 	req.files = savedFiles.map((val) => val.id)
 	next()

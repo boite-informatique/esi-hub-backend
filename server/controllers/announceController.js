@@ -79,8 +79,7 @@ const getAnnouncementId = asyncHandler(async (req, res) => {
 })
 
 const createAnnouncement = asyncHandler(async (req, res) => {
-	// parse body data
-	const body = JSON.parse(req.body.data)
+	const { body } = req
 
 	// create and save announcement
 	const announcementObj = new Announcement({ ...body, attachments: req.files })
@@ -96,8 +95,7 @@ const createAnnouncement = asyncHandler(async (req, res) => {
 })
 
 const updateAnnouncement = asyncHandler(async (req, res) => {
-	// parse body data
-	const body = JSON.parse(req.body.data)
+	const { body } = req
 
 	// search for the announcement
 

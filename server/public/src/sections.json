@@ -1,0 +1,22 @@
+[
+      {
+        "name" : "Home",
+        "link" : "/",
+        "icon" : "Home"
+      },
+      {
+        "name" : "Announcements",
+        "link" : "/announcements",
+        "icon" : "Campaign"
+      },
+      {
+        "name" : "Workspaces",
+        "link" : "/workspaces",
+        "icon" : "Workspaces"
+      },
+      {
+        "name" : "Chat",
+        "link" : "/chat",
+        "icon" : "Chat"
+      }
+    ]

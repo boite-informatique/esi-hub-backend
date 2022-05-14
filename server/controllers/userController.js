@@ -1,233 +1,266 @@
-const asyncHandler = require('express-async-handler')
-const User = require('../models/userModel')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv').config()
-const {emailVerification} = require('../config/general.json')
-const sendEmail = require('../utilities/email')
+const asyncHandler = require("express-async-handler")
+const User = require("../models/userModel")
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+const dotenv = require("dotenv").config()
+const { emailVerification } = require("../config/general.json")
+const sendEmail = require("../utilities/email")
 
 const registerUser = asyncHandler(async (req, res) => {
-  const {body} = req
+	const { body } = req
 
-  // Check if account already exists
-  const checkUser = await User.findOne({ email : body.email })
-  if (checkUser) {
-    res.status(400)
-    throw new Error('Account already exists')
-  }
+	// Check if account already exists
+	const checkUser = await User.findOne({ email: body.email })
+	if (checkUser) {
+		res.status(400)
+		throw new Error("Account already exists")
+	}
 
-  // hash password and create account
-  const salt = await bcrypt.genSalt(10)
-  body.password = await bcrypt.hash(body.password, salt)
+	// hash password and create account
+	const salt = await bcrypt.genSalt(10)
+	body.password = await bcrypt.hash(body.password, salt)
 
-  body.verified = true
+	body.verified = true
 
-  const user = await User.create(body)
-  await user.populate('groups')
+	const user = await User.create(body)
+	await user.populate("groups")
 
+	const { __v, password, updatedAt, refreshTokens, ...output } = user._doc
 
-  const  {__v, password, updatedAt, refreshTokens, ...output} = user._doc
-
-  res.status(201).json(output)
+	res.status(201).json(output)
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body
+	const { email, password } = req.body
 
-  // find user in database
+	// find user in database
 
-  const user = await User.findOne({ email })
+	const user = await User.findOne({ email })
 
-  if (!user || !await bcrypt.compare(password, user.password)) {
-    res.status(404)
-    throw new Error('Email or password incorrect')
-  }
+	if (!user || !(await bcrypt.compare(password, user.password))) {
+		res.status(404)
+		throw new Error("Email or password incorrect")
+	}
 
-  // in case user found
-  // check if user is verified
+	// in case user found
+	// check if user is verified
 
-  if (!emailVerification || user.verified) {
-    await user.populate('groups', 'name')
+	if (!emailVerification || user.verified) {
+		await user.populate("groups", "name")
 
-    // generate a refresh token
-    const refreshToken = generateRefreshToken(user)
-    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : true, maxAge : 365 * 24 * 60 * 60 * 1000 })
+		// generate a refresh token
+		const refreshToken = generateRefreshToken(user)
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			sameSite: true,
+			maxAge: 365 * 24 * 60 * 60 * 1000,
+		})
 
-    // push new refresh token to user's tokens
-    user.refreshTokens.push(refreshToken)
-    await user.save()
+		// push new refresh token to user's tokens
+		user.refreshTokens.push(refreshToken)
+		await user.save()
 
-    // generate an access token
-    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: true, maxAge : 15 * 60 * 1000 })
-    const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
-    res.status(200).json(output)
-  } else {
-    // unverified
-    const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
-    res.status(200).json(output)
-  }
-  
+		// generate an access token
+		res.cookie("accessToken", generateAccessToken(user), {
+			httpOnly: false,
+			sameSite: true,
+			maxAge: 15 * 60 * 1000,
+		})
+		const { __v, password, updatedAt, refreshTokens, ...output } = user._doc
+		res.status(200).json(output)
+	} else {
+		// unverified
+		const { __v, password, updatedAt, refreshTokens, ...output } = user._doc
+		res.status(200).json(output)
+	}
 })
 
 const updateUser = asyncHandler(async (req, res) => {
-  
-  // verify if user is admin or target
-  if (req.params.id !== req.user._id && !req.admin) {
-    res.status(401)
-    throw new Error('Unauthorized operation, you have to login as target user or admin')
-  }
-  // get data from request body
-  const { body } = req
+	// verify if user is admin or target
+	if (req.params.id !== req.user.id && !req.admin) {
+		res.status(401)
+		throw new Error(
+			"Unauthorized operation, you have to login as target user or admin"
+		)
+	}
+	// get data from request body
+	const { body } = req
 
-  // find user
-  const user = await User.findById(req.params.id)
+	// find user
+	const user = await User.findById(req.params.id)
 
-  if (!user) {
-    res.status(404)
-    throw new Error('User not found')
-  }
-  // strip role modification if not admin
-  body.groups = req.admin ? body.groups : null
+	if (!user) {
+		res.status(404)
+		throw new Error("User not found")
+	}
+	// strip role modification if not admin
+	body.groups = req.admin ? body.groups : null
 
-  // hash password if new password is set
-  if (body.password) {
-    const salt = await bcrypt.genSalt(10)
-    body.password = await bcrypt.hash(body.password, salt)
-  }
+	// hash password if new password is set
+	if (body.password) {
+		const salt = await bcrypt.genSalt(10)
+		body.password = await bcrypt.hash(body.password, salt)
+	}
 
-  // save user
-  for (const key in user) {
-    if (body[key]) {
-      user[key] = body[key]
-    }
-  }
+	// save user
+	for (const key in user) {
+		if (body[key]) {
+			user[key] = body[key]
+		}
+	}
 
-  await user.save()
-  res.status(200).json(user)
+	await user.save()
+	res.status(200).json(user)
 })
 
 const deleteUser = asyncHandler(async (req, res) => {
-  if (!req.admin) {
-    res.status(401)
-    throw new Error('Unauthorized, you need to be an admin')
-  }
+	if (!req.admin) {
+		res.status(401)
+		throw new Error("Unauthorized, you need to be an admin")
+	}
 
-  const user = await User.findById(req.body.id)
+	const user = await User.findById(req.body.id)
 
-  if(!user) {
-    res.status(404)
-    throw new Error('User not found')
-  }
-  await user.delete()
+	if (!user) {
+		res.status(404)
+		throw new Error("User not found")
+	}
+	await user.delete()
 
-  res.status(200).json({
-    id: req.body.id
-  })
+	res.status(200).json({
+		id: req.body.id,
+	})
 })
 
 const getUsers = asyncHandler(async (req, res) => {
-  const {s} = req.query
+	const { s } = req.query
 
-  const users = s ? 
-  await User.find({name : new RegExp(s, 'i')}).select('name email avatar createdAt groups').limit(5).populate('groups', 'name')
-  : await User.find().select('name email avatar createdAt groups').limit(5).populate('groups', 'name')
+	const users = s
+		? await User.find({ name: new RegExp(s, "i") })
+				.select("name email avatar createdAt groups")
+				.limit(5)
+				.populate("groups", "name")
+		: await User.find()
+				.select("name email avatar createdAt groups")
+				.limit(5)
+				.populate("groups", "name")
 
-  if (users.length === 0) {
-    res.status(404)
-    throw new Error('no users found')
-  }
+	if (users.length === 0) {
+		res.status(404)
+		throw new Error("no users found")
+	}
 
-  res.status(200).json(users)
+	res.status(200).json(users)
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id).select('-password -updatedAt -__v').populate('groups', 'name')
+	const user = await User.findById(req.user.id)
+		.select("-password -updatedAt -__v")
+		.populate("groups", "name")
 
-  if (!user) {
-    res.status(404)
-    throw new Error('user doesnt exist')
-  }
+	if (!user) {
+		res.status(404)
+		throw new Error("user doesnt exist")
+	}
 
-  const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
-  res.status(200).json(output)
+	const { __v, password, updatedAt, refreshTokens, ...output } = user._doc
+	res.status(200).json(output)
 })
 
 const verifyAccount = asyncHandler(async (req, res) => {
-  const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET)
+	const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET)
 
-  if (!decoded) {
-    res.status(401)
-    throw new Error('Unauthorized, expired token')
-  }
+	if (!decoded) {
+		res.status(401)
+		throw new Error("Unauthorized, expired token")
+	}
 
-  const user = await User.findById(decoded.id)
-  
-  if (!user) {
-    res.status(404)
-    throw new Error('User not found')
-  }
+	const user = await User.findById(decoded.id)
 
-  user.verified = true
-  await user.save()
+	if (!user) {
+		res.status(404)
+		throw new Error("User not found")
+	}
 
-  res.status(200).redirect('/login')
+	user.verified = true
+	await user.save()
+
+	res.status(200).redirect("/login")
 })
 
 const verifyAccountSend = asyncHandler(async (req, res) => {
-  const {email} = req.body
+	const { email } = req.body
 
-  if (!email) {
-    res.status(400)
-    throw new Error('You must enter an "email" field')
-  }
+	if (!email) {
+		res.status(400)
+		throw new Error('You must enter an "email" field')
+	}
 
-  const user = await User.findOne({email})
-  
-  if (!user) {
-    res.status(404)
-    throw new Error('User not found')
-  }
+	const user = await User.findOne({ email })
 
-  if (user.verified) {
-    res.status(400)
-    throw new Error('User already verified')
-  }
+	if (!user) {
+		res.status(404)
+		throw new Error("User not found")
+	}
 
-  const token = jwt.sign({ id : user.id }, process.env.JWT_SECRET_EMAIL_VERIFICATION, {expiresIn : '60m'})
+	if (user.verified) {
+		res.status(400)
+		throw new Error("User already verified")
+	}
 
-  sendEmail(user.email, token)
-  res.status(200).json({status : "Success, awaiting email verification", expiresIn : '60 minutes'})
+	const token = jwt.sign(
+		{ id: user.id },
+		process.env.JWT_SECRET_EMAIL_VERIFICATION,
+		{ expiresIn: "60m" }
+	)
+
+	sendEmail(user.email, token)
+	res
+		.status(200)
+		.json({
+			status: "Success, awaiting email verification",
+			expiresIn: "60 minutes",
+		})
 })
 
 const generateRefreshToken = (user) => {
-  return jwt.sign({ id : user.id }, process.env.JWT_SECRET, {expiresIn : '365d'})
+	return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+		expiresIn: "365d",
+	})
 }
 
 const generateAccessToken = (user) => {
-  if (!user.populated('groups')) {
-    user.populate('groups', 'name')
-    .then(res => {return})
-    .catch(err => {throw new Error(err)})
-  }
-  return jwt.sign({
-    id : user.id,
-    groups : user.groups,
-    isAdmin : user.groups.some(group => group.name === 'admin')
-  },
-  process.env.JWT_SECRET,
-  {
-    expiresIn : '5m'
-  })
+	if (!user.populated("groups")) {
+		user
+			.populate("groups", "name")
+			.then((res) => {
+				return
+			})
+			.catch((err) => {
+				throw new Error(err)
+			})
+	}
+	return jwt.sign(
+		{
+			id: user.id,
+			groups: user.groups,
+			isAdmin: user.groups.some((group) => group.name === "admin"),
+		},
+		process.env.JWT_SECRET,
+		{
+			expiresIn: "5m",
+		}
+	)
 }
 
 module.exports = {
-  registerUser,
-  loginUser,
-  updateUser,
-  deleteUser,
-  getUsers,
-  getCurrentUser,
-  generateAccessToken,
-  verifyAccount,
-  verifyAccountSend
+	registerUser,
+	loginUser,
+	updateUser,
+	deleteUser,
+	getUsers,
+	getCurrentUser,
+	generateAccessToken,
+	verifyAccount,
+	verifyAccountSend,
 }
