@@ -91,6 +91,7 @@ const createAnnouncement = asyncHandler(async (req, res) => {
 		res.status(201).json(announcementObj)
 	} catch (err) {
 		res.status(400)
+		console.log(err)
 		throw new Error(err)
 	}
 })
@@ -110,6 +111,7 @@ const updateAnnouncement = asyncHandler(async (req, res) => {
 
 	// search if announcement matches the user or if the user is an admin
 
+	console.log(announcement.user, req.user.id)
 	if (announcement.user != req.user.id && !req.user.isAdmin) {
 		res.status(401)
 		throw new Error("Unauthorized, you can't change this announcement")
