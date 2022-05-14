@@ -28,7 +28,7 @@ module.exports = asyncHandler(async (req, res, next) => {
 
     token = generateAccessToken(user)
 
-    res.cookie('accessToken', token, {httpOnly : false, sameSite : true})
+    res.cookie('accessToken', token, {httpOnly : false, sameSite : true, maxAge : 15 * 60 * 1000})
 
     req.user = jwt.decode(token)
     next()

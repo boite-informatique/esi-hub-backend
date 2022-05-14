@@ -3,18 +3,20 @@ const {Schema, model} = require('mongoose')
 const taskSchema = new Schema({
   name : {
     type: String,
-    required : true
+    required : [true, 'Name is required'],
+    maxlength : [64, 'Name must not exceed 64 characters']
   },
 
   description : {
     type : String,
-    required : false
+    required : false,
+    maxlength : [128, 'Description must not exceed 64 characters']
   },
 
   status : {
     type : String,
     required : true,
-    enum : ["Planned", "In progess", "Done"]
+    enum : { values: ["Planned", "In progess", "Done"], message: '{VALUE} is not supported status' }
   },
 
   userInCharge : {

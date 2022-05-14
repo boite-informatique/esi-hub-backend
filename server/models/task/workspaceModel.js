@@ -3,12 +3,14 @@ const {Schema, model} = require('mongoose')
 const workspaceSchema = new Schema({
   name : {
     type: String,
-    required : true
+    required : [true, 'Name is required'],
+    maxlength: [32, 'Name must not exceed 32 characters']
   },
 
   description : {
     type : String,
-    required : false
+    required : false,
+    maxlength: [64, 'Description must not exceed 32 characters']
   },
 
   members : [{

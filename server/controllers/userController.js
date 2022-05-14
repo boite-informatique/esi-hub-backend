@@ -51,14 +51,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // generate a refresh token
     const refreshToken = generateRefreshToken(user)
-    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : true })
+    res.cookie('refreshToken', refreshToken, { httpOnly : true, sameSite : true, maxAge : 365 * 24 * 60 * 60 * 1000 })
 
     // push new refresh token to user's tokens
     user.refreshTokens.push(refreshToken)
     await user.save()
 
     // generate an access token
-    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: true })
+    res.cookie('accessToken', generateAccessToken(user), { httpOnly: false, sameSite: true, maxAge : 15 * 60 * 1000 })
     const {__v, password, updatedAt, refreshTokens, ...output} = user._doc
     res.status(200).json(output)
   } else {
@@ -126,7 +126,11 @@ const deleteUser = asyncHandler(async (req, res) => {
 })
 
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select('-password -createdAt -updatedAt -__v').populate('groups', 'name')
+  const {s} = req.query
+
+  const users = s ? 
+  await User.find({name : new RegExp(s, 'i')}).select('name email avatar createdAt groups').limit(5).populate('groups', 'name')
+  : await User.find().select('name email avatar createdAt groups').limit(5).populate('groups', 'name')
 
   if (users.length === 0) {
     res.status(404)

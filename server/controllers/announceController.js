@@ -1,191 +1,209 @@
-const asyncHandler = require('express-async-handler')
-const User = require('../models/userModel')
-const Announcement = require('../models/announcement/announceModel')
-const Announcement_User = require('../models/announcement/announcement_user')
+const asyncHandler = require("express-async-handler")
+const User = require("../models/userModel")
+const Announcement = require("../models/announcement/announceModel")
+const Announcement_User = require("../models/announcement/announcement_user")
 
 const getAnnouncementAll = asyncHandler(async (req, res) => {
-  let {tags, limit} = req.query
-  let announcements
-  if (tags) {
-    tags = tags.split(',')
-    announcements = await Announcement.find({
-      tags : {$elemMatch : {$in : tags}},
-      $or : [
-        {visibility : []},
-        {user : req.user.id},
-        {visibility : {$elemMatch : {$in : req.user.groups}}}
-      ]
-    })
-    .limit(limit)
-    .populate('user', 'name avatar')
-//     .cursor()
-//     .eachAsync(async (doc) => {
-//       const read = await Announcement_User.findOne({user : req.user.id, announcement : doc})
-//       doc.read = read ? true : false
-//     })
-  } else {
-    announcements = await Announcement.find({
-      $or : [
-        {visibility : []},
-        {user : req.user.id},
-        {visibility : {$elemMatch : {$in : req.user.groups}}}
-      ]
-    })
-    .limit(limit)
-    .populate('user', 'name avatar')
-//     .cursor()
-//     .eachAsync(async (doc) => {
-//       const read = await Announcement_User.findOne({user : req.user.id, announcement : doc})
-//       doc.read = read ? true : false
-//     })
+	let { tags, search, limit = 10, page = 0 } = req.query
 
-  }
-  if (!announcements || announcements.length === 0) {
-    res.status(404)
-    throw new Error('Announcement(s) not found')
-  }
-  res.status(200).json(announcements)
+	// define our query conditions
+	let query = {
+		$or: [
+			{ visibility: [] },
+			{ user: req.user.id },
+			{ visibility: { $elemMatch: { $in: req.user.groups } } },
+		],
+	}
+
+	// check if tags or search params exist and if so add to query
+	if (tags) query.tags = { $elemMatch: { $in: tags.split(",") } }
+	if (search) query.title = new RegExp(search, "i") // perform case insensitive search on title
+
+	let announcements = []
+
+	// perform query
+	await Announcement.find(query)
+		.sort({ createdAt: -1 })
+		.skip(limit * page)
+		.limit(limit)
+		.populate("attachments")
+		.populate("user", "name avatar")
+		.cursor()
+		.eachAsync(async (doc) => {
+			const read = await Announcement_User.findOne({
+				user: req.user.id,
+				announcement: doc.id,
+			})
+			doc._doc.read = read ? true : false
+			announcements.push(doc)
+		})
+
+	// check is query returned any results
+	if (!announcements || announcements.length === 0) {
+		res.status(404)
+		throw new Error("Announcement(s) not found")
+	}
+
+	res.status(200).json({
+		limit,
+		nextPage: page + 1,
+		data: announcements,
+	})
 })
 
 const getAnnouncementId = asyncHandler(async (req, res) => {
+	// perform query while respecting visibility constraints
+	const announcement = await Announcement.findOne({
+		_id: req.params.id,
+		$or: [
+			{ visibility: [] },
+			{ user: req.user._id },
+			{ visibility: { $elemMatch: { $in: req.user.groups } } },
+		],
+	})
+		.populate("user", "name avatar")
+		.populate("attachments")
 
-  const announcement = await Announcement.findOne({
-    _id : req.params.id,
-    $or : [
-      {visibility : []},
-      {user : req.user._id},
-      {visibility : {$elemMatch : {$in : req.user.groups}}}
-    ]
-  }).populate('user','name avatar')
+	if (!announcement) {
+		res.status(404)
+		throw new Error("Announcement not found")
+	}
 
-  if (!announcement) {
-    res.status(404)
-    throw new Error('Announcement not found')
-  }
-
-  // read status
-  const read = await Announcement_User.findOne({user : req.user.id, announcement})
-  announcement.read = read ? true : false
-
-  res.status(200).json(announcement)
+	// read status
+	const read = await Announcement_User.findOne({
+		user: req.user.id,
+		announcement,
+	})
+	announcement._doc.read = read ? true : false
+	res.status(200).json(announcement)
 })
 
 const createAnnouncement = asyncHandler(async (req, res) => {
-  const {body} = req
+	// parse body data
+	const body = JSON.parse(req.body.data)
 
-  // create and save announcement
-  const announcementObj = new Announcement(body)
-  announcementObj.user = req.user.id
+	// create and save announcement
+	const announcementObj = new Announcement({ ...body, attachments: req.files })
+	announcementObj.user = req.user.id
 
-  await announcementObj.save()
-  res.status(201).json(announcementObj)
+	try {
+		await announcementObj.save()
+		res.status(201).json(announcementObj)
+	} catch (err) {
+		res.status(400)
+		console.log(err)
+		throw new Error(err)
+	}
 })
 
 const updateAnnouncement = asyncHandler(async (req, res) => {
-  const {body} = req
+	// parse body data
+	const body = JSON.parse(req.body.data)
 
-  // search for the announcement
+	// search for the announcement
 
-  const announcement = await Announcement.findById(req.params.id).populate('user', '_id')
+	const announcement = await Announcement.findById(req.params.id)
 
-  if (!announcement) {
-    res.status(400)
-    throw new Error('Announcement doesn\'t exist')
-  }
+	if (!announcement) {
+		res.status(404)
+		throw new Error("Announcement doesn't exist")
+	}
 
-  // search if announcement matches the user
+	// search if announcement matches the user or if the user is an admin
 
-  if (announcement.user._id === req.user._id || req.admin) {
-    res.status(401)
-    throw new Error('Unauthorized, you can\'t change this announcement')
-  }
+	console.log(announcement.user, req.user.id)
+	if (announcement.user != req.user.id && !req.user.isAdmin) {
+		res.status(401)
+		throw new Error("Unauthorized, you can't change this announcement")
+	}
 
-  // updating the announcement
+	// updating the announcement
 
-  await announcement.update(body)
-
-  res.status(200).json(announcement)
+	try {
+		await announcement.updateOne(body, { runValidators: true })
+		res.status(200).json({
+			old: announcement,
+			changed: body,
+		})
+	} catch (err) {
+		res.status(400)
+		throw new Error(err)
+	}
 })
 
 const deleteAnnouncement = asyncHandler(async (req, res) => {
-  const announcement = await Announcement.findById(req.params.id).populate('user', '_id')
+	const announcement = await Announcement.findById(req.params.id)
 
-  if (!announcement) {
-    res.status(400)
-    throw new Error('Announcement doesn\'t exist')
-  }
+	if (!announcement) {
+		res.status(400)
+		throw new Error("Announcement doesn't exist")
+	}
 
-  // search if announcement matches the user
+	// search if announcement matches the user or if the user is admin
 
-  if (announcement.user._id === req.user._id || req.admin) {
-    res.status(401)
-    throw new Error('Unauthorized, you can\'t change this announcement')
-  }
+	if (announcement.user == req.user.id || req.user.isAdmin) {
+		res.status(401)
+		throw new Error("Unauthorized, you can't change this announcement")
+	}
 
-  // deleting the announcement
+	// deleting the announcement
 
-  await announcement.remove()
+	await announcement.remove()
 
-  res.status(200).json({ id: announcement._id })
+	res.status(200).json({ id: announcement._id })
 })
 
-
 const markAsRead = asyncHandler(async (req, res) => {
-  const announcement = await Announcement.findOne({
-    _id : req.params.id,
-    $or : [
-      {visibility : []},
-      {user : req.user._id},
-      {visibility : {$elemMatch : {$in : req.user.groups}}}
-    ]
-  })
+	const announcement = await Announcement.findOne({
+		_id: req.params.id,
+		$or: [
+			{ visibility: [] },
+			{ user: req.user._id },
+			{ visibility: { $elemMatch: { $in: req.user.groups } } },
+		],
+	})
 
-  if (!announcement) {
-    res.status(400)
-    throw new Error('Announcement doesn\'t exist')
-  }
+	if (!announcement) {
+		res.status(404)
+		throw new Error("Announcement not found")
+	}
 
-  // search if announcement is already read
+	// search if announcement is already read
 
-  const read = await Announcement_User.findOne({user : req.user.id, announcement : announcement})
+	const read = await Announcement_User.findOne({
+		user: req.user.id,
+		announcement: announcement,
+	})
 
-  // mark as read or unread
-  // req.query.read specifies if announcement is marked to be read or not
+	// mark as read or unread
+	// req.query.read specifies if announcement is marked to be read or not
 
-  if (req.query.read === 'true') {
-    if (!read) {
-      const read = await Announcement_User.create({
-        announcement,
-        user : req.user.id
-      })
+	if (req.query.read === "true") {
+		if (!read) {
+			const read = await Announcement_User.create({
+				announcement: announcement.id,
+				user: req.user.id,
+			})
 
-      res.status(200)
-      res.json(read)
-    } else {
-      res.status(200)
-      res.json(read)
-    }
-  } else {
-    if (read) {
-      await Announcement_User.deleteOne(read)
-      res.status(200)
-      res.json(read)
-    } else {
-      res.status(200)
-      res.json(null)
-    }
-  }
-
-  await announcement.remove()
-
-  res.status(200).json({ id: announcement._id })
+			res.status(200).json(read)
+		} else {
+			res.status(200).json(read)
+		}
+	} else {
+		if (read) {
+			await Announcement_User.deleteOne(read)
+			res.status(200).json(read)
+		} else {
+			res.status(200).json(null)
+		}
+	}
 })
 
 module.exports = {
-  getAnnouncementAll,
-  getAnnouncementId,
-  createAnnouncement,
-  updateAnnouncement,
-  deleteAnnouncement,
-  markAsRead
+	getAnnouncementAll,
+	getAnnouncementId,
+	createAnnouncement,
+	updateAnnouncement,
+	deleteAnnouncement,
+	markAsRead,
 }
