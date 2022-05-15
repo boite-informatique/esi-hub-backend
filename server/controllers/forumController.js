@@ -57,7 +57,7 @@ const getForumId = asyncHandler(async (req, res) => {
     
     res.status(200).json(forum)
 
- })
+})
 
 const createForum = asyncHandler(async (req, res) => { 
     //get the data
@@ -72,7 +72,7 @@ const createForum = asyncHandler(async (req, res) => {
         return res.status(400).send(error);
     }
 
- })
+})
   
 const updateForum = asyncHandler(async (req, res) => { 
 
@@ -80,7 +80,7 @@ const updateForum = asyncHandler(async (req, res) => {
     const forum = await Forum.findById(req.params.id).populate('user', '_id')
 
     if (!forum) {
-        res.status(400)
+        res.status(404)
         throw new Error('forum not found')
     }
 
@@ -91,20 +91,79 @@ const updateForum = asyncHandler(async (req, res) => {
     }
     
     // updating forum
+    try {
+        const {title, body} = req.body  
+        const {files} = req
+        if (title) {
+            forum.title = title 
+            await forum.save()
+        }
+        if (body) {
+            forum.body = body 
+            await forum.save()
+        }
+        if (files) {
+            forum.attachments = files
+            await forum.save()
+        }
 
+        res.status(200).json({"forum updated": forum})
+    } catch (error) { //in case validation fails
+        res.status(400)
+		throw new Error(err)
+    }
+
+})
+
+const deleteForum = asyncHandler(async (req, res) => { 
+
+    // find the forum and get id of the owner
+    const forum = await Forum.findById(req.params.id).populate('user', '_id')
+
+    if (!forum) {
+        res.status(404)
+        throw new Error('forum not found')
+    }
+
+    // check if user is authorized (if user is the owner or admin)
+    if (forum.user._id != req.user.id && !req.user.isAdmin ) {
+		res.status(401)
+		throw new Error("Unauthorized, you can't delete this forum")
+    }
     
+    // deleting forum
+    try {
+        await forum.remove()
+        res.status(200).json({ message: 'forum deleted', id: announcement._id })
+    } catch (error) {
+        res.status(400)
+		throw new Error(err)
+    }
+})
 
+const viewForum = asyncHandler(async (req, res) => { 
+    // find the forum
+    const forum = await Forum.findById(req.params.id)
+
+    if (!forum) {
+        res.status(404)
+        throw new Error('forum not found')
+    }
+    
+    // incrementing views
+    try {
+        forum.views++
+        await forum.save()
+        res.status(200).json({ message: 'forum viewed', id: announcement._id })
+    } catch (error) {
+        res.status(500)
+        throw new Error(err)
+    }
+})
+
+const addUpvote = asyncHandler(async (req, res) => { 
     //STOPPED HERE
-
-
-
- })
-
-const deleteForum = asyncHandler(async (req, res) => { res.json({msg: 'this is deleteForum'}) })
-
-const viewForum = asyncHandler(async (req, res) => { res.json({msg: 'this is viewForum'}) })
-
-const addUpvote = asyncHandler(async (req, res) => { res.json({msg: 'this is addUpvote'}) })
+})
 
 const addDownvote = asyncHandler(async (req, res) => { res.json({msg: 'this is addDownvote'}) })
 
