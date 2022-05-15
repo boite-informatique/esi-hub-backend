@@ -28,6 +28,7 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 		.limit(limit)
 		.populate("attachments")
 		.populate("user", "name avatar")
+        .populate("user.avatar")
 		.cursor()
 		.eachAsync(async (doc) => {
 			const read = await Announcement_User.findOne({
@@ -62,6 +63,7 @@ const getAnnouncementId = asyncHandler(async (req, res) => {
 		],
 	})
 		.populate("user", "name avatar")
+		.populate("user.avatar")
 		.populate("attachments")
 
 	if (!announcement) {
@@ -79,8 +81,7 @@ const getAnnouncementId = asyncHandler(async (req, res) => {
 })
 
 const createAnnouncement = asyncHandler(async (req, res) => {
-	// parse body data
-	const body = JSON.parse(req.body.data)
+	const { body } = req
 
 	// create and save announcement
 	const announcementObj = new Announcement({ ...body, attachments: req.files })
@@ -96,8 +97,7 @@ const createAnnouncement = asyncHandler(async (req, res) => {
 })
 
 const updateAnnouncement = asyncHandler(async (req, res) => {
-	// parse body data
-	const body = JSON.parse(req.body.data)
+	const { body } = req
 
 	// search for the announcement
 

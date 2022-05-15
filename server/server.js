@@ -31,6 +31,7 @@ app.use(cookieParser())
 app.use("/api/user", require("./routes/userRoute"))
 app.use("/api/announcement", require("./routes/announceRoute"))
 app.use("/api/group", require("./routes/groupRoute"))
+app.use('/api/forum', require('./routes/forumRoute.js'))
 
 // error handling
 app.use(errorHandler)

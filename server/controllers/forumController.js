@@ -1,0 +1,125 @@
+const asyncHandler = require('express-async-handler')
+const Forum = require('../models/forumModel')
+
+
+const getForumAll = asyncHandler(async (req, res) => { 
+	let { search, limit = 30, page = 0 } = req.query
+
+	// define our query conditions
+	let query = {}
+
+	// check if search params exist and if so add to query
+	if (search) query.title = new RegExp(search, "i") // perform case insensitive search on title
+
+	// perform query
+	let forums = await Forum.find(query)
+		.sort({ createdAt: -1 })
+		.skip(limit * page)
+		.limit(limit)
+		.populate("attachments")
+        .populate({path: "comments",
+            populate: [{path: 'user', select: 'name avatar'},{path: 'attachments'}]
+        })
+		.populate("user", "name avatar")
+        .populate("user.avatar")
+
+
+	// check is query returned any results
+	if (!forums || forums.length === 0) {
+		res.status(404)
+		throw new Error("forums not found")
+	}
+
+	res.status(200).json({
+		limit,
+		nextPage: page + 1,
+		data: forums
+	})
+})
+
+const getForumId = asyncHandler(async (req, res) => { 
+
+    //fetch the forum from DB
+    const forum = await Forum.findOne({ _id : req.params.id })
+    .populate("attachments")
+    .populate({path: "comments",
+        populate: [{path: 'user', select: 'name avatar'},{path: 'attachments'}]
+    })
+    .populate("user", "name avatar")
+    .populate("user.avatar")
+
+
+    //if forum doesnt exist
+    if (!forum) {
+        res.status(404)
+        throw new Error('forum not found')
+    }
+    
+    res.status(200).json(forum)
+
+ })
+
+const createForum = asyncHandler(async (req, res) => { 
+    //get the data
+    const {title, body, attachments} = req.body
+    const user = req.user._id
+
+    //make forum using data, if data not valid it will apply mongoose data validation and throw error
+    try {
+        const forum = await Forum.create({title, body, attachments, user})
+        res.status(201).send(forum)
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+
+ })
+  
+const updateForum = asyncHandler(async (req, res) => { 
+
+    // find the forum and get id of the owner
+    const forum = await Forum.findById(req.params.id).populate('user', '_id')
+
+    if (!forum) {
+        res.status(400)
+        throw new Error('forum not found')
+    }
+
+    // check if user is authorized (if user is the owner or admin)
+    if (forum.user._id != req.user.id && !req.user.isAdmin ) {
+		res.status(401)
+		throw new Error("Unauthorized, you can't change this forum")
+    }
+    
+    // updating forum
+
+    
+
+    //STOPPED HERE
+
+
+
+ })
+
+const deleteForum = asyncHandler(async (req, res) => { res.json({msg: 'this is deleteForum'}) })
+
+const viewForum = asyncHandler(async (req, res) => { res.json({msg: 'this is viewForum'}) })
+
+const addUpvote = asyncHandler(async (req, res) => { res.json({msg: 'this is addUpvote'}) })
+
+const addDownvote = asyncHandler(async (req, res) => { res.json({msg: 'this is addDownvote'}) })
+
+const addComment = asyncHandler(async (req, res) => { res.json({msg: 'this is addComment'}) })
+
+
+
+module.exports = {
+    getForumAll,
+    getForumId,
+    createForum,
+    updateForum,
+    deleteForum,
+    viewForum,
+    addUpvote,
+    addDownvote,
+    addComment
+}
