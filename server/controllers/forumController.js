@@ -67,9 +67,10 @@ const createForum = asyncHandler(async (req, res) => {
     //make forum using data, if data not valid it will apply mongoose data validation and throw error
     try {
         const forum = await Forum.create({title, body, attachments, user})
-        res.status(201).send(forum)
+        res.status(201).json(forum)
     } catch (error) {
-        return res.status(400).send(error);
+        res.status(400)
+        throw new Error(error);
     }
 
 })
@@ -162,10 +163,68 @@ const viewForum = asyncHandler(async (req, res) => {
 })
 
 const addUpvote = asyncHandler(async (req, res) => { 
-    //STOPPED HERE
+    // find the forum
+    const forum = await Forum.findById(req.params.id).populate('user', '_id').populate('up_votes.users', '_id')
+
+    if (!forum) {
+        res.status(404)
+        throw new Error('forum not found')
+    }
+    
+    // check if user is the owner and prevent the upvote
+    if (forum.user._id === req.user.id) {
+        res.status(400)
+		throw new Error("the owner cannot upvote his forum")
+    }
+    // check if user already upvoted and prevent the upvote
+    if (forum.up_votes.users.some(user => user._id === req.user.id)) {
+        res.status(400)
+		throw new Error("you have already upvoted this forum")
+    }
+
+    //add the upvote
+    forum.up_votes.amount++
+    
+    try {
+        await forum.save()
+        res.status(201).json({message: 'upvote added', forum})
+    } catch (error) {
+        res.status(500)
+        throw new Error(err)
+    }
 })
 
-const addDownvote = asyncHandler(async (req, res) => { res.json({msg: 'this is addDownvote'}) })
+const addDownvote = asyncHandler(async (req, res) => { 
+        // find the forum
+        const forum = await Forum.findById(req.params.id).populate('user', '_id').populate('down_votes.users', '_id')
+
+        if (!forum) {
+            res.status(404)
+            throw new Error('forum not found')
+        }
+        
+        // check if user is the owner and prevent the down_votes
+        if (forum.user._id === req.user.id) {
+            res.status(400)
+            throw new Error("the owner cannot down_votes his forum")
+        }
+        // check if user already downvoted and prevent the downvote
+        if (forum.down_votes.users.some(user => user._id === req.user.id)) {
+            res.status(400)
+            throw new Error("you have already downvoted this forum")
+        }
+    
+        //add the downvote
+        forum.down_votes.amount++
+        
+        try {
+            await forum.save()
+            res.status(201).json({message: 'downvote added', forum})
+        } catch (error) {
+            res.status(500)
+            throw new Error(err)
+        }    
+ })
 
 const addComment = asyncHandler(async (req, res) => { res.json({msg: 'this is addComment'}) })
 
