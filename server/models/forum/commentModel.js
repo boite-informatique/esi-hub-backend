@@ -18,14 +18,30 @@ const commentSchema = mongoose.Schema({
     max : [5, 'too much files for this forum']
   }],
   up_votes : {
+    amount : {
       type : Number,
       required : true,
       default : 0
+    },
+    users : [{
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+      default : []
+    }]
   },
   down_votes : {
-    type : Number,
-    required : true,
-    default : 0
+    amount : {
+      type : Number,
+      required : true,
+      default : 0
+    },
+    users : [{
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+      default : []
+    }]
   }
 }, { timestamps: true })
 
