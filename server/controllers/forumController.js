@@ -62,7 +62,7 @@ const getForumId = asyncHandler(async (req, res) => {
 const createForum = asyncHandler(async (req, res) => { 
     //get the data
     const {title, body, attachments} = req.body
-    const user = req.user._id
+    const user = req.user.id
 
     //make forum using data, if data not valid it will apply mongoose data validation and throw error
     try {
@@ -135,7 +135,7 @@ const deleteForum = asyncHandler(async (req, res) => {
     // deleting forum
     try {
         await forum.remove()
-        res.status(200).json({ message: 'forum deleted', id: announcement._id })
+        res.status(200).json({ message: 'forum deleted', id: forum._id })
     } catch (error) {
         res.status(400)
 		throw new Error(err)
