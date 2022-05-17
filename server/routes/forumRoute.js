@@ -12,7 +12,6 @@ router.delete('/:id', c.deleteForum)
 router.put('/view/:id', c.viewForum)  //view forum, +1
 router.put('/upvote/:id', c.addUpvote)  //to add an upvote
 router.put('/downvote/:id', c.addDownvote)  //to add a downvote
-router.put('/comment/:id', c.addComment)  //to add a comment
 
 
 module.exports = router

@@ -32,6 +32,7 @@ app.use("/api/user", require("./routes/userRoute"))
 app.use("/api/announcement", require("./routes/announceRoute"))
 app.use("/api/group", require("./routes/groupRoute"))
 app.use('/api/forum', require('./routes/forumRoute.js'))
+app.use('/api/comment', require('./routes/commentRoute.js'))
 
 // error handling
 app.use(errorHandler)

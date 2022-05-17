@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const Forum = require('../models/forumModel')
+const Forum = require('../models/forum/forumModel')
 
 
 const getForumAll = asyncHandler(async (req, res) => { 
@@ -226,9 +226,6 @@ const addDownvote = asyncHandler(async (req, res) => {
         }    
  })
 
-const addComment = asyncHandler(async (req, res) => { res.json({msg: 'this is addComment'}) })
-
-
 
 module.exports = {
     getForumAll,
@@ -238,6 +235,5 @@ module.exports = {
     deleteForum,
     viewForum,
     addUpvote,
-    addDownvote,
-    addComment
+    addDownvote
 }
