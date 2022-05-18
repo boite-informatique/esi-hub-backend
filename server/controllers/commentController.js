@@ -4,27 +4,48 @@ const Comment = require('../models/forum/commentModel')
 
 
 const getCommentAll = asyncHandler(async (req, res) => { 
-    // let { limit = 10, page = 0 } = req.query
+	// how many comments does the user want to see & pagination
+    let { limit = 10, page = 0 } = req.query
 
-	// // perform query
-	// let comments = await Announcement.find()
-	// 	.sort({ 'up_votes.amount': -1 })
-	// 	.skip(limit * page)
-	// 	.limit(limit)
-	// 	.populate("attachments")
-	// 	.populate("user", "name avatar")
-    //     .populate("user.avatar")
-
-	// // check is query returned any results
-	// if (!comments || comments.length === 0) {
-	// 	res.status(404)
-	// 	throw new Error("Comments not found")
-	// }
+	if (limit <= 0) {
+		res.status(404)
+		throw new Error("limit must be a positive number")
+	}
+	if (page < 0) {
+		res.status(404)
+		throw new Error("page must be a positive number")
+	}
 
 
-	// //THIS CONTROLLER IS ALL WRONG, REDO IT
-	// //CUZ I AM FETCHING ALL FORUMS, WHILE I SHOULD FETCH ONLY THE ONES OF A SPESIFIC FORUM
+    // find the forum
+    const forum = await Forum.findById(req.params.id).populate("comments")
 
+	if (!forum) {
+        res.status(404)
+        throw new Error('forum not found')
+    }
+
+	if (!forum.comments || forum.comments.length === 0) {
+		res.status(404)
+		throw new Error("no comments found for this forum")
+	}
+
+	// sort the array of comments by upvotes
+	forum.comments.sort( (a, b) => {
+		return b.age - a.age
+	})
+
+	const comments = forum.comments.slice(limit * page, limit * page + limit)
+		.populate("attachments")
+		.populate("user", "name avatar")
+		.populate("user.avatar")
+		.select('-up_votes.users -down_votes.users')
+
+	res.status(200).json({
+		limit,
+		nextPage: page + 1,
+		data: comments,
+	})
  })
 
 const addComment = asyncHandler(async (req, res) => { res.json({message: 'this is addComment'}) })
