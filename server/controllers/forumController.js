@@ -17,12 +17,9 @@ const getForumAll = asyncHandler(async (req, res) => {
 		.skip(limit * page)
 		.limit(limit)
 		.populate("attachments")
-        .populate({path: "comments",
-            populate: [{path: 'user', select: 'name avatar'},{path: 'attachments'}]
-        })
 		.populate("user", "name avatar")
         .populate("user.avatar")
-
+    //didn't populate comments because they have their own route and controllers
 
 	// check is query returned any results
 	if (!forums || forums.length === 0) {
@@ -42,11 +39,9 @@ const getForumId = asyncHandler(async (req, res) => {
     //fetch the forum from DB
     const forum = await Forum.findOne({ _id : req.params.id })
     .populate("attachments")
-    .populate({path: "comments",
-        populate: [{path: 'user', select: 'name avatar'},{path: 'attachments'}]
-    })
     .populate("user", "name avatar")
     .populate("user.avatar")
+    //didn't populate comments because they have their own route and controllers
 
 
     //if forum doesnt exist
@@ -77,8 +72,8 @@ const createForum = asyncHandler(async (req, res) => {
   
 const updateForum = asyncHandler(async (req, res) => { 
 
-    // find the forum and get id of the owner
-    const forum = await Forum.findById(req.params.id).populate('user', '_id')
+    // find the forum
+    const forum = await Forum.findById(req.params.id)
 
     if (!forum) {
         res.status(404)
@@ -86,7 +81,7 @@ const updateForum = asyncHandler(async (req, res) => {
     }
 
     // check if user is authorized (if user is the owner or admin)
-    if (forum.user._id != req.user.id && !req.user.isAdmin ) {
+    if (forum.user != req.user.id && !req.user.isAdmin ) {
 		res.status(401)
 		throw new Error("Unauthorized, you can't change this forum")
     }
@@ -97,16 +92,14 @@ const updateForum = asyncHandler(async (req, res) => {
         const {files} = req
         if (title) {
             forum.title = title 
-            await forum.save()
         }
         if (body) {
             forum.body = body 
-            await forum.save()
         }
         if (files) {
             forum.attachments = files
-            await forum.save()
         }
+        await forum.save()
 
         res.status(200).json({"forum updated": forum})
     } catch (error) { //in case validation fails
@@ -118,8 +111,8 @@ const updateForum = asyncHandler(async (req, res) => {
 
 const deleteForum = asyncHandler(async (req, res) => { 
 
-    // find the forum and get id of the owner
-    const forum = await Forum.findById(req.params.id).populate('user', '_id')
+    // find the forum
+    const forum = await Forum.findById(req.params.id)
 
     if (!forum) {
         res.status(404)
@@ -127,7 +120,7 @@ const deleteForum = asyncHandler(async (req, res) => {
     }
 
     // check if user is authorized (if user is the owner or admin)
-    if (forum.user._id != req.user.id && !req.user.isAdmin ) {
+    if (forum.user != req.user.id && !req.user.isAdmin ) {
 		res.status(401)
 		throw new Error("Unauthorized, you can't delete this forum")
     }
@@ -164,7 +157,7 @@ const viewForum = asyncHandler(async (req, res) => {
 
 const addUpvote = asyncHandler(async (req, res) => { 
     // find the forum
-    const forum = await Forum.findById(req.params.id).populate('user', '_id').populate('up_votes.users', '_id')
+    const forum = await Forum.findById(req.params.id)
 
     if (!forum) {
         res.status(404)
@@ -172,12 +165,12 @@ const addUpvote = asyncHandler(async (req, res) => {
     }
     
     // check if user is the owner and prevent the upvote
-    if (forum.user._id === req.user.id) {
+    if (forum.user === req.user.id) {
         res.status(400)
 		throw new Error("the owner cannot upvote his forum")
     }
     // check if user already upvoted and prevent the upvote
-    if (forum.up_votes.users.some(user => user._id === req.user.id)) {
+    if (forum.up_votes.users.some(user => user === req.user.id)) {
         res.status(400)
 		throw new Error("you have already upvoted this forum")
     }
@@ -196,7 +189,7 @@ const addUpvote = asyncHandler(async (req, res) => {
 
 const addDownvote = asyncHandler(async (req, res) => { 
         // find the forum
-        const forum = await Forum.findById(req.params.id).populate('user', '_id').populate('down_votes.users', '_id')
+        const forum = await Forum.findById(req.params.id)
 
         if (!forum) {
             res.status(404)
@@ -204,12 +197,12 @@ const addDownvote = asyncHandler(async (req, res) => {
         }
         
         // check if user is the owner and prevent the down_votes
-        if (forum.user._id === req.user.id) {
+        if (forum.user === req.user.id) {
             res.status(400)
             throw new Error("the owner cannot down_votes his forum")
         }
         // check if user already downvoted and prevent the downvote
-        if (forum.down_votes.users.some(user => user._id === req.user.id)) {
+        if (forum.down_votes.users.some(user => user === req.user.id)) {
             res.status(400)
             throw new Error("you have already downvoted this forum")
         }
