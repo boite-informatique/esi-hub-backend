@@ -106,11 +106,94 @@ const updateComment = asyncHandler(async (req, res) => {
     }
 })
 
-const deleteComment = asyncHandler(async (req, res) => { res.json({message: 'this is deleteComment'}) })
+const deleteComment = asyncHandler(async (req, res) => { 
+	// find the comment
+	const comment = await Comment.findById(req.params.id)
 
-const addUpvote = asyncHandler(async (req, res) => { res.json({message: 'this is addUpvote'}) })
+	if (!comment) {
+		res.status(404)
+		throw new Error('comment not found')
+	}
 
-const addDownvote = asyncHandler(async (req, res) => { res.json({message: 'this is addDownvote'}) })
+	// check if user is authorized (if user is the owner or admin)
+	if (comment.user != req.user.id && !req.user.isAdmin ) {
+		res.status(401)
+		throw new Error("Unauthorized, you can't delete this comment")
+	}
+	
+	// deleting comment
+	try {
+		await comment.remove()
+		res.status(200).json({ message: 'comment deleted', id: comment._id })
+	} catch (error) {
+		res.status(400)
+		throw new Error(error)
+	}
+ })
+
+const addUpvote = asyncHandler(async (req, res) => { 
+	// find the comment
+	const comment = await Comment.findById(req.params.id)
+
+	if (!comment) {
+		res.status(404)
+		throw new Error('comment not found')
+	}
+
+    // check if user is the owner and prevent the upvote
+    if (comment.user === req.user.id) {
+        res.status(400)
+		throw new Error("the owner cannot upvote his comment")
+    }
+    // check if user already upvoted and prevent the upvote
+    if (comment.up_votes.users.some(user => user === req.user.id)) {
+        res.status(400)
+		throw new Error("you have already upvoted this comment")
+    }
+
+    //add the upvote
+    comment.up_votes.amount++
+    
+    try {
+        await comment.save()
+        res.status(201).json({message: 'upvote added', comment})
+    } catch (error) {
+        res.status(500)
+        throw new Error(error)
+    }
+ })
+
+const addDownvote = asyncHandler(async (req, res) => { 
+	// find the comment
+	const comment = await Comment.findById(req.params.id)
+
+	if (!comment) {
+		res.status(404)
+		throw new Error('comment not found')
+	}
+
+    // check if user is the owner and prevent the downvote
+    if (comment.user === req.user.id) {
+        res.status(400)
+		throw new Error("the owner cannot downvote his comment")
+    }
+    // check if user already downvoted and prevent the downvote
+    if (comment.down_votes.users.some(user => user === req.user.id)) {
+        res.status(400)
+		throw new Error("you have already downvoted this comment")
+    }
+
+    //add the downvote
+    comment.down_votes.amount++
+    
+    try {
+        await comment.save()
+        res.status(201).json({message: 'downvote added', comment})
+    } catch (error) {
+        res.status(500)
+        throw new Error(error)
+    }
+ })
 
 
 
