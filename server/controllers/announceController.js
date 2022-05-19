@@ -28,6 +28,7 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 		.limit(limit)
 		.populate("attachments")
 		.populate("user", "name avatar")
+        .populate("user.avatar")
 		.cursor()
 		.eachAsync(async (doc) => {
 			const read = await Announcement_User.findOne({
@@ -62,6 +63,7 @@ const getAnnouncementId = asyncHandler(async (req, res) => {
 		],
 	})
 		.populate("user", "name avatar")
+		.populate("user.avatar")
 		.populate("attachments")
 
 	if (!announcement) {
