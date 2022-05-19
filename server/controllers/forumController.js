@@ -104,9 +104,8 @@ const updateForum = asyncHandler(async (req, res) => {
         res.status(200).json({"forum updated": forum})
     } catch (error) { //in case validation fails
         res.status(400)
-		throw new Error(err)
+		throw new Error(error)
     }
-
 })
 
 const deleteForum = asyncHandler(async (req, res) => { 
@@ -131,7 +130,7 @@ const deleteForum = asyncHandler(async (req, res) => {
         res.status(200).json({ message: 'forum deleted', id: forum._id })
     } catch (error) {
         res.status(400)
-		throw new Error(err)
+		throw new Error(error)
     }
 })
 
@@ -151,7 +150,7 @@ const viewForum = asyncHandler(async (req, res) => {
         res.status(200).json({ message: 'forum viewed', id: announcement._id })
     } catch (error) {
         res.status(500)
-        throw new Error(err)
+        throw new Error(error)
     }
 })
 
@@ -183,41 +182,41 @@ const addUpvote = asyncHandler(async (req, res) => {
         res.status(201).json({message: 'upvote added', forum})
     } catch (error) {
         res.status(500)
-        throw new Error(err)
+        throw new Error(error)
     }
 })
 
 const addDownvote = asyncHandler(async (req, res) => { 
-        // find the forum
-        const forum = await Forum.findById(req.params.id)
+    // find the forum
+    const forum = await Forum.findById(req.params.id)
 
-        if (!forum) {
-            res.status(404)
-            throw new Error('forum not found')
-        }
-        
-        // check if user is the owner and prevent the down_votes
-        if (forum.user === req.user.id) {
-            res.status(400)
-            throw new Error("the owner cannot down_votes his forum")
-        }
-        // check if user already downvoted and prevent the downvote
-        if (forum.down_votes.users.some(user => user === req.user.id)) {
-            res.status(400)
-            throw new Error("you have already downvoted this forum")
-        }
+    if (!forum) {
+        res.status(404)
+        throw new Error('forum not found')
+    }
     
-        //add the downvote
-        forum.down_votes.amount++
-        
-        try {
-            await forum.save()
-            res.status(201).json({message: 'downvote added', forum})
-        } catch (error) {
-            res.status(500)
-            throw new Error(err)
-        }    
- })
+    // check if user is the owner and prevent the down_votes
+    if (forum.user === req.user.id) {
+        res.status(400)
+        throw new Error("the owner cannot down_votes his forum")
+    }
+    // check if user already downvoted and prevent the downvote
+    if (forum.down_votes.users.some(user => user === req.user.id)) {
+        res.status(400)
+        throw new Error("you have already downvoted this forum")
+    }
+
+    //add the downvote
+    forum.down_votes.amount++
+    
+    try {
+        await forum.save()
+        res.status(201).json({message: 'downvote added', forum})
+    } catch (error) {
+        res.status(500)
+        throw new Error(error)
+    }    
+})
 
 
 module.exports = {
