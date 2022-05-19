@@ -18,8 +18,7 @@ const getForumAll = asyncHandler(async (req, res) => {
 		.limit(limit)
 		.populate("attachments")
 		.populate("user", "name avatar")
-        .populate("user.avatar")
-    //didn't populate comments because they have their own route and controllers
+        	.populate("user.avatar")
 
 	// check is query returned any results
 	if (!forums || forums.length === 0) {
