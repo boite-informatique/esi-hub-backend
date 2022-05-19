@@ -48,7 +48,30 @@ const getCommentAll = asyncHandler(async (req, res) => {
 	})
  })
 
-const addComment = asyncHandler(async (req, res) => { res.json({message: 'this is addComment'}) })
+const addComment = asyncHandler(async (req, res) => { 
+	// find the forum
+	const forum = await Forum.findById(req.params.id)
+
+	if (!forum) {
+        res.status(404)
+        throw new Error('forum not found')
+    }
+
+	// get the data
+	const {body} = req.body
+	const attachments = req.files
+	const user = req.user.id
+
+	// create the comment and add it to the forum 
+	try {
+		const comment = await Comment.create({body, user, attachments})
+		forum.comments.push(comment._id)
+		res.status(201).json(comment)
+	} catch (error) {
+		res.status(400)
+        throw new Error(error);
+	}
+ })
 
 const updateComment = asyncHandler(async (req, res) => { res.json({message: 'this is updateComment'}) })
 

@@ -56,7 +56,8 @@ const getForumId = asyncHandler(async (req, res) => {
 
 const createForum = asyncHandler(async (req, res) => { 
     //get the data
-    const {title, body, attachments} = req.body
+    const {title, body} = req.body
+    const attachments = req.files
     const user = req.user.id
 
     //make forum using data, if data not valid it will apply mongoose data validation and throw error
@@ -67,7 +68,6 @@ const createForum = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error(error);
     }
-
 })
   
 const updateForum = asyncHandler(async (req, res) => { 
