@@ -39,7 +39,7 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 			announcements.push(doc)
 		})
 
-	// check is query returned any results
+	// check if query returned any results
 	if (!announcements || announcements.length === 0) {
 		res.status(404)
 		throw new Error("Announcement(s) not found")

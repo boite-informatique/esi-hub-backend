@@ -32,11 +32,11 @@ module.exports = asyncHandler(async (req, res, next) => {
 				maxAge: 15 * 60 * 1000,
 			})
 
-			const { iat, eat, ...userInfo } = jwt.decode(token)
+			const { iat, exp, ...userInfo } = jwt.decode(token)
 			req.user = userInfo
 			next()
 		} else {
-			const { iat, eat, ...userInfo } = decoded
+			const { iat, exp, ...userInfo } = decoded
 			req.user = userInfo
 			next()
 		}
