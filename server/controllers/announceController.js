@@ -4,7 +4,7 @@ const Announcement = require("../models/announcement/announceModel")
 const Announcement_User = require("../models/announcement/announcement_user")
 
 const getAnnouncementAll = asyncHandler(async (req, res) => {
-	let { tags, search, limit = 10, page = 0 } = req.query
+	let { tags, s: search, limit = 10, page = 0 } = req.query
 
 	// define our query conditions
 	let query = {
@@ -28,7 +28,7 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 		.limit(limit)
 		.populate("attachments")
 		.populate("user", "name avatar")
-        .populate("user.avatar")
+		.populate("user.avatar")
 		.cursor()
 		.eachAsync(async (doc) => {
 			const read = await Announcement_User.findOne({
