@@ -19,11 +19,16 @@ module.exports = (server) => {
 		// 		maxAge: 60 * 30,
 		// 	}
 		// )
-		console.log(headers)
+		console.log("khasna cookies", req.headers.cookie)
 	})
 
 	io.on("connection", (socket) => {
-		console.log("user connected", cookie.parse(socket.handshake.headers.cookie))
+		// console.log("user connected", cookie.parse(socket.handshake.headers.cookie))
+		socket.user = { _id: "6184sp1tstrightfax" }
+
+		socket.on("sup", () => {
+			console.log("sup", socket.user)
+		})
 
 		socket.on("joinRoom", (room) => {
 			socket.join(room)
