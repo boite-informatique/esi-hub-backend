@@ -133,17 +133,17 @@ const deleteUser = asyncHandler(async (req, res) => {
 })
 
 const getUsers = asyncHandler(async (req, res) => {
-	const { s } = req.query
+	let { s: search, limit = 5, page = 0 } = req.query
 
-	const users = s
-		? await User.find({ name: new RegExp(s, "i") })
-				.select("name email avatar createdAt groups")
-				.limit(5)
-				.populate("groups", "name")
-		: await User.find()
-				.select("name email avatar createdAt groups")
-				.limit(5)
-				.populate("groups", "name")
+	// define query
+	let query = {}
+	if (search) query.name = new RegExp(search, "i")
+
+	const users = await User.find(query)
+		.select("name email avatar createdAt groups")
+		.skip(limit * page)
+		.limit(limit)
+		.populate("groups", "name")
 
 	if (users.length === 0) {
 		res.status(404)
@@ -215,12 +215,10 @@ const verifyAccountSend = asyncHandler(async (req, res) => {
 	)
 
 	sendEmail(user.email, token)
-	res
-		.status(200)
-		.json({
-			status: "Success, awaiting email verification",
-			expiresIn: "60 minutes",
-		})
+	res.status(200).json({
+		status: "Success, awaiting email verification",
+		expiresIn: "60 minutes",
+	})
 })
 
 const generateRefreshToken = (user) => {
