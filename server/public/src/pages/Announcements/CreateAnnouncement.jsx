@@ -12,10 +12,12 @@ import {
 	Button,
 	Input,
 } from "@mui/material"
+import "./Announcements.css"
 import AttachmentIcon from "@mui/icons-material/Attachment"
 import axios from "axios"
 import React, { useState, useRef } from "react"
 import { Link } from "react-router-dom"
+import { borderColor } from "@mui/system"
 
 export default function CreateAnnouncement() {
 	const tags = [
@@ -40,7 +42,7 @@ export default function CreateAnnouncement() {
 		text: "",
 	})
 
-	const [files, setFiles] = useState([])
+	const [file, setFile] = useState(null)
 
 	const handleChange = (event) => {
 		const { name, value } = event.target
@@ -48,17 +50,13 @@ export default function CreateAnnouncement() {
 	}
 
 	const handleFileChange = (event) => {
-		setFiles(event.target.files)
+		setFile(event.target.files[0])
 	}
 
 	const handleSubmit = async (event) => {
 		event.preventDefault()
 		let fd = new FormData()
-
-		for (const file of files) {
-		fd.append("attachments", file)
-		}
-
+		if (file) fd.append("avatar", file, file.name)
 		fd.append("data", JSON.stringify(formData))
 
 		try {
@@ -107,6 +105,7 @@ export default function CreateAnnouncement() {
 	}
 
 	return (
+		<div className="CreateAnnouncementContainer">
 		<Container align="center">
 			<Breadcrumbs sx={{ marginBottom: 2 }}>
 				<Link to="/" style={{ textDecoration: "none" }}>
@@ -119,7 +118,8 @@ export default function CreateAnnouncement() {
 
 				<Typography>Create an Announcement</Typography>
 			</Breadcrumbs>
-			<form onSubmit={handleSubmit}>
+			
+			<form  className="CreateAnnouncementForm"onSubmit={handleSubmit}>
 				<Grid
 					container
 					gap={2}
@@ -134,6 +134,8 @@ export default function CreateAnnouncement() {
 						</Alert>
 					)}
 					<TextField
+				        color="warning"
+						focused
 						name="title"
 						label="Title"
 						type="text"
@@ -182,6 +184,7 @@ export default function CreateAnnouncement() {
 							onChange={handleFileChange}
 						/>
 						<Button
+						    color="#AB2F78"
 							variant="filled"
 							component="span"
 							align="center"
@@ -195,6 +198,8 @@ export default function CreateAnnouncement() {
 					</Button>
 				</Grid>
 			</form>
+			
 		</Container>
+		</div>
 	)
 }

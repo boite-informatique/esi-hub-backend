@@ -1,0 +1,140 @@
+.messenger{
+    margin-top: 60px;
+     height:calc( 100vh - 68px);
+     display: flex;
+     margin-left: 15%;
+}
+
+
+.chatMenu {
+    flex: 3.5;
+  }
+  
+  .chatMenuInput {
+    width: 90%;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid gray;
+  } 
+  
+  .chatMenuInputt {
+    width: 90%;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid gray;
+    margin-bottom: 10px;
+  } 
+
+  .chatBox {
+    flex: 5.5;
+  }
+  
+  .chatBoxWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .chatBoxTop {
+    height: 100%;
+    overflow-y: scroll;
+    padding-right: 10px;
+  }
+  
+  .chatBoxBottom {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .chatMessageInput {
+    width: 80%;
+    border-radius: 10px;
+    border: solid 2px rgba(0, 0, 0, 0.184);
+    height: 90px;
+    padding: 10px;
+  }
+  
+  .chatSubmitButton {
+    width: 70px;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: teal;
+    color: white;
+  }
+  .chatSubmitButtonn {
+    width: 70px;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: teal;
+    color: white;
+    margin-left: 80%;
+  }
+  .chatOnline {
+    flex: 3;
+  }
+  
+  
+  .chatBoxWrapper{
+    padding: 10px;
+    height: 100%;
+    border-right: solid 1px rgba(0, 0, 0, 0.242);
+
+
+  }
+  .chatOnlineWrapper {
+    padding: 10px;
+    height: 100%;
+
+  }
+  
+  .chatMenuWrapper{
+    padding: 10px;
+    height: 100%;
+    overflow-y: scroll;
+    border-right: solid 1px rgba(0, 0, 0, 0.242);  }
+  .noConversationText {
+    position: absolute;
+    top: 10%;
+    font-size: 50px;
+    color: rgb(224, 220, 220);
+    cursor: default;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .chatMenu {
+      flex: 1;
+    }
+  
+    .chatMenuInput {
+      display: none;
+    }
+  
+    .chatBox{
+      flex: 10;
+    }
+  
+    .chatOnline{
+      flex: 1px;
+
+    }
+  }
+
+  .plusIcon{
+      margin-left: 5px;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      background-color: white;
+      border: none;
+  }
+
+  .plusIcon:hover{
+      background-color: rgb(223, 220, 217);
+  }

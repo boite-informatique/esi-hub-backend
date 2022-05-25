@@ -1,0 +1,146 @@
+.sidebar{position: sticky;
+    width:200px ;
+    left:0;}
+    .SidebarClose{
+      position:fixed;
+      ;
+      top: 0;
+        height: 100vh;
+        background-color: var(--sidebar-color);
+        width: 70px;
+        z-index: 5;
+        
+    }
+    .SidebarOpen{
+       top:0;
+       position:fixed;
+      ;
+       height: 100vh;
+       z-index: 1;
+       height: 100vh;
+       background-color: var(--sidebar-color);
+       width :200px;
+       height: 100vh;
+       z-index: 5;
+       transition: var(--tran-03);
+       
+    }
+    
+    .Sidebarelement-close{
+       margin-left: 10px;
+       width: 50px;
+       transition: var(--tran-03);
+    height: 50px;
+    list-style: none;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    background: var(--sidebar-color);}
+    .Sidebarelement-open{
+       margin-left: 10px;
+       margin-right: 10px;
+       
+    height: 50px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    background: var(--sidebar-color);}
+    .Sidebarelement-close~ .Sidebarelement-open {
+       transition: all 500ms;
+    }
+    .name{
+       color: var(--text-color);
+    }
+    .text{
+       font-size: 17px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+    color: #ab2f78;
+    transition: var(--tran-03);
+    
+    
+    }
+    .logospace{
+       flex: 30%;
+    }
+    .logo{
+       height: 40px;
+       margin-left: 10px;
+       margin-top: 10px;
+    }
+    .item {
+       padding:20px 20px
+     
+    }
+    .Sidebarelement:hover .icon,.Sidebarelement:hover .item{
+       color: var(--sidebar-color);
+    
+    }
+    
+    .Sidebarelement:hover{
+       background-color: #ab2f78;
+    
+    
+       border-radius: 5px 20px 5px;;
+    }
+    a{
+       text-decoration: none;
+    }
+    .sidebar header .image-text {
+       display: flex;
+       align-items: center;
+    }
+    .sidebar header .image {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+    }
+    .sidebar header .image, .sidebar .icon {
+       flex: 30%;
+       min-width: 60px;
+       border-radius: 6px;
+    }
+    header .image-text .name {
+       flex: 50% 1;
+       margin-top: 12px;
+       margin-left: 10px;
+       font-size: 25px;
+       font-weight: 600;
+       width: 50px;;
+    }
+    
+    .sidebar header .logo-text {
+       display: flex;
+       flex-direction: column;
+    }
+    .sidebar .text {
+       font-size: 17px;
+       font-weight: 500;
+       white-space: nowrap;
+       opacity: 1;
+    }
+  
+    
+    .header{
+       height: 100px;
+       display: flex;
+    }
+    .logoclose{
+       display: flex;
+       height: 100px;
+    }
+    .logospaceC{
+       flex: 70%;
+    }
+    .text{
+       display: flex;
+    }
+    .icon{color: #ab2f78;
+    margin-left: 13px;
+    margin-top: 8px;}
+    .log-out{
+       margin-top: 150px;
+    }
+    

@@ -1,15 +1,16 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Home from "./Home"
+import Home from "./Home/Home"
 import { Toolbar, Box, CssBaseline } from "@mui/material"
 import TopBar from "../components/TopBar"
 import Sections from "../components/Sections"
 import Announcements from "./Announcements/Announcements"
-import Workspace from "./Workspace"
-import Chat from "./Chat"
+import Workspace from "./Workspace/Workspace"
+import Chat from "././Chat/Chat"
 import Announcement from "./Announcements/Announcement"
 import CreateAnnouncement from "./Announcements/CreateAnnouncement"
 import Profile from "./Profile"
+import HBackground from "./HomeBackground/HomeBackground"
 
 export default function Dashboard() {
   return (
@@ -17,6 +18,8 @@ export default function Dashboard() {
         <CssBaseline />
         <TopBar />
         <Sections />
+        <HBackground/>
+       
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
     <Routes>

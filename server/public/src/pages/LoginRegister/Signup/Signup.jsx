@@ -12,8 +12,10 @@ import {
 import axios from "axios"
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import GroupList from "../../components/GroupList"
-
+import GroupList from "../../../components/GroupList"
+import './Signup.css'
+import logo from '../Login/logo2(1).svg'
+import groups from '../../../components/groups.json'
 function Signup() {
 	const baseURL = "http://localhost:3005"
 	const [formData, setFormData] = useState({
@@ -33,7 +35,7 @@ function Signup() {
 		setFormData((values) => ({ ...values, [name]: value }))
 	}
 
-	const [groups, setGroups] = useState([])
+	//const [groups, setGroups] = useState([])
 	const [checked, setChecked] = useState([])
 
 	useEffect(() => {
@@ -97,76 +99,69 @@ function Signup() {
 
 	return (
 		<Container>
-			<CssBaseline />
-			<Typography variant="h3" align="center" color="primary" my={2}>
-				ESI Hub
-			</Typography>
-			<Card sx={{ width: 500, marginX: "auto", marginY: "auto" }}>
+			      <img src={logo} alt='cv chweya'  className="helloo"></img>
+
+			      <div className='centert'>
+
+				  <h1>Register</h1>
+
 				<form onSubmit={handleSubmit}>
-					<Grid
-						container
-						alignItems="center"
-						justify="center"
-						direction="column"
-						gap={3}
-					>
-						<CardHeader title="Signup to ESI Hub" />
-						{alert.text !== "" && (
-							<Alert severity={alert.severity} sx={{ minWidth: "60%" }}>
-								{alert.text}
-							</Alert>
-						)}
-						<TextField
-							name="name"
-							label="Name"
-							type="text"
-							variant="filled"
-							onChange={handleChange}
-							value={formData.name}
-							required
-							sx={{ width: "60%" }}
-						/>
-						<TextField
+					
+						<div className='txt_fielde'>
+							<input
+								name="name"
+								label="Name"
+								type="text"
+								variant="filled"
+								onChange={handleChange}
+								value={formData.name}
+								required
+							/>
+							<label>Name</label>
+              				<span></span>
+						</div>
+						<div className='txt_fielde'>
+							<input 
 							name="email"
 							label="Email"
-							type="email"
+							type="text"
 							variant="filled"
 							onChange={handleChange}
 							value={formData.email}
 							required
-							sx={{ width: "60%" }}
-						/>
-						<TextField
-							name="password"
-							type="password"
-							label="Password"
-							variant="filled"
-							onChange={handleChange}
-							value={formData.password}
-							required
-							sx={{ width: "60%" }}
-						/>
+							/>
+							<label>Email</label>
+              				<span></span>
+						</div>
+						<div className='txt_fielder'>
+							<input
+								name="password"
+								type="password"
+								label="Password"
+								variant="filled"
+								onChange={handleChange}
+								value={formData.password}
+								required
+							/>
+							<label>Password</label>
+              				<span></span>
+						</div>
 						{groups.length > 0 && (
+							<div  style={{height : 200, overflowY : 'scroll'}}  className='scrolly'>
 							<GroupList
 								data={groups}
 								checked={checked}
 								setChecked={setChecked}
 							/>
+							</div>
 						)}
-						<Button
-							variant="contained"
-							color="primary"
-							type="submit"
-							sx={{ width: "20%" }}
-						>
-							Signup
-						</Button>
-						<Typography gutterBottom>
-							Already have an account? <Link to="/login">Login</Link>
-						</Typography>
-					</Grid>
+						
+					
 				</form>
-			</Card>
+				<input  type="submit" value="Sign up" ></input>	
+				<div className='signup_link	' >Already have an account? <Link to="/login">Login</Link> </div>
+
+				</div>
 		</Container>
 	)
 }

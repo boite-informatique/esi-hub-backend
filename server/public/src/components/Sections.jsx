@@ -1,49 +1,113 @@
 import * as React from "react"
-import Box from "@mui/material/Box"
-import Drawer from "@mui/material/Drawer"
-import Toolbar from "@mui/material/Toolbar"
-import List from "@mui/material/List"
-import ListItem from "@mui/material/ListItem"
-import ListItemIcon from "@mui/material/ListItemIcon"
-import ListItemText from "@mui/material/ListItemText"
-import ListItemButton from "@mui/material/ListItemButton"
-import sections from "../sections.json"
-import SectionIcon from "./SectionIcon"
+import HomeIcon from '@mui/icons-material/Home'
+import ForumIcon from '@mui/icons-material/Forum';
+import ChatIcon from '@mui/icons-material/Chat';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import AnnouncementIcon from '@mui/icons-material/Announcement';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { Link, useNavigate } from "react-router-dom"
+import "./SideBar.css"
+import { useState } from "react";
 const drawerWidth = 240
 
 export default function Sections() {
+  const [showNav,setShowNav]=useState(false);;
+  const show =()=>{
+    setShowNav(!showNav);
+    
+  }
+  return(
+    <div className="Sidebar "> 
+  {showNav && <SidebarOpen show={show}/>}
+  {!showNav && <SidebarClose show={show}/>}
+  </div>
+  )
+ 
 
-  const navigate = useNavigate()
+   
+}
 
-  return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" },
-      }}
-    >
-      <Toolbar />
-      <Box sx={{ overflow: "auto" }}>
-        <List>
-          {sections.map((text, index) => (
-            <ListItem button onClick={() => navigate(text.link)} key={index}>
-              <ListItemIcon>
-                <SectionIcon iconName={text.icon} />
-              </ListItemIcon>
-              <ListItemText primary={text.name}/>
-            </ListItem>
-          ))}
-          <ListItem button sx={{ marginTop: "100%" }}>
-            <ListItemIcon>
-              <SectionIcon iconName="Settings" />
-            </ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItem>
-        </List>
-      </Box>
-    </Drawer>
+export const SidebarOpen = ({show}) => {
+  return(
+      <div className="SidebarOpen SidebarS " onClick={show}>
+      <header className="header">
+      <div className="image-text">
+      <div className="text">
+      <span className="logospace"><img className="logo" src="./assets/logo vector.svg" alt="logo"></img></span>
+      <span className="name">ESI HUB</span>
+      
+      </div>
+      </div>
+      
+      </header>
+      
+      <ul>
+      <Link to="/">
+      <li className="Sidebarelement Sidebarelement-open">
+      <div className="icon "><HomeIcon/></div>
+    <span className="item text">Home</span>
+  </li></Link>
+  <Link to="/announcements">
+  <li className="Sidebarelement Sidebarelement-open">
+  <div className="icon "><AnnouncementIcon /></div>
+ <span className="item text">Announces</span>
+  </li></Link>
+  <Link to="/workspaces">
+  <li className="Sidebarelement Sidebarelement-open">
+  
+  <div className="icon "><AssignmentTurnedInIcon/></div>
+ <span className="item text">WorkSpace</span>
+  </li></Link>
+  <Link to="/Forum">
+  <li className="Sidebarelement Sidebarelement-open">
+  <div className="icon "><ForumIcon /></div>
+ <span className="item text">Forums</span>
+  </li></Link>
+  <Link to="/chat">
+  <li className="Sidebarelement Sidebarelement-open">
+  <div className="icon "><ChatIcon /></div>
+ <span className="item text">Chat</span>
+  </li></Link>
+  <Link to="/Settings">
+  <li className="Sidebarelement Sidebarelement-open">
+  
+  <div className="icon "><SettingsIcon/></div><span className="item text">Settings</span>
+  </li>
+  </Link>
+  
+      </ul>
+      
+  <footer>
+      <div className="Sidebarelement Sidebarelement-open log-out"> <div className="icon "><LogoutIcon/></div><a href="#"><span className="item text ">Log out</span></a></div>
+  </footer>
+     
+      </div>
+  )
+}
+export const SidebarClose = ({show}) => {
+  return(
+      <div div className="SidebarClose SidebarS  " onClick={show}>
+          <div className="logoclose">
+          <span className="logospaceC"><img className="logo" src="./assets/logo vector.svg" alt="logo"></img></span>
+      
+      </div>
+      
+      
+      <div className="Sidebarelement-close Sidebarelement "><div className="icon "><HomeIcon/></div></div>
+
+
+      <div className="Sidebarelement-close Sidebarelement"><div className="icon "><AnnouncementIcon /></div></div>
+      
+      <div className="Sidebarelement-close Sidebarelement"><div className="icon "><AssignmentTurnedInIcon/></div></div>
+      
+      <div className="Sidebarelement-close Sidebarelement"><div className="icon "><ForumIcon/></div></div>
+      <div className="Sidebarelement-close Sidebarelement"><div className="icon "><IntegrationInstructionsIcon/></div></div>
+     
+      <div className="Sidebarelement-close Sidebarelement"><div className="icon "><SettingsIcon/></div></div>
+     
+      <div className="Sidebarelement-close Sidebarelement log-out"> <div className="icon "><LogoutIcon/></div></div>
+      </div>
   )
 }

@@ -1,0 +1,195 @@
+.Workspace{
+    position: absolute;
+    display: flex;
+    ;
+ 
+    height: 85%;
+    width: 73%;
+    top: 10%;
+    left: 20%;
+}
+/***/
+.ToolBar{
+    border-left:solid 2px rgba(0, 0, 0, 0.301);
+    
+    width: 25%;
+    
+
+}
+.WorkspaceC{
+flex: 75%;
+min-width: 75%;
+display: flex;
+}
+.ToolBarHeader{
+  text-align: center;  
+ color: rgb(0, 0, 0);
+ height: 10%;
+ display: flex;
+    font-weight: bold;
+    padding: 10px; 
+ font-size: 20px;
+ width: 100%;
+ border-bottom: solid 2px rgba(0, 0, 0, 0.301);
+   }
+.WorkSpaceTitle{
+flex: 90%;
+}
+.WAddCircleIcon{
+    flex: 10%;
+    margin-top: 3px;
+    cursor: pointer;
+}
+/*--Tasks--*/
+.Tasks{
+    border-radius: 10px;
+    position: relative;
+  height: 90%;
+    width: 31%;
+   max-height: 100%;
+    margin-top:20px;
+   margin-right: 2%;
+    margin-bottom: 10%;
+    border: solid 2px rgba(0, 0, 0, 0.301);
+    background-color: #ffffff;
+}
+.TasksT{
+    position: relative;
+   display: flex;
+    left: 5%;
+    height: 60px;
+    width: 90%;
+    text-align: left;
+    padding: 10px;
+    font-size: 21px;
+    font-weight: bold;
+    border-bottom: solid 2px black
+}
+
+
+/*------------------------------------------------*/
+.MyTasks{
+    border-radius: 10px;
+    position: relative;
+  height: 90%;
+  width: 30%;
+   max-height: 100%;
+    margin-top:20px;
+   margin-left: 10px;
+    margin-bottom: 10%;
+    background-color: #d0c9c0;
+}
+.MyTasksT{
+    position: relative;
+   display: flex;
+    left: 5%;
+    height: 60px;
+    width: 90%;
+    text-align: left;
+    padding: 10px;
+    font-size: 21px;
+    font-weight: bold;
+    border-bottom: solid 2px black
+}
+
+/*------------------------------------------------*/
+
+.Members{
+    border-radius: 10px;
+    position: relative;
+  height: 90%;
+  width: 30%;
+   max-height: 100%;
+    margin-top:20px;
+   margin-left: 10px;
+    margin-bottom: 10%;
+    background-color: #b8b8b8;
+}
+.MembersT{
+    position: relative;
+   display: flex;
+    left: 5%;
+    height: 60px;
+    width: 90%;
+    text-align: left;
+    padding: 10px;
+    font-size: 21px;
+    font-weight: bold;
+    border-bottom: solid 2px black
+}
+
+
+/*------------------------------------------------*/
+.Task{
+    position: relative;
+    height: 17%;
+  
+   
+    border-bottom:solid 2px rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    
+}
+.Task:hover{
+    background: rgba(153, 144, 144, 0.548);;
+}
+.TaskC{
+    display: flex;
+    position: relative;
+    height: 60%;
+    padding: 5px;
+    z-index: 0;
+}
+.TaskIcon{
+  
+  position: relative;
+  flex:10%;
+  margin-left: 2%;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 0;
+}
+.Tasktext{
+    flex: 60%;
+
+    text-align: left;
+    margin-left: 15px;
+    font-size: 20px;
+    font-weight:400;  z-index: 0;
+}
+
+/***
+/***/
+.TitleDO{
+    width: 200px;
+}
+.TAddCircleIcon{
+    margin-left: 0;
+    margin-top: 5px;
+    cursor: pointer;
+}
+/**********************/
+.Wspace{
+    padding: 20px;
+    width: 100%;
+    height: 70px;
+    display: flex;
+    border-bottom: solid 2px rgba(0, 0, 0, 0.301);
+    
+}
+.WsC{
+    display: flex;
+    min-width: 90%;
+}
+.WspaceIcon{
+   width: 20%;
+}
+.WspaceName{
+    font-size: 20px;
+    font-weight: 500;
+    width: 80%;
+}
+
+/**/
+.TaskIconMenu{position: relative;
+    z-index: 10;
+}
