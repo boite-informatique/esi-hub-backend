@@ -82,18 +82,15 @@ const getAnnouncementId = asyncHandler(async (req, res) => {
 
 const createAnnouncement = asyncHandler(async (req, res) => {
 	const { body } = req
+	console.log(body, req.files)
 
 	// create and save announcement
 	const announcementObj = new Announcement({ ...body, attachments: req.files })
 	announcementObj.user = req.user.id
 
-	try {
-		await announcementObj.save()
-		res.status(201).json(announcementObj)
-	} catch (err) {
-		res.status(400)
-		throw new Error(err)
-	}
+	const announcement = await announcementObj.save()
+
+	res.status(201).json(announcementObj)
 })
 
 const updateAnnouncement = asyncHandler(async (req, res) => {

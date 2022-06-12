@@ -13,7 +13,7 @@ router.get("/", c.getAnnouncementAll)
 router.get("/:id", c.getAnnouncementId)
 router.post(
 	"/",
-	upload.array("attachments", 8),
+	upload.array("attachments", 20),
 	uploadController,
 	c.createAnnouncement
 )

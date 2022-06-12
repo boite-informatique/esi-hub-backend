@@ -38,6 +38,10 @@ app.use("/api/comment", require("./routes/commentRoute.js"))
 // error handling
 app.use(errorHandler)
 
+app.get("/uploads/:file", function (req, res) {
+	res.sendFile(path.join(__dirname + "/public/uploads/" + req.params.file))
+})
+
 // unknown routes
 app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname + "/public/dist/index.html"))

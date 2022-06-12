@@ -58,7 +58,7 @@ const CreateTask = ({ open, handleClose }) => {
 			.post(`/api/task/`, formData, {
 				withCredentials: true,
 			})
-			.then((res) => console.log(res.data))
+			.then((res) => window.location.reload())
 			.catch((err) => console.log("err"))
 	}
 	/*:::::::::::::::::::::::::::::::::::::::::::*/

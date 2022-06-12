@@ -42,7 +42,7 @@ export default function CreateAnnouncement() {
 		text: "",
 	})
 
-	const [file, setFile] = useState(null)
+	const [files, setFiles] = useState([])
 
 	const handleChange = (event) => {
 		const { name, value } = event.target
@@ -50,13 +50,18 @@ export default function CreateAnnouncement() {
 	}
 
 	const handleFileChange = (event) => {
-		setFile(event.target.files[0])
+		setFiles(event.target.files)
 	}
 
 	const handleSubmit = async (event) => {
 		event.preventDefault()
+		console.log(files)
 		let fd = new FormData()
-		if (file) fd.append("avatar", file, file.name)
+		for (const file of files) {
+			fd.append("attachments", file, file.name)
+		}
+
+		// if (file) fd.append("avatar", file, file.name)
 		fd.append("data", JSON.stringify(formData))
 
 		try {

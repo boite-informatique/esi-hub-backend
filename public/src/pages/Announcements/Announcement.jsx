@@ -134,7 +134,7 @@ function Announcement() {
 						<Typography>{imageModal && imageModal.filename}</Typography>
 						<img
 							alt={imageModal && imageModal.filename}
-							src={"http://localhost:3005/uploads/" + imageModal.filename}
+							src={"/uploads/" + imageModal.filename}
 							style={{ objectFit: "contain", maxWidth: 400, maxHeight: 300 }}
 						/>
 					</Grid>

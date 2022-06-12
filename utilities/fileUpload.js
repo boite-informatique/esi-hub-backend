@@ -38,7 +38,7 @@ const upload = multer({
 
 const uploadController = async (req, res, next) => {
 	const { files } = req
-
+	req.body = JSON.parse(req.body.data)
 	if (!files || files.length === 0) next()
 
 	// attach user's id to each file
@@ -50,8 +50,6 @@ const uploadController = async (req, res, next) => {
 	}
 
 	const savedFiles = await File.insertMany(files)
-
-	req.body = JSON.parse(req.body.data)
 
 	// change files info to file id in req.files array
 	req.files = savedFiles.map((val) => val.id)
