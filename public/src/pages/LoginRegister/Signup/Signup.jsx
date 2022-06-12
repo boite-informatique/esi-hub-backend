@@ -17,7 +17,6 @@ import "./Signup.css"
 import logo from "../Login/logo2(1).svg"
 import groups from "../../../components/groups.json"
 function Signup() {
-	const baseURL = "http://localhost:3005"
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -42,11 +41,10 @@ function Signup() {
 		axios
 			.get(`/api/group/`)
 			.then((res) => {
-				console.log(res.data)
+				console.log("1", res.data)
 				setGroups(res.data)
 			})
-			.catch((err) => console.log(err?.response?.status))
-		console.log(formData)
+			.catch((err) => console.log(err.response))
 	}, [])
 
 	const handleSubmit = async (event) => {

@@ -25,12 +25,12 @@ import { useEffect } from "react"
 import { useContext } from "react"
 import { SocketContext } from "../../SocketProvider"
 
-const socket = sio("http://localhost:3005", {
-	withCredentials: true,
-	// query: {
-	// 	jwt: Cookies.get("accessToken"),
-	// },
-})
+// const socket = sio("http://localhost:3005", {
+// 	withCredentials: true,
+// 	// query: {
+// 	// 	jwt: Cookies.get("accessToken"),
+// 	// },
+// })
 
 export default function Chat() {
 	// const { socket, rooms, setRooms } = useContext(SocketContext)
