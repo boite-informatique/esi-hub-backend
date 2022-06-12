@@ -5,7 +5,7 @@ import photo1 from '../LoginRegister/Background/img33.png'
 const HBackground = () => {
   return (
 <div id="avatar" className="HomeBackground">
-<img src={photo2} alt='cv chweya' className="hamri" />
+<img src={photo2} alt='cv chweya' className="hel" />
 
 
    </div>

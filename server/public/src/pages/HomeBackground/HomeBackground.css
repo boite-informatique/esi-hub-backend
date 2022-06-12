@@ -1,5 +1,5 @@
 
-.hamri{
+.hel{
     position: fixed;
    width: 28%;
    height: 100%;
@@ -11,4 +11,12 @@
      
    }
    
-   
+   .hell{
+    position: fixed;
+    width: 28%;
+    height: 100%;
+    left: 72%;
+    top: 0px;
+    z-index: -2;
+    opacity: 80%;
+   }

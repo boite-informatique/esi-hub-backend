@@ -49,7 +49,7 @@ const createTask = asyncHandler(async (req, res) => {
 
 	const workspace = await Workspace.findOne({
 		_id: body.workspace,
-		members: { $elemMatch: req.user.id },
+		members: { $elemMatch: { $eq: req.user.id } },
 	})
 
 	if (!workspace) {
@@ -60,8 +60,8 @@ const createTask = asyncHandler(async (req, res) => {
 	// create and save task
 	const task = new Task(body)
 
-	await taskObj.save()
-	res.status(201).json(taskObj)
+	await task.save()
+	res.status(201).json(task)
 })
 
 const updateTask = asyncHandler(async (req, res) => {
@@ -81,9 +81,10 @@ const updateTask = asyncHandler(async (req, res) => {
 	}
 
 	// updating the task
+	task.status = req.query?.status === "1" ? "Done" : "In progress"
+	task.userInCharge = req.user.id
 
-	await task.update(body)
-
+	await task.save()
 	res.status(200).json(task)
 })
 
@@ -107,7 +108,7 @@ const deleteTask = asyncHandler(async (req, res) => {
 
 	await task.remove()
 
-	res.status(200)
+	res.status(200).json({ id: task.id })
 })
 
 module.exports = {

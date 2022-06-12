@@ -10,7 +10,8 @@ import Dashboard from "./pages/Dashboard"
 import { DarkContext } from "./DarkThemeProvider"
 import "./App.css"
 import HomePage from "./pages/HomePage/HomePage"
-import Chat from "./pages/Chat/Chat";
+import Chat from "./pages/Chat/Chat"
+
 const darkTheme = createTheme({
 	palette: {
 		mode: "light",
@@ -25,7 +26,6 @@ export default function App() {
 			<ThemeProvider theme={darkTheme}>
 				<QueryClientProvider client={queryClient}>
 					<Routes>
-						<Route path="/chat" element={<Chat/>}/>
 						<Route path="/login" element={<Login />} />
 						<Route path="/signup" element={<Signup />} />
 						<Route path="/verify" element={<Verify />} />

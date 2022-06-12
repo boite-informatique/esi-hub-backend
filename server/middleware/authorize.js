@@ -29,7 +29,7 @@ module.exports = asyncHandler(async (req, res, next) => {
 			res.cookie("accessToken", token, {
 				httpOnly: false,
 				sameSite: true,
-				maxAge: 15 * 60 * 1000,
+				// maxAge: 15 * 60 * 1000,
 			})
 
 			const { iat, exp, ...userInfo } = jwt.decode(token)
