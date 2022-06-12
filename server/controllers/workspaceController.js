@@ -1,10 +1,10 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
-const Workspace = require('../models/workspaceModel')
+const Workspace = require('../models/task/workspaceModel')
 
 const getWorkspaceAll = asyncHandler(async (req, res) => {
 
-  const workspaces = await Workspace.find({members : {$elemMatch : req.user._id}})
+  const workspaces = await Workspace.find({members : {$elemMatch : { $in: [req.user.id] }}}).populate('members', 'name avatar')
 
   if (workspaces.length === 0) {
     res.status(404)
@@ -31,7 +31,8 @@ const getWorkspaceId = asyncHandler(async (req, res) => {
 const createWorkspace = asyncHandler(async (req, res) => {
   const {body} = req
 
-  if (!req.admin && !body.members.includes(req.user._id)) {
+  body.members.push(req.user.id)
+  if (!req.admin && !body.members.includes(req.user.id)) {
     res.status(400)
     throw new Error('Unauthorized creation of workspace')
   }
@@ -39,8 +40,8 @@ const createWorkspace = asyncHandler(async (req, res) => {
   // create and save workspace
   const workspace = new Workspace(body)
 
-  await workspaceObj.save()
-  res.status(201).json(workspaceObj)
+  await workspace.save()
+  res.status(201).json(workspace)
 })
 
 const updateWorkspace = asyncHandler(async (req, res) => {

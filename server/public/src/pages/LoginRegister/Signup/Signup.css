@@ -1,0 +1,204 @@
+.centert{
+    
+    position: absolute;
+    
+    top: 40%;
+    left : 70%;
+    transform: translate(-50% , -50%);
+    width: 30%;
+    border-radius: 10px;  
+    background-color: #DDDBDB;
+    padding-top: 10px;
+    margin-top: 80px;
+    height: 93%;
+ }
+ 
+ .centert h1{
+  font-size: 27px;
+  font-weight: bold;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  margin-left: auto;
+  margin-right: auto;
+   text-align: center;
+   padding: 0 0 20px 0;
+   color: #AB2F78;
+   border-bottom: 1px solid silver ;
+   width: 70%;
+ }
+ 
+ .centert form{
+   padding: 0 40px ;
+   box-sizing: border-box;
+ }
+ 
+ form .txt_fielde{
+     margin-left: auto;
+     margin-right: auto;
+   width: 92%;
+   position: relative;
+   border-bottom: 2px solid #adadad;
+   margin-top: 30px;
+ }
+
+ form .txt_fielder{
+    margin-left: auto;
+    margin-right: auto;
+  width:92%;
+  position: relative;
+  border-bottom: 2px solid #adadad;
+  margin-top: 30px;
+  margin-bottom: 30px;
+ }
+ 
+ 
+ .txt_fielde input{
+
+   width: 100%;
+   padding: 0 5px;
+   height: 40px;
+   font-size: 16px;
+   border:none;
+   background-color: #DDDBDB;
+   outline: none;
+ }
+ 
+ .txt_fielder input{
+
+    width: 100%;
+    padding: 0 5px;
+    height: 40px;
+    font-size: 16px;
+    border:none;
+    background-color: #DDDBDB;
+    outline: none;
+  }
+  
+ .txt_fielde label{
+   position: absolute;
+   top: 50%;
+   left : 5px;
+   color: #adadad;
+   transform: translateY(-50%);
+   font-size: 16px;
+   pointer-events: none;
+   transition: .7s;
+ 
+ }
+
+ .txt_fielder label{
+    position: absolute;
+    top: 50%;
+    left : 5px;
+    color: #adadad;
+    transform: translateY(-50%);
+    font-size: 16px;
+    pointer-events: none;
+    transition: .7s;
+  
+  }
+ 
+ .txt_fielde span::before{
+   content:'';
+   position:absolute;
+   top: 40px;
+   left: 0;
+   width: 0%;
+   height: 2px;
+   background:  #2691d9 ;
+   transition: .5s;
+ 
+ }
+ 
+ .txt_fielder span::before{
+    content:'';
+    position:absolute;
+    top: 40px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background:  #2691d9 ;
+    transition: .5s;
+  
+  }
+  
+ .txt_fielde  input:focus ~ label,
+ .txt_fielde  input:valid ~ label{
+ top: -5px;
+ color: #2691d9;
+ 
+ }
+
+ .txt_fielder  input:focus ~ label,
+ .txt_fielder  input:valid ~ label{
+ top: -5px;
+ color: #2691d9;
+ 
+ }
+ 
+ .txt_fielde  input:focus ~ span::before,
+ .txt_fielde  input:valid ~ span::before{
+ 
+   width: 100%;
+ 
+ }
+
+ .txt_fielder  input:focus ~ span::before,
+ .txt_fielder  input:valid ~ span::before{
+ 
+   width: 100%;
+ 
+ }
+ 
+ .pass{
+   margin: -5px  0 20px  5px;
+   color: #666666;
+   cursor: pointer;
+   text-align: center  ;
+ 
+ }
+ 
+ .pass:hover{
+   text-decoration: underline;
+   
+ }
+ 
+ input[type="submit"]{
+   display: block;
+   width: 35%;
+   height: 50px;
+   border: 1px solid;
+   background: #AB2F78;
+   border-radius: 25px;
+   color: #e9f4fb;
+   font-weight: 700;
+   cursor: pointer;
+   outline: none;
+   margin-left: auto;
+   margin-right: auto;
+
+   
+ }
+ 
+ input[type="submit"]:hover{
+     border-color: #000;
+     transition: .5s;
+ 
+ }
+ 
+ .signup_links{
+   margin: 30px 0;
+   text-align: center;
+   font-size: 16px;
+   color: #666666;
+ }
+ 
+
+ 
+
+ .helloo{
+    width: 45%;
+    margin-left: -5%;
+    margin-top: 10%;
+
+}

@@ -1,4 +1,5 @@
 import { Announcement, Forum, Workspaces } from "@mui/icons-material"
+import { RightBar } from '../components/RightBar'
 import {
 	Avatar,
 	Card,
@@ -27,6 +28,9 @@ function Home() {
 	const navigate = useNavigate()
 
 	return (
+		<>
+		<RightBar/>
+		<div className="Home">
 		<Grid container spacing={2}>
 			<Grid item xs={4}>
 				<Card sx={{ height: "100%" }}>
@@ -34,7 +38,7 @@ function Home() {
 					<CardContent>
 						<List>
 							{status === "success" &&
-								data.data.data.map((announcement, index) => (
+								data.data.map((announcement, index) => (
 									<ListItemAnnouncement
 										name={announcement.title}
 										key={index}
@@ -93,7 +97,7 @@ function Home() {
 					</CardContent>
 				</Card>
 			</Grid>
-		</Grid>
+		</Grid></div></>
 	)
 }
 

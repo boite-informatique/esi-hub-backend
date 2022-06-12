@@ -13,7 +13,10 @@ import {
 import axios from "axios"
 import React, { useContext, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { AuthContext } from "../../AuthProvider"
+import { AuthContext } from "../../../AuthProvider"
+import Background from "../Background/Background"
+import logo from './logo2(1).svg'
+import './Login.css'
 
 function Login() {
   const baseURL = "http://localhost:3005"
@@ -94,61 +97,55 @@ function Login() {
 
   return (
     <Box>
-    <CssBaseline />
     <Container>
-      <Typography variant="h3" align="center" color="primary" my={2}>
-        ESI Hub
-      </Typography>
-      <Card sx={{ width: 500, marginX: "auto", marginY: "auto" }}>
+      <Background/>
+      <div className="center">
+      <img src={logo} alt='cv chweya'  className="hello"/>
         <form onSubmit={handleSubmit}>
-          <Grid
-            container
-            alignItems="center"
-            justify="center"
-            direction="column"
-            gap={3}
-          >
-            <CardHeader title="Login to ESI Hub" />
+          
+                    <h1>Login</h1>
+
             {alert.text !== "" && (
               <Alert severity={alert.severity} sx={{ minWidth: "60%" }}>
                 {alert.text}
               </Alert>
             )}
-            <TextField
-              name="email"
-              label="Email"
-              type="email"
-              variant="filled"
-              onChange={handleChange}
-              value={formData.email}
-              required
-              sx={{ width: "60%" }}
-            />
-            <TextField
-              name="password"
-              type="password"
-              label="Password"
-              variant="filled"
-              onChange={handleChange}
-              value={formData.password}
-              required
-              sx={{ width: "60%" }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              sx={{ width: "20%" }}
-            >
-              Login
-            </Button>
-            <Typography gutterBottom>
-              Don't have an account?
-              <Link to="/signup"> Sign Up</Link>
-            </Typography>
-          </Grid>
+           <div className='txt_field'>
+              <input 
+                     name="email"
+                     label="Email"
+                     type="text"
+                     variant="filled"                    
+                     onChange={handleChange}
+                     value={formData.email}
+                     required 
+                     />
+              <label>Email</label>
+              <span></span>
+          </div>
+          <div className='txt_field'>
+              <input 
+                    name="password"
+                    type="password"
+                    label="Password"
+                    variant="filled"
+                    onChange={handleChange}
+                    value={formData.password}
+                    required
+                />
+              <label>Password</label>
+              <span></span>
+          </div>
+
+         <input  type="submit" value="Sign in"></input>
+          <div className='signup_link' >
+           Not a member?  <Link to="/signup"> Sign up </Link>
+            </div>
+        
         </form>
-      </Card>
+         
+      
+        </div>
     </Container>
     </Box>
   )

@@ -1,31 +1,32 @@
 import { Image } from "@mui/icons-material"
 import {
-	Avatar,
-	Breadcrumbs,
-	Card,
-	CardContent,
-	CardHeader,
-	Chip,
-	Container,
-	Stack,
-	Typography,
-	Modal,
-	Box,
-	Grid,
+  Avatar,
+  Breadcrumbs,
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
+  Container,
+  Stack,
+  Typography,
+  Modal,
+  Box,
+  Grid
 } from "@mui/material"
 import axios from "axios"
 import React, { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 function Announcement() {
-	const baseURL = "http://localhost:3005"
-	const { id } = useParams()
-	const [data, setData] = useState(null)
-	const [error, setError] = useState(false)
-	const [imageModal, setImageModal] = useState({})
-	const navigate = useNavigate()
+  const baseURL = "http://localhost:3005"
+  const { id } = useParams()
+  const [imageModal, setImageModal] = useState({})
+  const [data, setData] = useState(null)
+  const [error, setError] = useState(false)
 
-	const style = {
+  const navigate = useNavigate()
+
+  const style = {
 		position: "absolute",
 		top: "50%",
 		left: "50%",
@@ -39,47 +40,54 @@ function Announcement() {
 		p: 4,
 	}
 
-	const handleCloseModal = () => setImageModal({})
-	useEffect(() => {
-		axios
-			.get(`${baseURL}/api/announcement/${id}`, { withCredentials: true })
-			.then((res) => {
-				console.log(res.data)
-				res.data.createdAt = new Date(res.data.createdAt)
-				setData(res.data)
-			})
-			.catch((err) => setError(true))
-	}, [])
+  const handleCloseModal = () => setImageModal({})
 
-	return (
-		<div>
-			<Container>
-				<Breadcrumbs sx={{ marginBottom: 2 }}>
-					<Link to="/" style={{ textDecoration: "none" }}>
-						<Typography color="text.primary" underline="hover">
-							Home
-						</Typography>
-					</Link>
+  useEffect(() => {
+    axios
+      .get(`${baseURL}/api/announcement/${id}`, {withCredentials : true})
+      .then((res) => {
+        console.log(res.data)
+        res.data.createdAt = new Date(res.data.createdAt)
+        setData(res.data)
+      })
+      .catch((err) => setError(true))
+  }, [])
 
-					<Link to="/announcements" style={{ textDecoration: "none" }}>
-						<Typography color="text.primary" underline="hover">
-							Announcements
-						</Typography>
-					</Link>
+  return (
+    <div>
+      <Container>
+        <Breadcrumbs sx={{ marginBottom: 2 }}>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <Typography color="text.primary" underline="hover">
+              Home
+            </Typography>
+          </Link>
 
-					<Typography>{data && data.title}</Typography>
-				</Breadcrumbs>
-				{data !== null && (
-					<Card>
-						<CardHeader
-							avatar={<Avatar alt={data.user.name} src={data.user.avatar} />}
-							title={data.title}
-							subheader={"by : " + data.user.name}
-						/>
-						<CardContent>
-							<Typography variant="body2">{data.body}</Typography>
+          <Link to="/announcements" style={{ textDecoration: "none" }}>
+            <Typography color="text.primary" underline="hover">
+              Announcements
+            </Typography>
+          </Link>
 
-							{data.attachments && data.attachments.length > 0 && (
+          <Typography>{data && data.title}</Typography>
+        </Breadcrumbs>
+        {data !== null && (
+          <Card>
+            <CardHeader
+              avatar={
+                <Avatar
+                  alt={data.user.name}
+                  src={data.user.avatar}
+                />
+              }
+              title={data.title}
+              subheader={
+                "by : " + data.user.name}
+            />
+            <CardContent>
+              <Typography variant="body2">{data.body}</Typography>
+
+              {data.attachments && data.attachments.length > 0 && (
 								<Stack direction="row" spacing={0.7} sx={{ marginTop: 2 }}>
 									<Typography variant="subtitle2">Attachments :</Typography>
 									{data.attachments.map((file, index) => (
@@ -97,31 +105,31 @@ function Announcement() {
 								</Stack>
 							)}
 
-							{data.tags && data.tags.length > 0 && (
-								<Stack direction="row" spacing={0.7} sx={{ marginTop: 2 }}>
-									<Typography variant="subtitle2">Tags :</Typography>
-									{data.tags.map((tag, index) => (
-										<Chip
-											key={index}
-											label={tag}
-											color="primary"
-											variant="outlined"
-											size="small"
-										/>
-									))}
-								</Stack>
-							)}
-						</CardContent>
-					</Card>
-				)}
+              {data.tags && data.tags.length > 0 && (
+                <Stack direction="row" spacing={0.7} sx={{ marginTop: 2 }}>
+                  <Typography variant="subtitle2">Tags :</Typography>
+                  {data.tags.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag}
+                      color="primary"
+                      variant="outlined"
+                      size="small"
+                    />
+                  ))}
+                </Stack>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
-				{error === true && (
-					<Typography>
-						Error fetching the announcement or the announcement doesnt exist
-					</Typography>
-				)}
-
-				<Modal open={imageModal.path ? true : false} onClose={handleCloseModal}>
+        {error === true && (
+          <Typography>
+            Error fetching the announcement or the announcement doesnt exist
+          </Typography>
+        )}
+      </Container>
+      <Modal open={imageModal.path ? true : false} onClose={handleCloseModal}>
 					<Box sx={style}>
 						<Grid
 							container
@@ -139,9 +147,8 @@ function Announcement() {
 						</Grid>
 					</Box>
 				</Modal>
-			</Container>
-		</div>
-	)
+    </div>
+  )
 }
 
 export default Announcement

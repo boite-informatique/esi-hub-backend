@@ -1,0 +1,48 @@
+.AnnouncementContainer{
+    margin-left: 200px;
+    width: 80%;
+    
+}
+
+
+.AnnouncementSCard{
+    background: #bac2c21e;
+    width: 400px;
+    position: sticky;
+    top: 122px;
+   padding: 20px;
+    border: solid 2px rgb(128, 124, 124);
+    border-radius: 10px;
+}
+.Tag{
+    
+    border-radius: 25px;
+}
+
+.AnnouncementCard{
+    background: #9fdddb67;
+    width: 80%;
+    height: 150px;
+    border:solid 2px rgba(0, 0, 0, 0.151);
+  overflow-y:scroll;
+    border-radius: 10px;
+}
+.CreateAnnouncementContainer{
+    margin-left: 15%;
+    position: absolute;
+    top: 10%;
+    width: 80%;
+    
+    height: 90%;
+}
+.CreateAnnouncementForm{
+    background: white;
+    border: solid 5px black;
+ width: 80%;
+ position: relative;
+  height: 100%;
+  margin-left:0%;
+  padding: 3%;
+    
+   
+}
