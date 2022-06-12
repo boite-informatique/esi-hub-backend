@@ -54,7 +54,7 @@ function Announcement() {
 
 	return (
 		<div>
-			<Container>
+			<Container sx={{ ml: "200px" }}>
 				<Breadcrumbs sx={{ marginBottom: 2 }}>
 					<Link to="/" style={{ textDecoration: "none" }}>
 						<Typography color="text.primary" underline="hover">
