@@ -8,7 +8,7 @@ import DoneIcon from "@mui/icons-material/Done"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
-import axios from "axios"
+import axios from "../../axios"
 import Modal from "@mui/material/Modal"
 import {
 	Select,
@@ -54,7 +54,7 @@ const CreateWorkspace = ({ open, handleClose }) => {
 		setAlert("")
 		try {
 			const res = await axios.post(
-				`http://localhost:3005/api/workspace`,
+				`/api/workspace`,
 				{
 					...formData,
 					members: [],

@@ -9,13 +9,13 @@ import {
 	Alert,
 	CssBaseline,
 } from "@mui/material"
-import axios from "axios"
+import axios from "../../../axios"
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import GroupList from "../../../components/GroupList"
-import './Signup.css'
-import logo from '../Login/logo2(1).svg'
-import groups from '../../../components/groups.json'
+import "./Signup.css"
+import logo from "../Login/logo2(1).svg"
+import groups from "../../../components/groups.json"
 function Signup() {
 	const baseURL = "http://localhost:3005"
 	const [formData, setFormData] = useState({
@@ -40,7 +40,7 @@ function Signup() {
 
 	useEffect(() => {
 		axios
-			.get(`${baseURL}/api/group/`)
+			.get(`/api/group/`)
 			.then((res) => {
 				console.log(res.data)
 				setGroups(res.data)
@@ -54,7 +54,7 @@ function Signup() {
 		formData.groups = checked
 		console.log(formData)
 		try {
-			const res = await axios.post(`${baseURL}/api/user/register`, formData)
+			const res = await axios.post(`/api/user/register`, formData)
 			console.log(res.data)
 			if (res.data.error) {
 				setalert({
@@ -99,29 +99,27 @@ function Signup() {
 
 	return (
 		<Container>
-			      <img src={logo} alt='cv chweya'  className="helloo"></img>
+			<img src={logo} alt="cv chweya" className="helloo"></img>
 
-			      <div className='centert'>
-
-				  <h1>Register</h1>
+			<div className="centert">
+				<h1>Register</h1>
 
 				<form onSubmit={handleSubmit}>
-					
-						<div className='txt_fielde'>
-							<input
-								name="name"
-								label="Name"
-								type="text"
-								variant="filled"
-								onChange={handleChange}
-								value={formData.name}
-								required
-							/>
-							<label>Name</label>
-              				<span></span>
-						</div>
-						<div className='txt_fielde'>
-							<input 
+					<div className="txt_fielde">
+						<input
+							name="name"
+							label="Name"
+							type="text"
+							variant="filled"
+							onChange={handleChange}
+							value={formData.name}
+							required
+						/>
+						<label>Name</label>
+						<span></span>
+					</div>
+					<div className="txt_fielde">
+						<input
 							name="email"
 							label="Email"
 							type="text"
@@ -129,39 +127,41 @@ function Signup() {
 							onChange={handleChange}
 							value={formData.email}
 							required
-							/>
-							<label>Email</label>
-              				<span></span>
-						</div>
-						<div className='txt_fielder'>
-							<input
-								name="password"
-								type="password"
-								label="Password"
-								variant="filled"
-								onChange={handleChange}
-								value={formData.password}
-								required
-							/>
-							<label>Password</label>
-              				<span></span>
-						</div>
-						{groups.length > 0 && (
-							<div  style={{height : 200, overflowY : 'scroll'}}  className='scrolly'>
+						/>
+						<label>Email</label>
+						<span></span>
+					</div>
+					<div className="txt_fielder">
+						<input
+							name="password"
+							type="password"
+							label="Password"
+							variant="filled"
+							onChange={handleChange}
+							value={formData.password}
+							required
+						/>
+						<label>Password</label>
+						<span></span>
+					</div>
+					{groups.length > 0 && (
+						<div
+							style={{ height: 200, overflowY: "scroll" }}
+							className="scrolly"
+						>
 							<GroupList
 								data={groups}
 								checked={checked}
 								setChecked={setChecked}
 							/>
-							</div>
-						)}
-						
-					
+						</div>
+					)}
 				</form>
-				<input  type="submit" value="Sign up" ></input>	
-				<div className='signup_link	' >Already have an account? <Link to="/login">Login</Link> </div>
-
+				<input type="submit" value="Sign up"></input>
+				<div className="signup_link	">
+					Already have an account? <Link to="/login">Login</Link>{" "}
 				</div>
+			</div>
 		</Container>
 	)
 }

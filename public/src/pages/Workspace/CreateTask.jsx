@@ -18,7 +18,7 @@ import {
 	InputLabel,
 } from "@mui/material"
 import { bgcolor, width } from "@mui/system"
-import axios from "axios"
+import axios from "../../axios"
 import { useParams } from "react-router-dom"
 
 const CreateTask = ({ open, handleClose }) => {
@@ -55,7 +55,7 @@ const CreateTask = ({ open, handleClose }) => {
 
 	const handleSubmit = async () => {
 		axios
-			.post(`http://localhost:3005/api/task/`, formData, {
+			.post(`/api/task/`, formData, {
 				withCredentials: true,
 			})
 			.then((res) => console.log(res.data))

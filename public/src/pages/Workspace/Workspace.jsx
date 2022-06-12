@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import "./Workspace.css"
-import axios from "axios"
+import axios from "../../axios"
 import { Add } from "@mui/icons-material"
 import { useQuery } from "react-query"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -18,7 +18,7 @@ function Workspace() {
 	const navigate = useNavigate()
 
 	const getWorkspace = async () =>
-		await axios.get(`http://localhost:3005/api/workspace/${id}`, {
+		await axios.get(`/api/workspace/${id}`, {
 			withCredentials: true,
 		})
 

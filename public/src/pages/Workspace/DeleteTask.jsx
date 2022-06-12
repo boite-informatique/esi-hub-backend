@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import "./Workspace.css"
-import axios from "axios"
+import axios from "../../axios"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
@@ -29,7 +29,7 @@ export const DeleteTask = ({ id, open, handleClose }) => {
 	}
 	const handleSubmit = async ({ id }) => {
 		await axios
-			.delete(`http://localhost:3005/api/task/${id}`, { withCredentials: true })
+			.delete(`/api/task/${id}`, { withCredentials: true })
 			.then((res) => {
 				console.log(" deleted", res.data)
 				handleClose()
@@ -107,7 +107,7 @@ export const DeleteWs = ({ open, handleClose, id }) => {
 	const handleSubmit = async (id) => {
 		console.log("submit id", id)
 		await axios
-			.delete(`http://localhost:3005/api/workspace/${id}`, {
+			.delete(`/api/workspace/${id}`, {
 				withCredentials: true,
 			})
 			.then((res) => handleClose())

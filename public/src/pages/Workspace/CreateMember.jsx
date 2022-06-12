@@ -14,7 +14,7 @@ import {
 	Grid,
 } from "@mui/material"
 import { bgcolor, width } from "@mui/system"
-import axios from "axios"
+import axios from "../../axios"
 const CreateMember = ({ Ws, open, handleClose }) => {
 	const style = {
 		position: "absolute",
@@ -34,7 +34,7 @@ const CreateMember = ({ Ws, open, handleClose }) => {
 		console.log("hello", Ws)
 		axios
 			.put(
-				`http://localhost:3005/api/workspace/${Ws._id}/?members=${members}`,
+				`/api/workspace/${Ws._id}/?members=${members}`,
 				{},
 				{ withCredentials: true }
 			)

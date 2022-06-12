@@ -4,6 +4,7 @@ const http = require("http")
 const cors = require("cors")
 const cookieParser = require("cookie-parser")
 const errorHandler = require("./middleware/errorHandler")
+const path = require("path")
 
 // initialize server
 const app = express()
@@ -38,6 +39,8 @@ app.use("/api/comment", require("./routes/commentRoute.js"))
 
 // error handling
 app.use(errorHandler)
+
+app.use(express.static(path.join(__dirname, "./public/build")))
 
 // unknown routes
 app.use("/*", (req, res) => res.status(404).send("woah this page doesnt exist"))

@@ -3,7 +3,7 @@ import "./Workspace.css"
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn"
 
 import { Add } from "@mui/icons-material"
-import axios from "axios"
+import axios from "../../axios"
 import { Typography, Button } from "@mui/material"
 import { useQuery } from "react-query"
 import { Link, useNavigate } from "react-router-dom"
@@ -19,7 +19,7 @@ const BASE_URL = "http://localhost:3005"
 
 function Workspaces() {
 	const fetchworkspaces = async () =>
-		await axios.get(`${BASE_URL}/api/workspace`, {
+		await axios.get(`/api/workspace`, {
 			withCredentials: true,
 		})
 	const { data, error, status, refetch, ...other } = useQuery(

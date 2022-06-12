@@ -14,13 +14,13 @@ import {
 	ListItemText,
 } from "@mui/material"
 import React from "react"
-import axios from "axios"
+import axios from "../axios"
 import { useQuery } from "react-query"
 import { useNavigate } from "react-router-dom"
 
 function Home() {
 	const fetchAnnouncements = async () =>
-		await axios.get(`http://localhost:3005/api/announcement?limit=4`, {
+		await axios.get(`/api/announcement?limit=4`, {
 			withCredentials: true,
 		})
 	const { data, error, status } = useQuery("announcements", fetchAnnouncements)

@@ -7,7 +7,7 @@ import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 import ListItemText from "@mui/material/ListItemText"
 import ListItemIcon from "@mui/material/ListItemIcon"
-import axios from "axios"
+import axios from "../../axios"
 import Typography from "@mui/material/Typography"
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -17,11 +17,7 @@ import EditIcon from "@mui/icons-material/Edit"
 export const TaskMenu = ({ id, handleOpenDT, anchorEl, open, handleClose }) => {
 	const TakeCharge = async () => {
 		await axios
-			.put(
-				`http://localhost:3005/api/task/${id}?status=0`,
-				{},
-				{ withCredentials: true }
-			)
+			.put(`/api/task/${id}?status=0`, {}, { withCredentials: true })
 			.then((res) => {
 				console.log(res.data)
 				handleClose()
@@ -94,11 +90,7 @@ export const TaskDoMenu = ({
 }) => {
 	const DoneTask = async (id) => {
 		axios
-			.put(
-				`http://localhost:3005/api/task/${id}?status=1`,
-				{},
-				{ withCredentials: true }
-			)
+			.put(`/api/task/${id}?status=1`, {}, { withCredentials: true })
 			.then((res) => {
 				console.log(res.data)
 				handleClose()
