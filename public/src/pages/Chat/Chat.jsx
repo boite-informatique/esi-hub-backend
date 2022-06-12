@@ -22,8 +22,6 @@ import { useState } from "react"
 import imgFirst from "/assets/chat.svg"
 import sio from "socket.io-client"
 import { useEffect } from "react"
-import { useContext } from "react"
-import { SocketContext } from "../../SocketProvider"
 
 // const socket = sio("http://localhost:3005", {
 // 	withCredentials: true,

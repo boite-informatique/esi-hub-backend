@@ -18,12 +18,12 @@ import sio from "socket.io-client"
 import Cookies from "js-cookie"
 import { useEffect } from "react"
 
-var socket = sio("http://localhost:3005", {
-	withCredentials: true,
-	query: {
-		jwt: Cookies.get("accessToken"),
-	},
-})
+// var socket = sio("http://localhost:3005", {
+// 	withCredentials: true,
+// 	query: {
+// 		jwt: Cookies.get("accessToken"),
+// 	},
+// })
 
 function Chat() {
 	useEffect(() => {

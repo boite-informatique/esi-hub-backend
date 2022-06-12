@@ -12,7 +12,6 @@ import CreateAnnouncement from "./Announcements/CreateAnnouncement"
 import Profile from "./Profile"
 import HBackground from "./HomeBackground/HomeBackground"
 import Workspace from "./Workspace/Workspace"
-import FirstPageChat from "./Chat/firstPageChat/FirstPageChat.jsx"
 
 export default function Dashboard() {
 	return (
@@ -31,7 +30,7 @@ export default function Dashboard() {
 					<Route path="announcements/:id" element={<Announcement />} />
 					<Route path="workspaces" element={<Workspaces />} />
 					<Route path="workspaces/:id" element={<Workspace />} />
-					<Route path="chat" element={<Chat />} />
+					{/* <Route path="chat" element={<Chat />} /> */}
 					<Route path="profile" element={<Profile />} />
 					<Route path="*" element={<Navigate to="/" />} />
 				</Routes>

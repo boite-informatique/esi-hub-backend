@@ -14,6 +14,7 @@ require("dotenv").config() // use environmental variables
 require("./db")() // connect to database
 require("./socketio")(server) // use socket.io
 
+app.use(express.static(path.join(__dirname, "./public/dist")))
 // middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -37,10 +38,10 @@ app.use("/api/comment", require("./routes/commentRoute.js"))
 // error handling
 app.use(errorHandler)
 
-app.use(express.static(path.join(__dirname, "./public/dist")))
-
 // unknown routes
-app.use("/*", (req, res) => res.status(404).send("woah this page doesnt exist"))
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname + "/public/dist/index.html"))
+})
 
 // server port
 const PORT = process.env.PORT || 3000
