@@ -25,6 +25,16 @@ function Home() {
 		})
 	const { data, error, status } = useQuery("announcements", fetchAnnouncements)
 
+	const fetchWorkspaces = async () =>
+		await axios.get(`/api/workspace?limit=4`, {
+			withCredentials: true,
+		})
+	const {
+		data: dataWorkspace,
+		error: errorWorkspace,
+		status: statusWorkspace,
+	} = useQuery("workspaces", fetchWorkspaces)
+
 	return (
 		<div style={{ height: "100%" }}>
 			<div className="Home">

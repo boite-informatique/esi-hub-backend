@@ -101,13 +101,16 @@ export const DeleteWs = ({ open, handleClose, id }) => {
 	}
 	/**************************** */
 
-	const handleSubmit = async (id) => {
+	const handleSubmit = (id) => {
 		console.log("submit id", id)
-		await axios
+		axios
 			.delete(`/api/workspace/${id}`, {
 				withCredentials: true,
 			})
-			.then((res) => handleClose())
+			.then((res) => {
+				handleClose()
+				window.location.reload()
+			})
 			.catch((err) => console.log("err"))
 	}
 	//::::::::::::::::::::::::::::*/
