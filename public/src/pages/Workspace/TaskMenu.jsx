@@ -15,12 +15,13 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt"
 import EditIcon from "@mui/icons-material/Edit"
 
 export const TaskMenu = ({ id, handleOpenDT, anchorEl, open, handleClose }) => {
-	const TakeCharge = async () => {
-		await axios
+	const TakeCharge = () => {
+		axios
 			.put(`/api/task/${id}?status=0`, {}, { withCredentials: true })
 			.then((res) => {
 				console.log(res.data)
 				handleClose()
+				window.location.reload()
 			})
 			.catch((err) => console.log("err"))
 	}
@@ -39,7 +40,7 @@ export const TaskMenu = ({ id, handleOpenDT, anchorEl, open, handleClose }) => {
 					<TaskAltIcon />
 					take charge
 				</MenuItem>
-				<MenuItem onClick={handleOpenDT} disableRipple>
+				<MenuItem onClick={() => handleOpenDT()} disableRipple>
 					<DeleteIcon />
 					Delete
 				</MenuItem>
@@ -88,12 +89,13 @@ export const TaskDoMenu = ({
 	open,
 	handleClose,
 }) => {
-	const DoneTask = async (id) => {
+	const DoneTask = (id) => {
 		axios
 			.put(`/api/task/${id}?status=1`, {}, { withCredentials: true })
 			.then((res) => {
 				console.log(res.data)
 				handleClose()
+				window.location.reload()
 			})
 			.catch((err) => console.log("err"))
 	}

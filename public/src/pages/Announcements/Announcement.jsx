@@ -88,7 +88,8 @@ function Announcement() {
 										<Chip
 											key={index}
 											label={file.filename.substring(0, 20)}
-											onClick={() => setImageModal(file)}
+											//onClick={() => setImageModal(file)}
+											onClick={() => navigate("/uploads/" + file.filename)}
 											color="primary"
 											variant="outlined"
 											size="small"

@@ -82,7 +82,6 @@ const CreateWorkspace = ({ open, handleClose }) => {
 					),
 				})
 			}
-			window.location.reload()
 		} catch (error) {
 			console.log(error)
 			setAlert({

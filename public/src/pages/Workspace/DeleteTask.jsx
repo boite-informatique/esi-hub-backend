@@ -27,61 +27,58 @@ export const DeleteTask = ({ id, open, handleClose }) => {
 		boxShadow: 24,
 		p: 4,
 	}
-	const handleSubmit = async ({ id }) => {
-		await axios
+	const handleSubmit = (id) => {
+		axios
 			.delete(`/api/task/${id}`, { withCredentials: true })
 			.then((res) => {
 				console.log(" deleted", res.data)
 				handleClose()
+				window.location.reload()
 			})
 			.catch((err) => console.log("err"))
 	}
 
 	return (
 		<>
-			{open && (
-				<div>
-					<Modal
-						open={open}
-						onClose={handleClose}
-						aria-labelledby="modal-modal-title"
-						aria-describedby="modal-modal-description"
+			<Modal
+				open={open}
+				onClose={handleClose}
+				aria-labelledby="modal-modal-title"
+				aria-describedby="modal-modal-description"
+			>
+				<Box sx={style}>
+					<Typography
+						id="modal-modal-title"
+						variant="h6"
+						component="h2"
+						sx={{ padding: 2 }}
 					>
-						<Box sx={style}>
-							<Typography
-								id="modal-modal-title"
-								variant="h6"
-								component="h2"
-								sx={{ padding: 2 }}
-							>
-								DO you wanna delete this task ,
-							</Typography>
+						DO you wanna delete this task ,
+					</Typography>
 
-							<Button
-								onClick={handleSubmit({ id })}
-								variant="contained"
-								sx={{
-									width: 100,
-									marginLeft: 6,
-								}}
-							>
-								Yes
-							</Button>
+					<Button
+						onClick={() => handleSubmit(id)}
+						variant="contained"
+						sx={{
+							width: 100,
+							marginLeft: 6,
+						}}
+					>
+						Yes
+					</Button>
 
-							<Button
-								onClick={handleClose}
-								variant="contained"
-								sx={{
-									width: 100,
-									marginLeft: 5,
-								}}
-							>
-								No
-							</Button>
-						</Box>
-					</Modal>
-				</div>
-			)}
+					<Button
+						onClick={handleClose}
+						variant="contained"
+						sx={{
+							width: 100,
+							marginLeft: 5,
+						}}
+					>
+						No
+					</Button>
+				</Box>
+			</Modal>
 		</>
 	)
 }

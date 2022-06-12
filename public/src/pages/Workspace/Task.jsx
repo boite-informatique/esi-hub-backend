@@ -18,6 +18,7 @@ export const Task = ({ t }) => {
 	/*--------------------------------------------*/
 
 	/*--------------------------------------------*/
+	const [anchorEl, setAnchorEl] = React.useState(null)
 	const [openD, setOpenD] = React.useState(false)
 	const handleOpenD = () => {
 		setOpenD(true)
@@ -27,7 +28,6 @@ export const Task = ({ t }) => {
 		setOpenD(false)
 	}
 	/**** */
-	const [anchorEl, setAnchorEl] = React.useState(null)
 	const open = Boolean(anchorEl)
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget)
@@ -37,6 +37,7 @@ export const Task = ({ t }) => {
 	}
 	return (
 		<>
+			<DeleteTask id={t._id} open={openD} handleClose={handleCloseD} />
 			<div className="Task">
 				<div className="TaskC">
 					<div className="TaskIcon">
@@ -48,16 +49,14 @@ export const Task = ({ t }) => {
 						sx={{ marginTop: "5px", cursor: "pointer" }}
 					/>
 				</div>
-
-				<TaskMenu
-					id={t._id}
-					handleOpenDT={handleOpenD}
-					anchorEl={anchorEl}
-					open={open}
-					handleClose={handleClose}
-				/>
 			</div>
-			<DeleteTask id={t._id} open={openD} handleClose={handleCloseD} />
+			<TaskMenu
+				id={t._id}
+				handleOpenDT={handleOpenD}
+				anchorEl={anchorEl}
+				open={open}
+				handleClose={handleClose}
+			/>
 		</>
 	)
 }
