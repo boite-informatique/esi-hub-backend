@@ -17,13 +17,12 @@
       ;
        height: 100vh;
        z-index: 1;
-       height: 100vh;
+       height: 100%;
        background-color: var(--sidebar-color);
        width :200px;
        height: 100vh;
        z-index: 5;
        transition: var(--tran-03);
-       
     }
     
     .Sidebarelement-close{

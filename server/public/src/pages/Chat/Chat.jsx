@@ -1,66 +1,39 @@
-import React, { useEffect, useState } from "react"
-import { SidebarClose, SidebarOpen } from "../../components/Sections"
-import TopBar from "../../components/TopBar"
-import "./Chat.css"
-import ChatOnline from "./chatOnline/ChatOnline"
-import Conversation from "./Conversation/Conversation"
-import Message from "./Message/Message"
-import { FaPlus } from "react-icons/fa"
-import { Navigate } from "react-router-dom"
-import img from "/assets/miloudiz.jpg"
-import img2 from "/assets/amine.jpg"
-import img3 from "/assets/logoHome.png"
-import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import Typography from "@mui/material/Typography"
-import Modal from "@mui/material/Modal"
-import CreateChatRoom from "./CreateChatRoom/CreateChatRoom"
+import { Add, AttachEmail } from "@mui/icons-material"
+import {
+	Avatar,
+	Divider,
+	Grid,
+	IconButton,
+	List,
+	ListItem,
+	ListItemAvatar,
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
+	Typography,
+	Modal,
+	Box,
+	TextField,
+	Button,
+	Container,
+} from "@mui/material"
+import React from "react"
+import { useState } from "react"
+import imgFirst from "/assets/chat.svg"
 import sio from "socket.io-client"
-import axios from "axios"
-import { useQuery } from "react-query"
-import Cookies from "js-cookie"
-import { ListItem, ListItemText, List } from "@mui/material"
+import { useEffect } from "react"
+import { useContext } from "react"
+import { SocketContext } from "../../SocketProvider"
 
-function Chat() {
-	const [socket, setSocket] = useState(null)
-	useEffect(() => {
-		setSocket(
-			sio("http://localhost:3005", {
-				withCredentials: true,
-				query: {
-					jwt: Cookies.get("accessToken"),
-				},
-			})
-		)
+const socket = sio("http://localhost:3005", {
+	withCredentials: true,
+	// query: {
+	// 	jwt: Cookies.get("accessToken"),
+	// },
+})
 
-		socket.on("authorized", (user) => {
-			console.log("authorizd lol")
-			setCurrentUser(user)
-			socket.on("join-rooms", (data) => setconversations(data))
-		})
-	}, [])
-	const [currentUser, setCurrentUser] = useState({})
-	const [users, setUsers] = useState([
-		{ id: 0, name: "user1", avatar: img3 },
-		{ id: 1, name: "users2", avatar: img2 },
-		{ id: 3, name: "user3", avatar: img },
-	])
-
-	const fetchUsers = async () =>
-		await axios.get(
-			`http://localhost:3005/api/user/?search=${searchUsersQuery}`,
-			{
-				withCredentials: true,
-			}
-		)
-
-	const { data, error, status, refetch, ...other } = useQuery(
-		"users",
-		fetchUsers
-	)
-
-	const [searchUsersQuery, setSearchUsersQuery] = useState("")
-
+export default function Chat() {
+	// const { socket, rooms, setRooms } = useContext(SocketContext)
 	const style = {
 		position: "absolute",
 		top: "50%",
@@ -72,154 +45,237 @@ function Chat() {
 		boxShadow: 24,
 		p: 4,
 	}
-	const [messages, setMessages] = useState(null)
-
-	const [conversations, setconversations] = useState([
-		{ id: 0, name: "salam", avatar: img3 },
-		{ id: 1, name: "zo3ama", avatar: img2 },
-		{ id: 3, name: "perfecto", avatar: img },
-	])
-
-	const [chatsOnline, setChatsOnline] = useState([
-		{ id: 0, name: "amine", avatar: img },
-		{ id: 1, name: "moahmed", avatar: img2 },
-		{ id: 3, name: "chakib", avatar: img3 },
-	])
-	const [newRoomData, setNewRoomData] = useState({ name: "", participants: "" })
-	const [currentRoom, setCurrentRoom] = useState("")
-	const [myMessage, setMyMessage] = useState("")
+	const [rooms, setRooms] = useState([])
 	const [open, setOpen] = useState(false)
-	const [newMessage, setNewMessage] = useState(false)
 	const handleOpen = () => setOpen(true)
 	const handleClose = () => setOpen(false)
+	const [createRoomData, setCreateRoomData] = useState({
+		name: "",
+		participants: "",
+	})
 
-	const addNewMessage = (msg) => {
-		setMessages([...messages, msg])
-	}
-
-	const handleClick = () => {
-		if (!myMessage) return
-		setMessages([...messages, { body: myMessage, avatar: img }])
-		socket.emit("message", { body: myMessage })
-		document.getElementById("btn").value = ""
-	}
-
-	const handleAddConversation = () => {
-		console.log("creating room", currentUser)
-		socket.emit("create-room", { room: newRoomData, user: currentUser })
-		setconversations([
-			...conversations,
-			{ id: 8, name: newRoomData.name, avatar: img3 },
-		])
-		setOpen(false)
-	}
-
-	const handleChangeCreateRoom = (event) => {
+	const handleChange = (event) => {
 		const { name, value } = event.target
-		setNewRoomData((values) => ({ ...values, [name]: value }))
+		setCreateRoomData((values) => ({ ...values, [name]: value }))
 	}
+
+	const [newMessage, setNewMessage] = useState("")
+	const handleNewMessage = (event) => {
+		event.preventDefault()
+		if (!newMessage.trim()) return
+		socket.emit("new-message", {
+			room: currentRoom,
+			body: newMessage.trim(),
+		})
+		setNewMessage("")
+	}
+	const [currentRoom, setCurrentRoom] = useState(null)
+	const handleCreateRoom = () => {
+		socket.emit("create-room", createRoomData)
+		setCreateRoomData({ name: "", participants: "" })
+		handleClose()
+	}
+	useEffect(() => {
+		socket.on("connected", () => {
+			socket.emit("ready")
+
+			socket.on("join-rooms", (rooms) => {
+				setRooms(rooms)
+				///////////
+				socket.on("new-message", (msg) => {
+					let roomArr = rooms
+					const i = roomArr.findIndex((val) => val._id == msg.room)
+					console.log(i, roomArr, rooms)
+					roomArr[i].messages.push(msg)
+					setRooms(roomArr)
+				})
+				/////////
+
+				socket.on("new-room", (room) => socket.emit("ask-join-room", room))
+				socket.on("room-joined", (room) => setRooms([...rooms, room]))
+			})
+		})
+	})
+	const user = [
+		{
+			name: "Mohamed",
+			avatar:
+				"https://media.discordapp.net/attachments/553250258587484182/974380998999564418/unknown.png?width=376&height=376",
+		},
+	]
+	const messages = [
+		{
+			body: "hello world",
+			user: {
+				name: "Mohamed",
+				avatar:
+					"https://media.discordapp.net/attachments/553250258587484182/974380998999564418/unknown.png?width=376&height=376",
+			},
+		},
+	]
+	const handleAddRoom = () => {}
 
 	return (
 		<>
-			<TopBar />
-			<SidebarOpen />
-			<div className="messenger">
-				{open && (
-					<div>
-						<Modal
-							open={open}
-							onClose={handleClose}
-							aria-labelledby="modal-modal-title"
-							aria-describedby="modal-modal-description"
-						>
-							<Box sx={style}>
-								<Typography id="modal-modal-title" variant="h6" component="h2">
-									Create new chat room
-								</Typography>
-								<input
-									placeholder="Name"
-									name="name"
-									className="chatMenuInputt"
-									value={newRoomData.name}
-									onChange={handleChangeCreateRoom}
-								/>
-								<input
-									placeholder="Add users by email separated by comma (,)"
-									name="participants"
-									value={newRoomData.participants}
-									className="chatMenuInputt"
-									onChange={handleChangeCreateRoom}
-								/>
-								<span>image</span>
-								<span></span>
-								<br />
-								<button
-									className="chatSubmitButtonn"
-									onClick={handleAddConversation}
-								>
-									Add{" "}
-								</button>
-							</Box>
-						</Modal>
-					</div>
-				)}
-				<div className="chatMenu">
-					<div className="chatMenuWrapper">
-						<input placeholder="Search for friends" className="chatMenuInput" />
-						<button className="plusIcon" onClick={() => setOpen(true)}>
-							<FaPlus />
-						</button>
+			<Modal
+				open={open}
+				onClose={handleClose}
+				aria-labelledby="modal-modal-title"
+				aria-describedby="modal-modal-description"
+			>
+				<Box sx={style}>
+					<Typography id="modal-modal-title" variant="h6" component="h2">
+						Create new chat room
+					</Typography>
+					<TextField
+						label="Name"
+						type="text"
+						name="name"
+						variant="filled"
+						onChange={handleChange}
+						value={createRoomData.name}
+						fullWidth
+					/>
+					<TextField
+						label="Add Friends"
+						name="participants"
+						type="text"
+						variant="filled"
+						onChange={handleChange}
+						value={createRoomData.participants}
+						fullWidth
+					/>
+					<Button variant="contained" fullWidth onClick={handleCreateRoom}>
+						Create New Room
+					</Button>
+				</Box>
+			</Modal>
+			<Grid container sx={{ ml: "200px" }}>
+				<Grid item xs={3}>
+					<Grid container>
 						<List>
-							{conversations.map((conv, index) => (
-								<ListItem
-									key={index}
-									button
-									onClick={() => setCurrentRoom(conv._id)}
-								>
-									<ListItemText primary={conv.name} />
-								</ListItem>
-							))}
+							<ListItem
+								secondaryAction={
+									<IconButton edge="end" onClick={() => handleOpen()}>
+										<Add />
+									</IconButton>
+								}
+							>
+								<ListItemText primary="Your Rooms" />
+							</ListItem>
+							{rooms.length > 0 && (
+								<List sx={{ height: "100%" }}>
+									{rooms.map((room, index) => (
+										<ListItemRoom
+											name={room.name}
+											id={room._id}
+											key={index}
+											setRoom={setCurrentRoom}
+										/>
+									))}
+								</List>
+							)}
+							{rooms.length === 0 && <Typography>No rooms found</Typography>}
 						</List>
-					</div>
-				</div>
-				<div className="chatBox">
-					<div className="chatBoxWrapper">
-						<div className="chatBoxTop">
-							{messages &&
-								messages.map((msg, index) => (
-									<Message avatar={msg.avatar} body={msg.body} key={index} />
+					</Grid>
+				</Grid>
+				{currentRoom !== null && (
+					<>
+						<Grid item xs={5} sx={{ height: "1000" }}>
+							<Container fixed>
+								<List sx={{ height: "100%", overflowY: "scroll" }}>
+									{rooms
+										.find((val) => val._id == currentRoom)
+										.messages.map((message, index) => (
+											<Message data={message} key={index} />
+										))}
+								</List>
+								<form
+									onSubmit={handleNewMessage}
+									style={{
+										display: "flex",
+										marginTop: "10",
+										alignItems: "center",
+									}}
+								>
+									<Grid container gap={1}>
+										<TextField
+											type="text"
+											value={newMessage}
+											onChange={(e) => setNewMessage(e.target.value)}
+											sx={{ height: 6 }}
+										/>
+										<Button
+											type="submit"
+											variant="contained"
+											sx={{ height: 50 }}
+										>
+											Send
+										</Button>
+									</Grid>
+								</form>
+							</Container>
+						</Grid>
+						<Grid item xs={4}>
+							{rooms
+								.find((val) => val._id == currentRoom)
+								.participants.map((participant, index) => (
+									<Participant data={participant} key={index} />
 								))}
-						</div>
-						<div className="chatBoxBottom">
-							<textarea
-								className="chatMessageInput"
-								placeholder="write something..."
-								onChange={(e) => {
-									setMyMessage(e.currentTarget.value)
-								}}
-								id="btn"
-							></textarea>
-							<button className="chatSubmitButton" onClick={handleClick}>
-								{" "}
-								Send
-							</button>
-						</div>
-					</div>
-				</div>
-				<div className="chatOnline">
-					<div className="chatOnlineWrapper">
-						{chatsOnline.map((chatOn, index) => (
-							<ChatOnline
-								name={chatOn.name}
-								avatar={chatOn.avatar}
-								key={index}
-							/>
-						))}
-					</div>
-				</div>
-			</div>
+						</Grid>
+					</>
+				)}
+				{currentRoom === null && (
+					<Grid item xs={5}>
+						<img src={imgFirst} height="100%" />
+					</Grid>
+				)}
+			</Grid>
 		</>
 	)
 }
 
-export default Chat
+function ListItemRoom({ name, id, setRoom }) {
+	return (
+		<ListItem disablePadding>
+			<ListItemButton onClick={() => setRoom(id)}>
+				<ListItemText primary={name} />
+			</ListItemButton>
+		</ListItem>
+	)
+}
+
+function Message({ data }) {
+	console.log(data)
+	return (
+		<ListItem alignItems="flex-start">
+			<ListItemAvatar>
+				<Avatar alt={data.user.name || "username"} src={data.user.avatar} />
+			</ListItemAvatar>
+			<ListItemText
+				primary={data.user.name}
+				secondary={
+					<Typography
+						sx={{ display: "inline" }}
+						component="span"
+						variant="body2"
+						color="text.primary"
+					>
+						{data.body}
+					</Typography>
+				}
+			/>
+		</ListItem>
+	)
+}
+
+function Participant({ data }) {
+	return (
+		<ListItem>
+			<ListItemAvatar>
+				<Avatar alt={data.name} src={data.avatar} />
+			</ListItemAvatar>
+			<ListItemText primary={data.name} />
+		</ListItem>
+	)
+}

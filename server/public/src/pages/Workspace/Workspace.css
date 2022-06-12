@@ -1,13 +1,19 @@
+
 .Workspace{
     position: absolute;
     display: flex;
-    ;
  
     height: 85%;
     width: 73%;
     top: 10%;
     left: 20%;
 }
+.WorkspaceW{
+    flex: 75%;
+    min-width: 75%;
+   
+    }
+
 /***/
 .ToolBar{
     border-left:solid 2px rgba(0, 0, 0, 0.301);
@@ -15,6 +21,9 @@
     width: 25%;
     
 
+}
+.ToolBarC{
+    overflow-y: scroll;
 }
 .WorkspaceC{
 flex: 75%;
@@ -150,7 +159,7 @@ flex: 90%;
 }
 .Tasktext{
     flex: 60%;
-
+overflow: hidden;
     text-align: left;
     margin-left: 15px;
     font-size: 20px;
@@ -169,6 +178,7 @@ flex: 90%;
 }
 /**********************/
 .Wspace{
+    cursor: pointer;
     padding: 20px;
     width: 100%;
     height: 70px;
@@ -192,4 +202,54 @@ flex: 90%;
 /**/
 .TaskIconMenu{position: relative;
     z-index: 10;
+}
+/*----------------------*/
+.ToolBarCdescription{
+    height: 40%;
+    padding: 5%;
+  
+}
+.ToolBarCtitle{
+   height: 15%;
+    font-size: 18px;
+    font-weight: bold;
+  text-align: center;
+
+}
+.ToolBarCdescriptionbody{
+    border-top: solid 2px rgba(0, 0, 0, 0.39);
+    border-bottom: solid 2px rgba(0, 0, 0, 0.39);
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 16px;
+    height: 80%;
+    margin-top: 5%;
+}
+.membersList{
+    height: 35%;
+    margin-left: 5%;
+   
+}
+.membersListbody{
+    border-left: solid 6px rgba(0, 0, 0, 0.39);
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 16px;
+    overflow-y: scroll;
+    height: 80%;
+    margin-top: 5%;
+}
+.member{
+    font-size: 18;
+    font-weight: 500;
+    display: flex;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.459);
+    padding: 10px;
+    height: 40px;
+    width: 100%;
+}
+.InCharge{
+    color: rgba(0, 0, 0, 0.678);
+    font-size: 15px;
+    margin-left: 16px;
 }

@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300&family=Space+Grotesk:wght@700&display=swap');
+.messengers{
+    margin-top: 60px;
+     height:calc( 100vh - 68px);
+     display: flex;
+     margin-left: 15%;
+}
+.chatMenuu{
+    flex: 3.5;
+
+  }
+
+  .imgChat{
+      flex:5.5;
+     margin-top: 7%;
+     margin-left: 5%;
+  }
+  .div{
+      display: flex;
+  }
+
+  .div h1{
+      font-family: Space Grotesk;
+      font-size: 30px;
+      font-weight: bolder;
+      margin-top: 3%;
+     flex: 1.5;
+      
+  }
+
+  .div span{
+      margin-top: 5%;
+      margin-left: 10%;
+      width: 5%;
+  }
+.div span:hover{
+    cursor: pointer;
+}
+
+  .conversations{
+      margin-left: 15%;
+      height: auto;
+      background-color: rgb(224, 224, 224);
+      border-radius: 5%;
+  }

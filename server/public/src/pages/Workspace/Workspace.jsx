@@ -1,99 +1,111 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from "react"
 import "./Workspace.css"
-
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-
-import { WsBoard } from './WsBoard';
-
-import { Wspace} from './Task';
-
-import CreateWorkspace from './CreateWorkspace';
-import axios from 'axios';
-import { useQuery } from 'react-query';
-import { Typography } from '@mui/material';
-;
+import axios from "axios"
+import { Add } from "@mui/icons-material"
+import { useQuery } from "react-query"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import PersonIcon from "@mui/icons-material/Person"
+import "./CreateMember"
+import { Typography, Button } from "@mui/material"
+import { WsBoard } from "./WsBoard"
+import CreateMember from "./CreateMember"
 
 function Workspace() {
-const [ActiveWSid,setActiveWSid]=useState(12);
+	const { id } = useParams()
+	// const [data, setData] = useState(null)
+	const [error, setError] = useState(false)
 
-const fetchAnnouncements = async () =>
-		await axios.get(`http://localhost:3005/api/workspace/?limit=50`, {
+	const navigate = useNavigate()
+
+	const getWorkspace = async () =>
+		await axios.get(`http://localhost:3005/api/workspace/${id}`, {
 			withCredentials: true,
 		})
-	const { data, error, status, refetch, ...other } = useQuery(
-		"announcements",
-		fetchAnnouncements
+
+	const { data, status, refetch } = useQuery("workspace", getWorkspace)
+	// useEffect(() => {
+	// 	axios
+	// 		.get(`http://localhost:3005/api/workspace/${id}`, {
+	// 			withCredentials: true,
+	// 		})
+	// 		.then((res) => {
+	// 			console.log(res.data)
+	// 			res.data.createdAt = new Date(res.data.createdAt)
+	// 			setData(res.data)
+	// 		})
+	// 		.catch((err) => setError(true))
+	// }, [])
+
+	/***************************/
+
+	/****************** */
+
+	const [open, setOpen] = React.useState(false)
+	const handleOpen = () => {
+		setOpen(true)
+	}
+	const handleClose = () => {
+		setOpen(false)
+	}
+	/************************ */
+
+	return (
+		<>
+			{status === "success" && (
+				<div className="Workspace">
+					<WsBoard tasks={data.data.tasks} />
+					<div className="ToolBar">
+						<div className="ToolBarHeader">
+							{" "}
+							<div className="WorkSpaceTitle">{data.data.name}</div>
+						</div>
+						<div className="ToolBarC"></div>
+						<div className="ToolBarCdescription">
+							<div className="ToolBarCtitle"> Workspace description</div>
+							<div className="ToolBarCdescriptionbody">
+								{data.data.description}
+							</div>
+						</div>
+						<div className="membersList">
+							<div className="ToolBarCtitle">Workspace members</div>
+							<div className="membersListbody">
+								{" "}
+								{data.data.members.map((m, index) => (
+									<div className="member" key={index}>
+										<PersonIcon />
+										<div style={{ marginLeft: "10px" }}>{m.name}</div>
+									</div>
+								))}
+							</div>
+							<Button
+								onClick={handleOpen}
+								sx={{
+									mb: 2,
+									fontSize: "15px",
+									width: "80%",
+									marginLeft: "10%",
+								}}
+								startIcon={<Add />}
+								fullWidth
+							>
+								Add a member
+							</Button>
+							<CreateMember
+								Ws={data.data}
+								open={open}
+								handleClose={handleClose}
+							/>
+						</div>
+					</div>
+				</div>
+			)}
+			{error === true && (
+				<Typography>
+					Error fetching the workspace or the workspace doesnt exist
+				</Typography>
+			)}
+		</>
 	)
-
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      name: "hhhhhhhh",
-      User: "",
-      Workspace:{id:12,
-        name:"Projet"},
-    },
-   
-   
-  ])
-  
-  const [WS,setWS]=useState([
-    {id:12,
-    name:"Projet"},
-    {id:13,
-  name:"KHdma"}]) 
-
-
-const ActiveWS=({_id})=>{
-  setActiveWSid(_id)
-  console.log(_id);
 }
 
-
-
-
-
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => {
-    setOpen(true);
-    console.log("OPEN WEE")
-  };
-  const handleClose = () => {setOpen(false);console.log("khkhkh")}
-  return (<>
-   
-    < div className="Workspace">
-
-    <WsBoard tasks={tasks}  />
-    <div className="ToolBar">
-   
-    <div className="ToolBarHeader">
-     <div className="WorkSpaceTitle">MY WORKSPACES</div> 
-      <div className="WAddCircleIcon" onClick={handleOpen}>
-        <AddCircleIcon />
-         </div>
-      <CreateWorkspace open={open} handleClose={handleClose} />
-      </div>
-      <div className="ToolBarC">
-      {//WS.map((W)=><Wspace W={W} ActiveWS={ActiveWS}/>)
-      }
-      {status === "loading" && <Typography>Loading...</Typography>}
-
-      {status === "success" && 
-        console.log(data.data) &&
-        data.data.map((workspace, index) => 
-        <Wspace W={workspace} key={index} ActiveWS={ActiveWs}/>)
-      }
-      </div>
-    </div>
-    
-    </div></>
-  )
-}
-
-
-
-
-
-
-
-export default Workspace;
+export default Workspace
