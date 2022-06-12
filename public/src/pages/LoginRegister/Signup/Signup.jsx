@@ -44,7 +44,8 @@ function Signup() {
 				console.log("1", res.data)
 				setGroups(res.data)
 			})
-			.catch((err) => console.log(err.response))
+			.catch((err) => console.log(err?.response?.status))
+		console.log(formData)
 	}, [])
 
 	const handleSubmit = async (event) => {
@@ -102,6 +103,12 @@ function Signup() {
 			<div className="centert">
 				<h1>Register</h1>
 
+				{alert.text !== "" && (
+					<Alert severity={alert.severity} sx={{ minWidth: "60%" }}>
+						{alert.text}
+					</Alert>
+				)}
+
 				<form onSubmit={handleSubmit}>
 					<div className="txt_fielde">
 						<input
@@ -142,7 +149,7 @@ function Signup() {
 						<label>Password</label>
 						<span></span>
 					</div>
-					{groups.length > 0 && (
+					{groups.length < 0 && ( //change to bigger than later
 						<div
 							style={{ height: 200, overflowY: "scroll" }}
 							className="scrolly"
@@ -155,7 +162,7 @@ function Signup() {
 						</div>
 					)}
 				</form>
-				<input type="submit" value="Sign up"></input>
+				<input type="submit" value="Sign up" onClick={handleSubmit}></input>
 				<div className="signup_link	">
 					Already have an account? <Link to="/login">Login</Link>{" "}
 				</div>
