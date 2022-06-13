@@ -82,7 +82,7 @@ const Settings = () => {
 				>
 					<Avatar
 						alt={data.name}
-						src={"/uploads/" + data.avatar.filename}
+						src={"/uploads/" + data.avatar?.filename}
 						sx={{ height: 96, width: 96, mx: "auto", my: 2 }}
 					/>
 					<Button

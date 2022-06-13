@@ -54,7 +54,7 @@ function MyProfile() {
 					<>
 						<Avatar
 							alt={data.name}
-							src={"/uploads/" + data.avatar.filename}
+							src={"/uploads/" + data.avatar?.filename}
 							sx={{
 								height: 96,
 								border: "solid 5px #0087a1",
