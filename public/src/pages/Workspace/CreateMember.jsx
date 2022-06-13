@@ -38,7 +38,10 @@ const CreateMember = ({ Ws, open, handleClose }) => {
 				{},
 				{ withCredentials: true }
 			)
-			.then((res) => console.log("added members", res.data))
+			.then((res) => {
+				console.log("added members", res.data)
+				windows.location.reload()
+			})
 			.catch((err) => console.log("err"))
 	}
 	return (
