@@ -89,7 +89,7 @@ export default function Announcements() {
 							{status === "loading" && <Typography>Loading ...</Typography>}
 
 							{status === "error" && (
-								<Typography>Error loading announcements</Typography>
+								<Typography>No Announcements found</Typography>
 							)}
 						</Grid>
 					</Grid>

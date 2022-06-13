@@ -102,9 +102,7 @@ function Workspaces() {
 
 						{status === "loading" && <Typography>Loading ...</Typography>}
 
-						{status === "error" && (
-							<Typography>Error loading Workspaces</Typography>
-						)}
+						{status === "error" && <Typography>No Workspaces Found</Typography>}
 					</div>
 				</div>
 			</div>

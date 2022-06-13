@@ -11,24 +11,27 @@ import {
 } from "@mui/material"
 import axios from "../axios"
 import React, { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
 function Profile() {
+	const { id } = useParams()
 	const [data, setData] = useState(null)
 	const [error, setError] = useState(false)
 
 	useEffect(() => {
 		axios
-			.get(`/api/user/current`, { withCredentials: true })
+			.get(id ? `/api/user/${id}` : `/api/user/current`, {
+				withCredentials: true,
+			})
 			.then((res) => {
-				console.log(res.data)
+				console.log(res)
 				setData(res.data)
 			})
 			.catch((err) => setError(true))
 	}, [])
 
 	return (
-		<Container>
+		<Container sx={{ ml: "200px" }}>
 			<Breadcrumbs sx={{ marginBottom: 2 }}>
 				<Link to="/" style={{ textDecoration: "none" }}>
 					<Typography color="text.primary">Home</Typography>

@@ -32,6 +32,7 @@ export default function Dashboard() {
 					<Route path="workspaces/:id" element={<Workspace />} />
 					{/* <Route path="chat" element={<Chat />} /> */}
 					<Route path="profile" element={<Profile />} />
+					<Route path="profile/:id" element={<Profile />} />
 					<Route path="*" element={<Navigate to="/" />} />
 				</Routes>
 			</Box>

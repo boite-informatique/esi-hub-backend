@@ -17,8 +17,11 @@ import {
 import React from "react"
 import axios from "../../axios"
 import { useQuery } from "react-query"
+import { useNavigate } from "react-router-dom"
 
 function Home() {
+	const navigate = useNavigate()
+
 	const fetchAnnouncements = async () =>
 		await axios.get(`/api/announcement?limit=4`, {
 			withCredentials: true,
@@ -93,9 +96,22 @@ function Home() {
 						<Card
 							sx={{ height: "100%", bgcolor: "#B8B8B8", borderRadius: "10px" }}
 						>
-							<CardHeader title="Recent Workspace activity" />
+							<CardHeader title="Recently Created Workspaces" />
 							<CardContent>
-								<ListItemWorkspace
+								<List></List>
+								{status === "success" &&
+									dataWorkspace.data.map((workspace, index) => (
+										<ListItemWorkspace
+											name={workspace.name}
+											key={index}
+											action={""}
+											onClick={() => navigate("/workspaces/" + workspace._id)}
+										/>
+									))}
+								{errorWorkspace && errorWorkspace?.response?.status === 404 && (
+									<Typography>No Workspaces found</Typography>
+								)}
+								{/* <ListItemWorkspace
 									name="Project 1"
 									action="Chakib started task 2"
 								/>
@@ -106,7 +122,7 @@ function Home() {
 								<ListItemWorkspace
 									name="Competition prep"
 									action="Mohamed created new workspace"
-								/>
+								/> */}
 							</CardContent>
 						</Card>
 					</Grid>
@@ -150,10 +166,10 @@ function ListItemRoom({ name, action }) {
 	)
 }
 
-function ListItemWorkspace({ name, action }) {
+function ListItemWorkspace({ name, click, action, ...props }) {
 	return (
 		<div className="ListItemWorkspace ">
-			<ListItem disablePadding>
+			<ListItem disablePadding {...props}>
 				<ListItemButton>
 					<ListItemIcon>
 						<Workspaces />

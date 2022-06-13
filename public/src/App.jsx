@@ -11,6 +11,7 @@ import { DarkContext } from "./DarkThemeProvider"
 import "./App.css"
 import HomePage from "./pages/HomePage/HomePage"
 import Chat from "./pages/Chat/Chat"
+import WelcomePage from "./pages/WelcomePage/WelcomePage"
 
 const darkTheme = createTheme({
 	palette: {
@@ -29,6 +30,7 @@ export default function App() {
 						<Route path="/login" element={<Login />} />
 						<Route path="/signup" element={<Signup />} />
 						<Route path="/verify" element={<Verify />} />
+						<Route path="/welcome" element={<WelcomePage />} />
 						<Route
 							path="/*"
 							element={<ProtectedRoute component={Dashboard} />}

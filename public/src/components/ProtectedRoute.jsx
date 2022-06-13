@@ -1,6 +1,6 @@
 import axios from "../axios"
 import React, { useContext, useEffect, useState } from "react"
-import { Navigate } from "react-router-dom"
+import { Navigate, useResolvedPath } from "react-router-dom"
 import { AuthContext } from "../AuthProvider"
 
 function ProtectedRoute({ component: Component, admin }) {
@@ -26,7 +26,10 @@ function ProtectedRoute({ component: Component, admin }) {
 	}
 
 	if (success === "y") return <Component />
-	if (success === "n") return <Navigate to="/login" />
+	if (success === "n" && window.location.pathname !== "/")
+		return <Navigate to="/login" />
+	if (success === "n" && window.location.pathname === "/")
+		return <Navigate to="/welcome" />
 }
 
 export default ProtectedRoute

@@ -221,6 +221,22 @@ const verifyAccountSend = asyncHandler(async (req, res) => {
 	})
 })
 
+const logout = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.user.id)
+	if (!user) {
+		res.status(404)
+		throw new Error("User not found")
+	}
+
+	user.refreshTokens = user.refreshTokens.filter(
+		(val) => val == req.cookies.refreshToken
+	)
+
+	res.cookie("accessToken", "")
+	res.cookie("refreshToken", "")
+	res.status(200).json({ success: true })
+})
+
 const generateRefreshToken = (user) => {
 	return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
 		expiresIn: "365d",
@@ -261,4 +277,5 @@ module.exports = {
 	generateAccessToken,
 	verifyAccount,
 	verifyAccountSend,
+	logout,
 }

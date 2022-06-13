@@ -4,9 +4,14 @@ const Workspace = require("../models/task/workspaceModel")
 const Task = require("../models/task/taskModel")
 
 const getWorkspaceAll = asyncHandler(async (req, res) => {
+	const { limit = 0 } = req.query
+
 	const workspaces = await Workspace.find({
 		members: { $elemMatch: { $in: [req.user.id] } },
-	}).populate("members", "name avatar")
+	})
+		.sort({ createdAt: -1 })
+		.limit(limit)
+		.populate("members", "name avatar")
 
 	if (workspaces.length === 0) {
 		res.status(404)
