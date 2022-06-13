@@ -11,6 +11,7 @@ import {
 	FormControl,
 	Button,
 	Input,
+	Box,
 } from "@mui/material"
 import "./Announcements.css"
 import AttachmentIcon from "@mui/icons-material/Attachment"
@@ -18,16 +19,32 @@ import axios from "../../axios"
 import React, { useState, useRef } from "react"
 import { Link } from "react-router-dom"
 import { borderColor } from "@mui/system"
+import GroupList from "../../components/GroupList"
+import groupJson from "../../components/groups.json"
+import { useEffect } from "react"
 
 export default function CreateAnnouncement() {
+	const [groups, setGroups] = useState([])
+
+	useEffect(() => {
+		axios
+			.get("/api/group", {
+				withCredentials: true,
+			})
+			.then((res) => {
+				console.log(res.data)
+				setGroups(res.data)
+			})
+			.catch((err) => console.log("error has occured", err.response))
+	}, [])
+
 	const tags = [
 		"Important",
 		"Club Event",
 		"Administrative Announcement",
 		"Homework",
 		"Course Support",
-		"Lost & Found",
-		"Lost & Found : Resolved",
+		"Lost And Found",
 	]
 
 	const [formData, setFormData] = useState({
@@ -42,6 +59,7 @@ export default function CreateAnnouncement() {
 		text: "",
 	})
 
+	const [checked, setChecked] = useState([])
 	const [files, setFiles] = useState([])
 
 	const handleChange = (event) => {
@@ -55,14 +73,15 @@ export default function CreateAnnouncement() {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault()
-		console.log(files)
+		let data = formData
+		data.visibility = checked
 		let fd = new FormData()
 		for (const file of files) {
 			fd.append("attachments", file, file.name)
 		}
 
 		// if (file) fd.append("avatar", file, file.name)
-		fd.append("data", JSON.stringify(formData))
+		fd.append("data", JSON.stringify(data))
 
 		try {
 			const res = await axios.post(`/api/announcement/`, fd, {
@@ -175,6 +194,18 @@ export default function CreateAnnouncement() {
 								))}
 							</Select>
 						</FormControl>
+						{groups.length > 0 && (
+							<Box>
+								<Typography>
+									Visibility (Choose none for a public announcement)
+								</Typography>
+								<GroupList
+									data={groups}
+									checked={checked}
+									setChecked={setChecked}
+								/>
+							</Box>
+						)}
 						<label htmlFor="upload-files">
 							<input
 								type="file"

@@ -15,7 +15,7 @@ import { Link } from "react-router-dom"
 import GroupList from "../../../components/GroupList"
 import "./Signup.css"
 import logo from "../Login/logo2(1).svg"
-import groups from "../../../components/groups.json"
+
 function Signup() {
 	const [formData, setFormData] = useState({
 		name: "",
@@ -34,18 +34,16 @@ function Signup() {
 		setFormData((values) => ({ ...values, [name]: value }))
 	}
 
-	//const [groups, setGroups] = useState([])
+	const [groups, setGroups] = useState([])
 	const [checked, setChecked] = useState([])
 
 	useEffect(() => {
 		axios
 			.get(`/api/group/`)
 			.then((res) => {
-				console.log("1", res.data)
 				setGroups(res.data)
 			})
 			.catch((err) => console.log(err?.response?.status))
-		console.log(formData)
 	}, [])
 
 	const handleSubmit = async (event) => {
@@ -149,11 +147,8 @@ function Signup() {
 						<label>Password</label>
 						<span></span>
 					</div>
-					{groups.length < 0 && ( //change to bigger than later
-						<div
-							style={{ height: 200, overflowY: "scroll" }}
-							className="scrolly"
-						>
+					{groups.length > 0 && ( //change to bigger than later
+						<div className="scrolly">
 							<GroupList
 								data={groups}
 								checked={checked}

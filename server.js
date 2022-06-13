@@ -33,6 +33,7 @@ app.use("/api/task", require("./routes/taskRoute.js"))
 app.use("/api/group", require("./routes/groupRoute"))
 app.use("/api/forum", require("./routes/forumRoute.js"))
 app.use("/api/comment", require("./routes/commentRoute.js"))
+app.use("/api/room", require("./routes/roomRoute.js"))
 
 // error handling
 app.use(errorHandler)

@@ -30,7 +30,7 @@ const CreateMember = ({ Ws, open, handleClose }) => {
 		p: 4,
 	}
 	const [members, setMembers] = useState("")
-	const handleSubmit = async () => {
+	const handleSubmit = () => {
 		console.log("hello", Ws)
 		axios
 			.put(
@@ -42,7 +42,10 @@ const CreateMember = ({ Ws, open, handleClose }) => {
 				console.log("added members", res.data)
 				windows.location.reload()
 			})
-			.catch((err) => console.log("err"))
+			.catch((err) => {
+				console.log("err")
+				windows.location.reload()
+			})
 	}
 	return (
 		<>

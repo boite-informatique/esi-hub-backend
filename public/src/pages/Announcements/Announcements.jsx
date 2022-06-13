@@ -18,6 +18,7 @@ import { useQuery } from "react-query"
 import { Link, useNavigate } from "react-router-dom"
 import AnnouncementCard from "../../components/AnnouncementCard"
 import { red, yellow } from "@mui/material/colors"
+import { useEffect } from "react"
 
 const TAGS = [
 	{ t: "Important", C: "#F79C93" },
@@ -25,28 +26,50 @@ const TAGS = [
 	{ t: "Administrative Announcement", C: "#efd345" },
 	{ t: "Homework", C: "#79d0c1" },
 	{ t: "Course Support", C: "#617ba7" },
-	{ t: "Lost & Found", C: "#16825d" },
-	{ t: "Lost & Found : Resolved", C: "#c98f09" },
+	{ t: "Lost And Found", C: "#16825d" },
 ]
 
 export default function Announcements() {
 	const [query, setQuery] = useState({ tags: [], search: "" })
 	// const [tags, setTags] = useState("")
+	// const [data, setData] = useState([])
+	// const [refresh, setRefresh] = useState(false)
+	// const [error, setError] = useState(null)
 
-	const fetchAnnouncements = async () =>
+	const fetchAnnouncements = async (tags = [], search = "") =>
 		await axios.get(
-			`/api/announcement/?limit=50&tags=${JSON.stringify(query.tags)}&s=${
-				query.search
-			}`,
+			`/api/announcement/?limit=50&tags=${JSON.stringify(tags)}&s=${search}`,
 			{
 				withCredentials: true,
 			}
 		)
 	const { data, error, status, refetch, isFetching } = useQuery(
 		"announcements",
-		fetchAnnouncements
+		() => fetchAnnouncements(query.tags, query.search),
+		{ enabled: false }
 	)
 
+	useEffect(() => {
+		refetch()
+	}, [])
+	// useEffect(() => {
+	// 	axios
+	// 		.get(
+	// 			`/api/announcement/?limit=50&tags=${JSON.stringify(query.tags)}&s=${
+	// 				query.search
+	// 			}`
+	// 		)
+	// 		.then((res) => {
+	// 			console.log(res.data.data)
+	// 			setError(null)
+	// 			setData(res.data.data)
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log("err fetching announcements", err)
+	// 			setError(err)
+	// 			setData([])
+	// 		})
+	// }, [])
 	const navigate = useNavigate()
 
 	const handleTag = (tag) => {
@@ -63,11 +86,15 @@ export default function Announcements() {
 	}
 
 	const handleFilterApply = () => {
+		console.log("refresh")
 		refetch()
+		// setRefresh(!refresh)
 	}
 
 	const handleClearFIlter = () => {
 		setQuery({ tags: [], search: "" })
+		console.log("clear refresh")
+		// setRefresh(!refresh)
 		refetch()
 	}
 
@@ -88,6 +115,9 @@ export default function Announcements() {
 				<Grid container gap={3} wrap="nowrap">
 					<Grid item xs={8}>
 						<Grid container gap={2}>
+							{status === "error" && (
+								<Typography>No announcements found</Typography>
+							)}
 							{status === "success" &&
 								data.data.data.map((announcement, index) => (
 									<Grid item xs={12} key={index}>
@@ -97,9 +127,12 @@ export default function Announcements() {
 
 							{status === "loading" && <Typography>Loading ...</Typography>}
 
-							{status === "error" && (
-								<Typography>No Announcements found</Typography>
-							)}
+							{/* {error &&
+								(error?.response?.status == 404 ? (
+									<Typography>No Announcements found</Typography>
+								) : (
+									<Typography>Could not find any announcements</Typography>
+								))} */}
 						</Grid>
 					</Grid>
 
@@ -158,7 +191,7 @@ export default function Announcements() {
 									<Button
 										variant="contained"
 										fullWidth
-										onClick={() => handleFilterApply}
+										onClick={() => handleFilterApply()}
 									>
 										Apply filters
 									</Button>

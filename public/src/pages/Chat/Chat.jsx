@@ -16,8 +16,9 @@ import {
 	TextField,
 	Button,
 	Container,
+	Paper,
 } from "@mui/material"
-import React from "react"
+import React, { useRef } from "react"
 import { useState } from "react"
 import imgFirst from "/assets/chat.svg"
 import sio from "socket.io-client"
@@ -37,9 +38,34 @@ let socket
 export default function Chat() {
 	const [connected, setConnected] = useState(false)
 
+	const style = {
+		position: "absolute",
+		top: "50%",
+		left: "50%",
+		transform: "translate(-50%, -50%)",
+		width: 400,
+		bgcolor: "background.paper",
+		border: "2px solid #000",
+		boxShadow: 24,
+		p: 4,
+	}
+
+	const [rooms, setRooms] = useState([])
+	const [currentRoom, setCurrentRoom] = useState(null)
+	const [newMessage, setNewMessage] = useState("")
+	const [messages, setMessages] = useState([])
+	const [open, setOpen] = useState(false)
+	const handleOpen = () => setOpen(true)
+	const handleClose = () => setOpen(false)
+	const messagesEndRef = useRef(null)
+	const [createRoomData, setCreateRoomData] = useState({
+		name: "",
+		participants: "",
+	})
+
 	useEffect(() => {
-		console.log("render 1")
-		socket = io("http://localhost:3005", { withCredentials: true })
+		// socket = io("http://localhost:3005", { withCredentials: true })
+		socket = io({ withCredentials: true })
 
 		socket.on("connected", () => {
 			setConnected(true)
@@ -54,62 +80,56 @@ export default function Chat() {
 				socket.on("room-joined", (room) => setRooms([...rooms, room]))
 			})
 
-			socket.on("new-message", (msg) => {
-				console.log("got new message", msg)
-				let roomArr = rooms
-				const i = roomArr.findIndex((val) => val._id == msg.room)
-				if (i < 0) return
-				console.log(i, rooms, roomArr)
-				roomArr[i].messages.push(msg)
-				setRooms(roomArr)
+			socket.on("room-messages", (messages) => {
+				console.log("got your messages bro", messages)
+				setMessages(messages.messages)
+				scrollToBottom()
 			})
+
 			return () => {
 				socket.disconnect()
 			}
 		})
 	}, [])
 
-	if (socket) {
-	}
-
-	const style = {
-		position: "absolute",
-		top: "50%",
-		left: "50%",
-		transform: "translate(-50%, -50%)",
-		width: 400,
-		bgcolor: "background.paper",
-		border: "2px solid #000",
-		boxShadow: 24,
-		p: 4,
-	}
-
-	const [rooms, setRooms] = useState([])
-	const [open, setOpen] = useState(false)
-	const handleOpen = () => setOpen(true)
-	const handleClose = () => setOpen(false)
-	const [createRoomData, setCreateRoomData] = useState({
-		name: "",
-		participants: "",
-	})
+	useEffect(() => {
+		scrollToBottom()
+		if (currentRoom) {
+			socket.emit("room-messages", currentRoom)
+			socket.on("new-message-room", (msg) => {
+				console.log("new message arrived before !")
+				console.log(currentRoom)
+				if (!currentRoom) return
+				console.log("new message arrived middle !")
+				console.log(msg.room == currentRoom._id)
+				if (msg.room == currentRoom._id) {
+					console.log("new message arrived !")
+					setMessages((prev) => [...prev, msg])
+					scrollToBottom()
+				}
+			})
+		}
+		console.log("current room", currentRoom)
+		scrollToBottom()
+	}, [currentRoom])
 
 	const handleChange = (event) => {
 		const { name, value } = event.target
 		setCreateRoomData((values) => ({ ...values, [name]: value }))
 	}
-
-	const [newMessage, setNewMessage] = useState("")
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollIntoView()
+	}
 
 	const handleNewMessage = () => {
 		console.log("new message firing once")
 		if (!newMessage.trim()) return
 		socket.emit("new-message", {
-			room: currentRoom._id,
+			room: currentRoom,
 			body: newMessage.trim(),
 		})
 		setNewMessage("")
 	}
-	const [currentRoom, setCurrentRoom] = useState(null)
 	const handleCreateRoom = () => {
 		console.log("i fired once")
 		socket.emit("create-room", createRoomData)
@@ -159,65 +179,91 @@ export default function Chat() {
 				</Box>
 			</Modal>
 			<Grid container sx={{ ml: "200px" }}>
-				<Grid item xs={3}>
-					<Grid container>
-						<List>
-							<ListItem
-								secondaryAction={
-									<IconButton edge="end" onClick={() => handleOpen()}>
-										<Add />
-									</IconButton>
-								}
-							>
-								<ListItemText primary="Your Rooms" />
-							</ListItem>
-							{rooms.length > 0 && (
-								<List sx={{ height: "100%" }}>
-									{rooms.map((room, index) => (
-										<ListItemRoom
-											room={room}
-											key={index}
-											setRoom={setCurrentRoom}
-										/>
-									))}
-								</List>
-							)}
-							{rooms.length === 0 && (
-								<Typography marginLeft={3}>No rooms found</Typography>
-							)}
-						</List>
+				<Paper sx={{ maxHeight: 400, minWidth: 250 }}>
+					<Grid item xs={3}>
+						<Grid container>
+							<List sx={{ maxHeight: 400, minWidth: 250 }}>
+								<ListItem
+									secondaryAction={
+										<IconButton edge="end" onClick={() => handleOpen()}>
+											<Add />
+										</IconButton>
+									}
+								>
+									<ListItemText
+										primary={<Typography variant="h5">Your rooms</Typography>}
+									/>
+								</ListItem>
+								<Divider />
+								{rooms.length > 0 && (
+									<List
+										sx={{ height: "100%", overflow: "scroll", maxHeight: 330 }}
+									>
+										{rooms.map((room, index) => (
+											<ListItemRoom
+												room={room}
+												key={index}
+												setRoom={setCurrentRoom}
+											/>
+										))}
+									</List>
+								)}
+								{rooms.length === 0 && (
+									<Typography marginLeft={3}>No rooms found</Typography>
+								)}
+							</List>
+						</Grid>
 					</Grid>
-				</Grid>
+				</Paper>
 				{currentRoom && (
 					<>
-						<Grid item xs={5} sx={{ minHeight: 400 }}>
+						<Grid item xs={5} sx={{ minHeight: "80%" }}>
 							<Container fixed>
-								<List sx={{ maxHeight: 400, overflowY: "scroll" }}>
-									{currentRoom.messages.map((message, index) => (
-										<Message data={message} key={index} />
-									))}
-								</List>
-								<Grid container gap={1}>
-									<TextField
-										type="text"
-										value={newMessage}
-										onChange={(e) => setNewMessage(e.target.value)}
-										sx={{ height: 6 }}
-									/>
-									<Button
-										variant="contained"
-										sx={{ height: 50 }}
-										onClick={() => handleNewMessage()}
+								<Paper
+									sx={{
+										maxHeight: 400,
+										minHeight: 400,
+										minWidth: 500,
+										position: "relative",
+									}}
+								>
+									<List sx={{ maxHeight: 320, overflowY: "scroll" }}>
+										{messages.length > 0 &&
+											messages.map((message, index) => (
+												<Message data={message} key={index} />
+											))}
+										<div ref={messagesEndRef} />
+									</List>
+									<Grid
+										container
+										gap={1}
+										sx={{ position: "absolute", bottom: 10, left: 10 }}
 									>
-										Send
-									</Button>
-								</Grid>
+										<TextField
+											type="text"
+											value={newMessage}
+											onChange={(e) => setNewMessage(e.target.value)}
+											sx={{ height: 5 }}
+										/>
+										<Button
+											variant="contained"
+											sx={{ height: 50 }}
+											onClick={() => handleNewMessage()}
+										>
+											Send
+										</Button>
+									</Grid>
+								</Paper>
 							</Container>
 						</Grid>
 						<Grid item xs={4}>
-							{currentRoom.participants.map((participant, index) => (
-								<Participant data={participant} key={index} />
-							))}
+							<Paper sx={{ minHeight: 400, maxHeight: 400, maxWidth: 250 }}>
+								<List sx={{ maxHeight: 400, overflowY: "scroll" }}>
+									{currentRoom.participants.map((participant, index) => (
+										<Participant data={participant} key={index} />
+									))}
+								</List>
+							</Paper>
 						</Grid>
 					</>
 				)}
@@ -234,7 +280,12 @@ export default function Chat() {
 function ListItemRoom({ room, setRoom }) {
 	return (
 		<ListItem disablePadding>
-			<ListItemButton onClick={() => setRoom(room)}>
+			<ListItemButton
+				onClick={() => {
+					console.log("room to be set", room)
+					setRoom(room)
+				}}
+			>
 				<ListItemText primary={room.name} />
 			</ListItemButton>
 		</ListItem>

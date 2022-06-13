@@ -158,6 +158,28 @@ function Announcement() {
 									))}
 								</Stack>
 							)}
+
+							{data.visibility && (
+								<Stack direction="row" spacing={0.7} sx={{ marginTop: 2 }}>
+									<Typography variant="subtitle2">Visibility :</Typography>
+									{data.visibility.length === 0 && (
+										<Typography vairant="subtitle2" sx={{ fontSize: 14 }}>
+											{" "}
+											All
+										</Typography>
+									)}
+									{data.visibility.length > 0 &&
+										data.visibility.map((group, index) => (
+											<Chip
+												key={index}
+												label={group.name}
+												color="primary"
+												variant="outlined"
+												size="small"
+											/>
+										))}
+								</Stack>
+							)}
 						</CardContent>
 					</Card>
 				)}

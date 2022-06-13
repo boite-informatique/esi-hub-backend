@@ -25,7 +25,6 @@ function ProtectedRoute({ component: Component, admin }) {
 			.catch((err) => setSuccess("n"))
 	}
 
-	console.log(auth)
 	if (success === "y") return <Component />
 	if (success === "n" && window.location.pathname !== "/")
 		return <Navigate to="/login" />

@@ -16,11 +16,9 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 	}
 
 	// check if tags or search params exist and if so add to query
-	console.log(tags)
 	tags = tags ? JSON.parse(tags) : []
 	if (tags.length > 0) query.tags = { $elemMatch: { $in: tags } }
 	if (search) query.title = new RegExp(search, "i") // perform case insensitive search on title
-	console.log("query search: ", query.search)
 	let announcements = []
 
 	// perform query
@@ -60,13 +58,14 @@ const getAnnouncementId = asyncHandler(async (req, res) => {
 		_id: req.params.id,
 		$or: [
 			{ visibility: [] },
-			{ user: req.user._id },
+			{ user: req.user.id },
 			{ visibility: { $elemMatch: { $in: req.user.groups } } },
 		],
 	})
 		.populate("user", "name avatar")
 		.populate("user.avatar")
 		.populate("attachments")
+		.populate("visibility", "name")
 
 	if (!announcement) {
 		res.status(404)

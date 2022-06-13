@@ -29,7 +29,7 @@ function Home() {
 	const { data, error, status } = useQuery("announcements", fetchAnnouncements)
 
 	const fetchWorkspaces = async () =>
-		await axios.get(`/api/workspace?limit=4`, {
+		await axios.get(`/api/workspace?limit=6`, {
 			withCredentials: true,
 		})
 	const {
@@ -37,6 +37,16 @@ function Home() {
 		error: errorWorkspace,
 		status: statusWorkspace,
 	} = useQuery("workspaces", fetchWorkspaces)
+
+	const fetchRooms = async () =>
+		await axios.get(`/api/room`, {
+			withCredentials: true,
+		})
+	const {
+		data: dataRoom,
+		error: errorRoom,
+		status: statusRoom,
+	} = useQuery("rooms", fetchRooms)
 
 	if (status === "sucesss") console.log("success", data.data)
 	return (
@@ -75,7 +85,7 @@ function Home() {
 						>
 							<CardHeader title="Recent Active Chat Rooms" />
 							<CardContent>
-								<List>
+								{/* <List>
 									<ListItemRoom
 										name="2CP G4 Promo 2020"
 										action="Mohamed : Lorem ipsum dolor sit amet."
@@ -88,6 +98,20 @@ function Home() {
 										name="python workshop"
 										action="Brahmine : Lorem ipsum dolor sit amet."
 									/>
+								</List> */}
+								<List>
+									{statusRoom === "success" &&
+										dataRoom.data.map((room, index) => (
+											<ListItemRoom
+												name={room.name}
+												key={index}
+												action={""}
+												onClick={() => navigate("/chat/")}
+											/>
+										))}
+									{errorRoom && errorRoom?.response?.status === 404 && (
+										<Typography>No Rooms Found</Typography>
+									)}
 								</List>
 							</CardContent>
 						</Card>
@@ -99,19 +123,21 @@ function Home() {
 						>
 							<CardHeader title="Recently Created Workspaces" />
 							<CardContent>
-								<List></List>
-								{statusWorkspace === "success" &&
-									dataWorkspace.data.map((workspace, index) => (
-										<ListItemWorkspace
-											name={workspace.name}
-											key={index}
-											action={""}
-											onClick={() => navigate("/workspaces/" + workspace._id)}
-										/>
-									))}
-								{errorWorkspace && errorWorkspace?.response?.status === 404 && (
-									<Typography>No Workspaces found</Typography>
-								)}
+								<List>
+									{statusWorkspace === "success" &&
+										dataWorkspace.data.map((workspace, index) => (
+											<ListItemWorkspace
+												name={workspace.name}
+												key={index}
+												action={""}
+												onClick={() => navigate("/workspaces/" + workspace._id)}
+											/>
+										))}
+									{errorWorkspace &&
+										errorWorkspace?.response?.status === 404 && (
+											<Typography>No Workspaces found</Typography>
+										)}
+								</List>
 								{/* <ListItemWorkspace
 									name="Project 1"
 									action="Chakib started task 2"
@@ -152,10 +178,10 @@ function CardAnnouncement(props) {
 	)
 }
 
-function ListItemRoom({ name, action }) {
+function ListItemRoom({ name, action, ...props }) {
 	return (
 		<div className="ListItemRoom ">
-			<ListItem disablePadding>
+			<ListItem disablePadding {...props}>
 				<ListItemButton>
 					<ListItemIcon>
 						<Forum />

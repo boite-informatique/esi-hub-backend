@@ -49,52 +49,54 @@ module.exports = (server) => {
 		socket.emit("connected")
 		socket.on("ready", async () => {
 			///////OPEARTIONS AFTER CLIENT HAS CONNECTED
-			const rooms = []
-			await ChatRoom.find({
+			const rooms = await ChatRoom.find({
 				participants: { $elemMatch: { $in: [socket?.user?.id] } },
-			})
-				.populate("participants", "name avatar")
-				.cursor()
-				.eachAsync(async (doc) => {
-					doc._doc.messages = await ChatMessage.find({ room: doc.id })
-						.populate("user", "name avatar")
-						.sort({
-							createdAt: 1,
-						})
-					rooms.push(doc)
-				})
+			}).populate("participants", "name avatar")
+			// .cursor()
+			// .eachAsync(async (doc) => {
+			// 	doc._doc.messages = await ChatMessage.find({ room: doc.id })
+			// 		.populate("user", "name avatar")
+			// 		.sort({
+			// 			createdAt: 1,
+			// 		})
+			// 	rooms.push(doc)
+			// })
 
 			rooms.map((room) => socket.join(room._id.toString()))
 			socket.emit("join-rooms", rooms)
+		})
 
-			socket.on("test", (msg) => {
-				console.log(msg, "socket.sup:", socket.user)
-			})
+		// GET MESSAGES OF CURRENT ROOM
+		socket.on("room-messages", async (room) => {
+			console.log("beep boop request room messages")
+			try {
+				const messages = await ChatMessage.find({ room })
+					.populate("user", "name avatar")
+					.sort({ createdAt: 1 })
 
-			//ROOM STUFF
-
-			socket.on("joinRoom", (room) => {
-				socket.join(room)
-			})
-			socket.on("message", (msg) => {
-				io.to(msg.room).emit("chatMessage", msg)
-			})
+				socket.emit("room-messages", {
+					room,
+					messages,
+				})
+			} catch (err) {
+				console.log("room-messages error", err)
+			}
 		})
 
 		// NEW MESSAGE ON OLD ROOM
-		socket.on("new-message", (msg) => {
+		socket.on("new-message", async (msg) => {
 			console.log("new message from", socket.user.id)
-			ChatMessage.create({
-				body: msg.body,
-				room: msg.room,
-				user: socket.user.id,
-			})
-				.then((msg) => msg.populate("user", "name avatar"))
-				.then((msg) => {
-					console.log("MESSAGE CREATED", msg)
-					io.to(msg.room.toString()).emit("new-message", msg)
+			try {
+				const newMessage = await ChatMessage.create({
+					body: msg.body,
+					room: msg.room,
+					user: socket.user.id,
 				})
-				.catch((err) => console.log("error new-message", err))
+				await newMessage.populate("user", "name avatar")
+				io.to(msg.room._id.toString()).emit("new-message-room", newMessage)
+			} catch (err) {
+				console.log("new-message error", err)
+			}
 		})
 
 		// CREATE NEW ROOM THEN SEND ROOM INFO TO SOCKETS TO ASK TO JOIN
