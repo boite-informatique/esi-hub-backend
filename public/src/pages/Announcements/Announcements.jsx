@@ -30,18 +30,19 @@ const TAGS = [
 ]
 
 export default function Announcements() {
-	const [tagFilter, setTagFilter] = useState([])
-	const [query, setQuery] = useState({ tags: "", search: "" })
+	const [query, setQuery] = useState({ tags: [], search: "" })
 	// const [tags, setTags] = useState("")
 
 	const fetchAnnouncements = async () =>
 		await axios.get(
-			`/api/announcement/?tags=${query.tags}&search=${query.search}`,
+			`/api/announcement/?limit=50&tags=${JSON.stringify(query.tags)}&s=${
+				query.search
+			}`,
 			{
 				withCredentials: true,
 			}
 		)
-	const { data, error, status, refetch, ...other } = useQuery(
+	const { data, error, status, refetch, isFetching } = useQuery(
 		"announcements",
 		fetchAnnouncements
 	)
@@ -49,19 +50,27 @@ export default function Announcements() {
 	const navigate = useNavigate()
 
 	const handleTag = (tag) => {
-		tagFilter.includes(tag)
-			? setTagFilter((prevState) => prevState.filter((val) => val !== tag))
-			: setTagFilter((prevState) => [...prevState, tag])
-		console.log(tagFilter)
+		query.tags.includes(tag)
+			? setQuery((prevState) => ({
+					...prevState,
+					["tags"]: prevState.tags.filter((val) => val !== tag),
+			  }))
+			: setQuery((prevState) => ({
+					...prevState,
+					["tags"]: [...prevState.tags, tag],
+			  }))
+		console.log(query.tags)
 	}
 
-	const handleTagApply = () => {
-		setQuery((prev) => ({ ...prev, tags: tagFilter.toString() }))
-		console.log(tagFilter)
+	const handleFilterApply = () => {
 		refetch()
 	}
 
-	if (data) console.log("data ; ", data)
+	const handleClearFIlter = () => {
+		setQuery({ tags: [], search: "" })
+		refetch()
+	}
+
 	return (
 		<div className="AnnouncementContainer">
 			<Container>
@@ -81,7 +90,7 @@ export default function Announcements() {
 						<Grid container gap={2}>
 							{status === "success" &&
 								data.data.data.map((announcement, index) => (
-									<Grid item xs={12}>
+									<Grid item xs={12} key={index}>
 										<AnnouncementCard data={announcement} key={index} />
 									</Grid>
 								))}
@@ -122,12 +131,15 @@ export default function Announcements() {
 									<Grid container gap={1}>
 										<Typography variant="subtitle1">Tags : </Typography>
 										{TAGS.map((tag, index) => (
-											<div className="Tag" style={{ backgroundColor: tag.C }}>
+											<div
+												key={index}
+												className="Tag"
+												style={{ backgroundColor: tag.C }}
+											>
 												<Chip
-													key={index}
 													label={tag.t}
 													variant={
-														tagFilter.includes(tag.t) ? "filled" : "outlined"
+														query.tags.includes(tag.t) ? "filled" : "outlined"
 													}
 													onClick={() => handleTag(tag.t)}
 												/>
@@ -137,14 +149,16 @@ export default function Announcements() {
 									<Button
 										variant="filled"
 										fullWidth
-										onClick={() => setTagFilter([])}
+										onClick={() => {
+											handleClearFIlter()
+										}}
 									>
 										Clear filters
 									</Button>
 									<Button
 										variant="contained"
 										fullWidth
-										onClick={handleTagApply}
+										onClick={() => handleFilterApply}
 									>
 										Apply filters
 									</Button>

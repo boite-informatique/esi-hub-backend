@@ -16,9 +16,11 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 	}
 
 	// check if tags or search params exist and if so add to query
-	if (tags) query.tags = { $elemMatch: { $in: tags.split(",") } }
+	console.log(tags)
+	tags = tags ? JSON.parse(tags) : []
+	if (tags.length > 0) query.tags = { $elemMatch: { $in: tags } }
 	if (search) query.title = new RegExp(search, "i") // perform case insensitive search on title
-
+	console.log("query search: ", query.search)
 	let announcements = []
 
 	// perform query

@@ -76,6 +76,7 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 const updateUser = asyncHandler(async (req, res) => {
+	if (!req.params.id) req.params.id = req.user.id
 	// verify if user is admin or target
 	if (req.params.id !== req.user.id && !req.admin) {
 		res.status(401)
@@ -98,6 +99,12 @@ const updateUser = asyncHandler(async (req, res) => {
 
 	// hash password if new password is set
 	if (body.password) {
+		console.log(body.password, req.query.old)
+		if (!(await bcrypt.compare(req.query.old, user.password))) {
+			res.status(401)
+			throw new Error("Incorrect old password")
+		}
+
 		const salt = await bcrypt.genSalt(10)
 		body.password = await bcrypt.hash(body.password, salt)
 	}
@@ -153,18 +160,32 @@ const getUsers = asyncHandler(async (req, res) => {
 	res.status(200).json(users)
 })
 
+const getUserById = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.params.id)
+		.select("name email avatar createdAt groups")
+		.populate("groups", "name")
+		.populate("avatar")
+
+	if (!user) {
+		res.status(404)
+		throw new Error("User not found")
+	}
+
+	res.status(200).json(user)
+})
+
 const getCurrentUser = asyncHandler(async (req, res) => {
 	const user = await User.findById(req.user.id)
-		.select("-password -updatedAt -__v")
+		.select("name email groups avatar")
 		.populate("groups", "name")
+		.populate("avatar")
 
 	if (!user) {
 		res.status(404)
 		throw new Error("user doesnt exist")
 	}
 
-	const { __v, password, updatedAt, refreshTokens, ...output } = user._doc
-	res.status(200).json(output)
+	res.status(200).json(user)
 })
 
 const verifyAccount = asyncHandler(async (req, res) => {
@@ -237,6 +258,24 @@ const logout = asyncHandler(async (req, res) => {
 	res.status(200).json({ success: true })
 })
 
+const changeAvatar = asyncHandler(async (req, res) => {
+	if (!req.files[0]) {
+		res.status(400)
+		throw new Error("Bad file format")
+	}
+
+	const user = await User.findById(req.user.id)
+	if (!user) {
+		res.status(404)
+		throw new Error("User not found")
+	}
+
+	user.avatar = req.files[0]
+	await user.save()
+
+	res.status(200).json(user)
+})
+
 const generateRefreshToken = (user) => {
 	return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
 		expiresIn: "365d",
@@ -273,9 +312,11 @@ module.exports = {
 	updateUser,
 	deleteUser,
 	getUsers,
+	getUserById,
 	getCurrentUser,
 	generateAccessToken,
 	verifyAccount,
 	verifyAccountSend,
 	logout,
+	changeAvatar,
 }

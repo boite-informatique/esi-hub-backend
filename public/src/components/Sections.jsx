@@ -37,7 +37,7 @@ export const SidebarOpen = () => {
 			.then((res) => {
 				console.log(res)
 				setAuth({ isAuth: false, info: {} })
-				navigate("/")
+				navigate("/login")
 			})
 			.catch((err) => console.log("err logout", err))
 	}
@@ -83,20 +83,20 @@ export const SidebarOpen = () => {
 						<span className="item text">WorkSpace</span>
 					</li>
 				</Link>
-				{/* <Link to="/Forum">
-					<li className="Sidebarelement Sidebarelement-open">
-						<div className="icon ">
-							<ForumIcon />
-						</div>
-						<span className="item text">Forums</span>
-					</li>
-				</Link>
 				<Link to="/chat">
 					<li className="Sidebarelement Sidebarelement-open">
 						<div className="icon ">
 							<ChatIcon />
 						</div>
 						<span className="item text">Chat</span>
+					</li>
+				</Link>
+				{/* <Link to="/Forum">
+					<li className="Sidebarelement Sidebarelement-open">
+						<div className="icon ">
+							<ForumIcon />
+						</div>
+						<span className="item text">Forums</span>
 					</li>
 				</Link>
 				<Link to="/Settings">

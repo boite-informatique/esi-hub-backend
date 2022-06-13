@@ -12,6 +12,8 @@ import CreateAnnouncement from "./Announcements/CreateAnnouncement"
 import Profile from "./Profile"
 import HBackground from "./HomeBackground/HomeBackground"
 import Workspace from "./Workspace/Workspace"
+import { RightBar } from "../components/RightBar"
+import Settings from "./Settings"
 
 export default function Dashboard() {
 	return (
@@ -20,7 +22,7 @@ export default function Dashboard() {
 			<TopBar />
 			<Sections />
 			<HBackground />
-
+			<RightBar />
 			<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
 				<Toolbar />
 				<Routes>
@@ -30,9 +32,10 @@ export default function Dashboard() {
 					<Route path="announcements/:id" element={<Announcement />} />
 					<Route path="workspaces" element={<Workspaces />} />
 					<Route path="workspaces/:id" element={<Workspace />} />
-					{/* <Route path="chat" element={<Chat />} /> */}
-					<Route path="profile" element={<Profile />} />
+					<Route path="chat" element={<Chat />} />
+					<Route path="profile/" element={<Profile />} />
 					<Route path="profile/:id" element={<Profile />} />
+					<Route path="/settings" element={<Settings />} />
 					<Route path="*" element={<Navigate to="/" />} />
 				</Routes>
 			</Box>

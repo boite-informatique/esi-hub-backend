@@ -1,9 +1,9 @@
 module.exports = (err, req, res, next) => {
-  const statusCode = res.statusCode ? res.statusCode : 500
+	const statusCode = res.statusCode ? res.statusCode : 500
 
-  res.status(statusCode)
-
-  res.json({
-    error: err.message
-  })
+	res.status(statusCode)
+	console.log(err.message)
+	res.json({
+		error: err.message,
+	})
 }

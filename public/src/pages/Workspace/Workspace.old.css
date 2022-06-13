@@ -43,7 +43,6 @@ display: flex;
    }
 .WorkSpaceTitle{
 flex: 90%;
-overflow-x: hidden;
 }
 .WAddCircleIcon{
     flex: 10%;
@@ -54,7 +53,6 @@ overflow-x: hidden;
 .Tasks{
     border-radius: 10px;
     position: relative;
-    overflow-y: scroll;
   height: 90%;
     width: 31%;
    max-height: 100%;
@@ -199,7 +197,6 @@ overflow: hidden;
     font-size: 20px;
     font-weight: 500;
     width: 80%;
-    overflow-x: hidden;
 }
 
 /**/

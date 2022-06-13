@@ -1,9 +1,6 @@
-
 .AnnouncementContainer{
-    margin-top: 50px;
     margin-left: 200px;
     width: 80%;
-    
     
 }
 
@@ -23,29 +20,13 @@
 }
 
 .AnnouncementCard{
-    background: #ffffff;
+    background: #9fdddb67;
     width: 80%;
     height: 150px;
     border:solid 2px rgba(0, 0, 0, 0.151);
-  overflow-y:hidden;
+  overflow-y:scroll;
     border-radius: 10px;
-    border-left: solid 20px;
 }
-.View-more:hover{
-    text-decoration:underline;
-}
-.View-more:visited{
-    color: rgb(0, 0, 0);
-}
-.View-more{
-    font-weight: 700;
-    cursor: pointer;
-    background-color: transparent;
-    text-transform: capitalize;
-    transform-style: none;
-
-}
-
 .CreateAnnouncementContainer{
     margin-left: 15%;
     position: absolute;
@@ -56,11 +37,11 @@
 }
 .CreateAnnouncementForm{
     background: white;
-    
+    border: solid 5px black;
  width: 80%;
  position: relative;
   height: 100%;
-  margin-left:10%;
+  margin-left:0%;
   padding: 3%;
     
    

@@ -6,7 +6,7 @@ import { useQuery } from "react-query"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import PersonIcon from "@mui/icons-material/Person"
 import "./CreateMember"
-import { Typography, Button } from "@mui/material"
+import { Typography, Button, Breadcrumbs } from "@mui/material"
 import { WsBoard } from "./WsBoard"
 import CreateMember from "./CreateMember"
 

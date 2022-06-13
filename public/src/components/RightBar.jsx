@@ -1,52 +1,153 @@
-import React, { useState } from 'react'
+import React, { useState } from "react"
 import "./RightBar.css"
+import InfoIcon from "@mui/icons-material/Info"
+import { Link, useNavigate, Navigate } from "react-router-dom"
+import SettingsIcon from "@mui/icons-material/Settings"
+import ArrowDropDownCircleTwoToneIcon from "@mui/icons-material/ArrowDropDownCircleTwoTone"
+import Avatar from "@mui/material/Avatar"
+import ArrowCircleUpTwoToneIcon from "@mui/icons-material/ArrowCircleUpTwoTone"
+// import Losts from "./Losts"
 
-import Avatar from '@mui/material/Avatar';
 export const RightBar = () => {
+	let navigate = useNavigate()
 
-  const [amis,setAmis]=useState([{name:"Brahim Haloucha",statu:false},{name:"Yacine gzn",statu:true},{name:"Chakib ouzane",statu:true},{name:"Miloudi Mohamed",statu:false},{name:"Bahaa Hammadi",statu:false},])
-  const [Anouncs,setAnouncs]=useState([
-  { id:1 ,
-    user: "Amine Benchaa",
-    OP:true,
-    vis:  "ALL",
-    title: "un portefeuille noir",
-    text : "bonjour, j'ai perdu un portefeuille noir à l'école si quelqu'un l'a trouvé contactez moi svp.",},
-    { id: 2,
-      user: "Brahim Haloucha",
-      OP:false,
-      vis:  "ALL",
-      title: "cahier d'algorithmes",
-      text :"Salam, j'ai oubliée mon cahier d'algorithmes dans la salle de TP , si quelqu'un le trouve s'il vous plaît me contacter "
-      },
+	const handleopenMyprofile = () => {
+		navigate(`/profile`)
+	}
+	const handleopenSettings = () => {
+		navigate(`/settings`)
+	}
 
-  ]);
-    const Ami=({name,statu})=>{
-      const [amiOpen,setAmisOpen]=useState(true);
-     const openAmi=()=>{
-    if(amiOpen===true){setAmisOpen(false)}else{setAmisOpen(true)};
-      }    
-       return (
-      <>
-       {amiOpen && <div className="Am" onClick={openAmi}><div className="Avatar AVAM "><Avatar sx={{height:40,width:40}}/>{statu && <img className="greenC"  alt="AMi" src="./assets/enLigneGreenCircle.png"/>}</div> <div className="AmText">{name}</div></div>}
-       {!amiOpen && <div className="AmO" onClick={openAmi}><div className="Avatar AVAM "><Avatar sx={{height:40,width:40}}/></div> <div className="AmText">{name}</div>{statu && <img className="greenCO" alt="AMi" src="./assets/enLigneGreenCircle.png"/>}</div>}
-     </>)
-    }
-   
+	const [open, setOpen] = useState(false)
+	const handleClose = () => {
+		setOpen(false)
+	}
+	const handleOpen = () => {
+		setOpen(true)
+	}
+	const [OpenRB, setOpenRB] = useState(false)
+	const [focus1, setFocus1] = useState(false)
+	const [focus2, setFocus2] = useState(false)
+	const [focus3, setFocus3] = useState(false)
+	const onmouseover1 = () => {
+		setFocus1(!focus1)
+	}
+	const onmouseover2 = () => {
+		setFocus2(!focus2)
+	}
+	const onmouseover3 = () => {
+		setFocus3(!focus3)
+	}
+	const OpenRightBar = () => {
+		setOpenRB(true)
+	}
+	const CloseRightBar = () => {
+		setOpenRB(false)
+	}
 
-  
-  return (
-   <div className="RightBar">
-   <div className="space"></div>
-   <div className="ObjetPerdu">
-    <div className="OpTitle">Objet Perdu</div>
-   {Anouncs.map((An)=>( <div className="AnOp"><p>{An.title}</p></div>))}
-       </div>
-       
-       <div className="ListAmis">
-       { amis.map((Am)=>(<Ami name={Am.name} statu={Am.statu}/> ))} 
-       
-       </div> 
-       </div>
-  )
+	return (
+		<div className="RightBarC">
+			{!OpenRB && (
+				<div className="RightBarF">
+					<ArrowDropDownCircleTwoToneIcon
+						onClick={OpenRightBar}
+						sx={{
+							fontSize: 35,
+							marginTop: "5px",
+							zIndex: 3,
+							cursor: "pointer",
+							marginLeft: "20px",
+							color: "#0087a1",
+						}}
+					/>{" "}
+				</div>
+			)}
+
+			{OpenRB && (
+				<div>
+					<div className="RightBarF">
+						{" "}
+						<ArrowCircleUpTwoToneIcon
+							onClick={CloseRightBar}
+							sx={{
+								fontSize: 35,
+								marginTop: "5px",
+								cursor: "pointer",
+								marginLeft: "20px",
+								color: "#0087a1",
+							}}
+						/>{" "}
+					</div>
+					<div className="RightBarO">
+						<div className="RightBarOC">
+							{!focus1 && (
+								<div className="AvatarR" onMouseEnter={onmouseover1}>
+									{" "}
+									<Avatar
+										alt="Remy Sharp"
+										src=""
+										sx={{ height: 30, width: 30 }}
+										id="demo-positioned-button"
+										aria-controls={open ? "demo-positioned-menu" : undefined}
+										aria-haspopup="true"
+										aria-expanded={open ? "true" : undefined}
+									></Avatar>
+								</div>
+							)}
+							{focus1 && (
+								<div
+									className="AvatarR OpenR "
+									onClick={handleopenMyprofile}
+									onMouseLeave={onmouseover1}
+								>
+									<div>My profil</div>
+									<Avatar
+										alt="Remy Sharp"
+										src=""
+										sx={{ marginLeft: 8.5, height: 30, width: 30 }}
+										id="demo-positioned-button"
+										aria-controls={open ? "demo-positioned-menu" : undefined}
+										aria-haspopup="true"
+										aria-expanded={open ? "true" : undefined}
+									></Avatar>
+								</div>
+							)}
+							{!focus2 && (
+								<div className="iconR " onMouseEnter={onmouseover2}>
+									<SettingsIcon sx={{ fontSize: 30 }} />
+								</div>
+							)}
+							{focus2 && (
+								<div
+									className="iconR OpenR "
+									onClick={handleopenSettings}
+									onMouseLeave={onmouseover2}
+								>
+									<div>Settings</div>
+									<SettingsIcon sx={{ marginLeft: 9, fontSize: 30 }} />
+								</div>
+							)}
+
+							{/* {!focus3 && (
+								<div className="iconR " onMouseEnter={onmouseover3}>
+									<InfoIcon sx={{ fontSize: 30 }} />
+								</div>
+							)} */}
+							{/* {focus3 && (
+								<div
+									className="iconR OpenR "
+									onClick={handleOpen}
+									onMouseLeave={onmouseover3}
+								>
+									<div>Losts & founds</div>
+									<InfoIcon sx={{ marginLeft: 2.1, fontSize: 30 }} />
+								</div>
+							)}
+							<Losts open={open} handleClose={handleClose} /> */}
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	)
 }

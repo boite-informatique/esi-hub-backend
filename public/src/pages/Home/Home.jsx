@@ -38,6 +38,7 @@ function Home() {
 		status: statusWorkspace,
 	} = useQuery("workspaces", fetchWorkspaces)
 
+	if (status === "sucesss") console.log("success", data.data)
 	return (
 		<div style={{ height: "100%" }}>
 			<div className="Home">
@@ -99,7 +100,7 @@ function Home() {
 							<CardHeader title="Recently Created Workspaces" />
 							<CardContent>
 								<List></List>
-								{status === "success" &&
+								{statusWorkspace === "success" &&
 									dataWorkspace.data.map((workspace, index) => (
 										<ListItemWorkspace
 											name={workspace.name}

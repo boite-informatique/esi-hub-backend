@@ -26,116 +26,116 @@ module.exports = (server) => {
 	// 	console.log("khasna cookies", cookie.parse(req.headers.cookie).accessToken)
 	// })
 
-	io.on("connection", async (socket) => {
-		try {
-			console.log("############################")
-			console.log(socket.handshake.headers.cookie)
-			console.log("############################")
+	io.on("connection", (socket) => {
+		// console.log("############################")
+		// console.log(socket.handshake.headers.cookie)
+		// console.log("############################")
 
-			// const tokenPayload = jwt.decode(socket.handshake.query.jwt)
+		// const tokenPayload = jwt.decode(socket.handshake.query.jwt)
 
-			const tokenPayload = jwt.decode(
-				cookie.parse(socket.handshake.headers.cookie).accessToken
-			)
-			console.log("user connected")
-			// console.log('TOKEN PAYlooold : ', tokenPayload)
+		const tokenPayload = jwt.decode(
+			cookie.parse(socket.handshake.headers.cookie).accessToken
+		)
+		console.log("user connected")
+		socket.emit("connected")
+		// console.log('TOKEN PAYlooold : ', tokenPayload)
 
-			const user = await User.findById(tokenPayload?.id)
-				.select("name avatar")
-				.populate("avatar")
-
-			console.log("user", user.id, "payload", tokenPayload.id)
-			socket.user = user._doc
-			socket.emit("connected")
-			socket.on("ready", async () => {
-				///////OPEARTIONS AFTER CLIENT HAS CONNECTED
-				const rooms = []
-				await ChatRoom.find({
-					participants: { $elemMatch: { $in: [user?._id] } },
-				})
-					.populate("participants", "name avatar")
-					.cursor()
-					.eachAsync(async (doc) => {
-						doc._doc.messages = await ChatMessage.find({ room: doc.id })
-							.populate("user", "name avatar")
-							.sort({
-								createdAt: 1,
-							})
-						rooms.push(doc)
-					})
-
-				const messages = await socket.emit("authorized", user)
-				rooms.map((room) => socket.join(room._id.toString()))
-				socket.emit("join-rooms", rooms)
-
-				socket.on("new-message", async (msg) => {
-					try {
-						const message = await ChatMessage.create({
-							body: msg.body,
-							room: msg.room,
-							user: socket.user._id,
+		// const user = await User.findById(tokenPayload?.id)
+		// .select("name avatar")
+		// .populate("avatar")
+		//
+		console.log("payload", tokenPayload.id)
+		socket.user = { id: tokenPayload?.id.toString() }
+		socket.emit("connected")
+		socket.on("ready", async () => {
+			///////OPEARTIONS AFTER CLIENT HAS CONNECTED
+			const rooms = []
+			await ChatRoom.find({
+				participants: { $elemMatch: { $in: [socket?.user?.id] } },
+			})
+				.populate("participants", "name avatar")
+				.cursor()
+				.eachAsync(async (doc) => {
+					doc._doc.messages = await ChatMessage.find({ room: doc.id })
+						.populate("user", "name avatar")
+						.sort({
+							createdAt: 1,
 						})
-						console.log(msg.room.toString())
-						console.log(socket.rooms)
-						await message.populate("user", "name avatar")
-						io.to(msg.room.toString()).emit("new-message", msg)
-					} catch (err) {
-						console.log("error new-message", err)
-					}
+					rooms.push(doc)
 				})
 
-				socket.on("test", (msg) => {
-					console.log(msg, "socket.sup:", socket.user)
-				})
+			rooms.map((room) => socket.join(room._id.toString()))
+			socket.emit("join-rooms", rooms)
 
-				//ROOM STUFF
-
-				socket.on("create-room", async (room) => {
-					try {
-						members = room.participants.split(",").map((val) => val.trim())
-						const queriedMembers = await (
-							await User.find({ email: { $in: members } })
-						).map((elem) => elem.id)
-
-						queriedMembers.push(socket.user._id)
-						room.participants = queriedMembers
-						const newRoom = await ChatRoom.create(room)
-						io.emit("new-room", {
-							id: newRoom.id.toString(),
-							participants: newRoom.participants,
-						})
-					} catch (err) {
-						console.log("err create-room", err)
-					}
-				})
-
-				socket.on("ask-join-room", async (room) => {
-					try {
-						if (!room.participants.find((val) => val == socket.user._id)) return
-						socket.join(room.id)
-						const roomQueried = await ChatRoom.findById(room.id).populate(
-							"user",
-							"name avatar"
-						)
-						roomQueried._doc.messages = []
-						socket.emit("room-joined", roomQueried)
-					} catch (err) {
-						console.log("error ask-join-room", err)
-					}
-				})
-
-				socket.on("joinRoom", (room) => {
-					socket.join(room)
-				})
-				socket.on("message", (msg) => {
-					io.to(msg.room).emit("chatMessage", msg)
-				})
+			socket.on("test", (msg) => {
+				console.log(msg, "socket.sup:", socket.user)
 			})
 
-			socket.on("disconnect", () => console.log("user disconnected"))
-		} catch (err) {
-			console.log("error has occured", err)
-			socket.disconnect()
-		}
+			//ROOM STUFF
+
+			socket.on("joinRoom", (room) => {
+				socket.join(room)
+			})
+			socket.on("message", (msg) => {
+				io.to(msg.room).emit("chatMessage", msg)
+			})
+		})
+
+		// NEW MESSAGE ON OLD ROOM
+		socket.on("new-message", (msg) => {
+			console.log("new message from", socket.user.id)
+			ChatMessage.create({
+				body: msg.body,
+				room: msg.room,
+				user: socket.user.id,
+			})
+				.then((msg) => msg.populate("user", "name avatar"))
+				.then((msg) => {
+					console.log("MESSAGE CREATED", msg)
+					io.to(msg.room.toString()).emit("new-message", msg)
+				})
+				.catch((err) => console.log("error new-message", err))
+		})
+
+		// CREATE NEW ROOM THEN SEND ROOM INFO TO SOCKETS TO ASK TO JOIN
+		socket.on("create-room", (room) => {
+			console.log("i fired once", socket.id)
+
+			members = room.participants.split(",").map((val) => val.trim())
+			User.find({ email: { $in: members } })
+				.then((res) => {
+					res = res.map((elem) => elem.id)
+					res.push(socket.user.id)
+					room.participants = res
+					ChatRoom.create(room)
+						.then((room) => {
+							io.emit("new-room", {
+								id: room.id.toString(),
+								participants: room.participants,
+							})
+						})
+						.catch((err) => console.log("err create-room 1", err))
+				})
+				.catch((err) => console.log("err create-room 2"))
+		})
+
+		// emitted from client after receiving new-room event
+		socket.on("ask-join-room", async (room) => {
+			try {
+				if (!room.participants.find((val) => val == socket.user.id)) return
+				socket.join(room.id)
+				const roomQueried = await ChatRoom.findById(room.id).populate(
+					"participants",
+					"name avatar"
+				)
+				roomQueried._doc.messages = []
+				socket.emit("room-joined", roomQueried)
+			} catch (err) {
+				console.log("error ask-join-room", err)
+			}
+		})
+
+		socket.on("disconnect", () => console.log("user disconnected"))
+		socket.on("end", () => socket.disconnect())
 	})
 }

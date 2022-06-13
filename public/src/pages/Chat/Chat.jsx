@@ -22,6 +22,8 @@ import { useState } from "react"
 import imgFirst from "/assets/chat.svg"
 import sio from "socket.io-client"
 import { useEffect } from "react"
+import { useContext } from "react"
+import io from "socket.io-client"
 
 // const socket = sio("http://localhost:3005", {
 // 	withCredentials: true,
@@ -30,8 +32,46 @@ import { useEffect } from "react"
 // 	// },
 // })
 
+let socket
+
 export default function Chat() {
-	// const { socket, rooms, setRooms } = useContext(SocketContext)
+	const [connected, setConnected] = useState(false)
+
+	useEffect(() => {
+		console.log("render 1")
+		socket = io("http://localhost:3005", { withCredentials: true })
+
+		socket.on("connected", () => {
+			setConnected(true)
+			socket.emit("ready")
+
+			socket.on("join-rooms", (rooms) => {
+				setRooms(rooms)
+				///////////
+				/////////
+
+				socket.on("new-room", (room) => socket.emit("ask-join-room", room))
+				socket.on("room-joined", (room) => setRooms([...rooms, room]))
+			})
+
+			socket.on("new-message", (msg) => {
+				console.log("got new message", msg)
+				let roomArr = rooms
+				const i = roomArr.findIndex((val) => val._id == msg.room)
+				if (i < 0) return
+				console.log(i, rooms, roomArr)
+				roomArr[i].messages.push(msg)
+				setRooms(roomArr)
+			})
+			return () => {
+				socket.disconnect()
+			}
+		})
+	}, [])
+
+	if (socket) {
+	}
+
 	const style = {
 		position: "absolute",
 		top: "50%",
@@ -43,6 +83,7 @@ export default function Chat() {
 		boxShadow: 24,
 		p: 4,
 	}
+
 	const [rooms, setRooms] = useState([])
 	const [open, setOpen] = useState(false)
 	const handleOpen = () => setOpen(true)
@@ -58,59 +99,24 @@ export default function Chat() {
 	}
 
 	const [newMessage, setNewMessage] = useState("")
-	const handleNewMessage = (event) => {
-		event.preventDefault()
+
+	const handleNewMessage = () => {
+		console.log("new message firing once")
 		if (!newMessage.trim()) return
 		socket.emit("new-message", {
-			room: currentRoom,
+			room: currentRoom._id,
 			body: newMessage.trim(),
 		})
 		setNewMessage("")
 	}
 	const [currentRoom, setCurrentRoom] = useState(null)
 	const handleCreateRoom = () => {
+		console.log("i fired once")
 		socket.emit("create-room", createRoomData)
 		setCreateRoomData({ name: "", participants: "" })
 		handleClose()
 	}
-	useEffect(() => {
-		socket.on("connected", () => {
-			socket.emit("ready")
 
-			socket.on("join-rooms", (rooms) => {
-				setRooms(rooms)
-				///////////
-				socket.on("new-message", (msg) => {
-					let roomArr = rooms
-					const i = roomArr.findIndex((val) => val._id == msg.room)
-					console.log(i, roomArr, rooms)
-					roomArr[i].messages.push(msg)
-					setRooms(roomArr)
-				})
-				/////////
-
-				socket.on("new-room", (room) => socket.emit("ask-join-room", room))
-				socket.on("room-joined", (room) => setRooms([...rooms, room]))
-			})
-		})
-	})
-	const user = [
-		{
-			name: "Mohamed",
-			avatar:
-				"https://media.discordapp.net/attachments/553250258587484182/974380998999564418/unknown.png?width=376&height=376",
-		},
-	]
-	const messages = [
-		{
-			body: "hello world",
-			user: {
-				name: "Mohamed",
-				avatar:
-					"https://media.discordapp.net/attachments/553250258587484182/974380998999564418/unknown.png?width=376&height=376",
-			},
-		},
-	]
 	const handleAddRoom = () => {}
 
 	return (
@@ -143,7 +149,11 @@ export default function Chat() {
 						value={createRoomData.participants}
 						fullWidth
 					/>
-					<Button variant="contained" fullWidth onClick={handleCreateRoom}>
+					<Button
+						variant="contained"
+						fullWidth
+						onClick={() => handleCreateRoom()}
+					>
 						Create New Room
 					</Button>
 				</Box>
@@ -165,61 +175,49 @@ export default function Chat() {
 								<List sx={{ height: "100%" }}>
 									{rooms.map((room, index) => (
 										<ListItemRoom
-											name={room.name}
-											id={room._id}
+											room={room}
 											key={index}
 											setRoom={setCurrentRoom}
 										/>
 									))}
 								</List>
 							)}
-							{rooms.length === 0 && <Typography>No rooms found</Typography>}
+							{rooms.length === 0 && (
+								<Typography marginLeft={3}>No rooms found</Typography>
+							)}
 						</List>
 					</Grid>
 				</Grid>
-				{currentRoom !== null && (
+				{currentRoom && (
 					<>
-						<Grid item xs={5} sx={{ height: "1000" }}>
+						<Grid item xs={5} sx={{ minHeight: 400 }}>
 							<Container fixed>
-								<List sx={{ height: "100%", overflowY: "scroll" }}>
-									{rooms
-										.find((val) => val._id == currentRoom)
-										.messages.map((message, index) => (
-											<Message data={message} key={index} />
-										))}
+								<List sx={{ maxHeight: 400, overflowY: "scroll" }}>
+									{currentRoom.messages.map((message, index) => (
+										<Message data={message} key={index} />
+									))}
 								</List>
-								<form
-									onSubmit={handleNewMessage}
-									style={{
-										display: "flex",
-										marginTop: "10",
-										alignItems: "center",
-									}}
-								>
-									<Grid container gap={1}>
-										<TextField
-											type="text"
-											value={newMessage}
-											onChange={(e) => setNewMessage(e.target.value)}
-											sx={{ height: 6 }}
-										/>
-										<Button
-											type="submit"
-											variant="contained"
-											sx={{ height: 50 }}
-										>
-											Send
-										</Button>
-									</Grid>
-								</form>
+								<Grid container gap={1}>
+									<TextField
+										type="text"
+										value={newMessage}
+										onChange={(e) => setNewMessage(e.target.value)}
+										sx={{ height: 6 }}
+									/>
+									<Button
+										variant="contained"
+										sx={{ height: 50 }}
+										onClick={() => handleNewMessage()}
+									>
+										Send
+									</Button>
+								</Grid>
 							</Container>
 						</Grid>
 						<Grid item xs={4}>
-							{rooms
-								.find((val) => val._id == currentRoom)
-								.participants.map((participant, index) => (
-									<Participant data={participant} key={index} />
-								))}
+							{currentRoom.participants.map((participant, index) => (
+								<Participant data={participant} key={index} />
+							))}
 						</Grid>
 					</>
 				)}
@@ -233,37 +231,38 @@ export default function Chat() {
 	)
 }
 
-function ListItemRoom({ name, id, setRoom }) {
+function ListItemRoom({ room, setRoom }) {
 	return (
 		<ListItem disablePadding>
-			<ListItemButton onClick={() => setRoom(id)}>
-				<ListItemText primary={name} />
+			<ListItemButton onClick={() => setRoom(room)}>
+				<ListItemText primary={room.name} />
 			</ListItemButton>
 		</ListItem>
 	)
 }
 
 function Message({ data }) {
-	console.log(data)
 	return (
-		<ListItem alignItems="flex-start">
-			<ListItemAvatar>
-				<Avatar alt={data.user.name || "username"} src={data.user.avatar} />
-			</ListItemAvatar>
-			<ListItemText
-				primary={data.user.name}
-				secondary={
-					<Typography
-						sx={{ display: "inline" }}
-						component="span"
-						variant="body2"
-						color="text.primary"
-					>
-						{data.body}
-					</Typography>
-				}
-			/>
-		</ListItem>
+		data && (
+			<ListItem alignItems="flex-start">
+				<ListItemAvatar>
+					<Avatar alt={data.user.name || "username"} src={data.user.avatar} />
+				</ListItemAvatar>
+				<ListItemText
+					primary={data.user.name}
+					secondary={
+						<Typography
+							sx={{ display: "inline" }}
+							component="span"
+							variant="body2"
+							color="text.primary"
+						>
+							{data.body}
+						</Typography>
+					}
+				/>
+			</ListItem>
+		)
 	)
 }
 
