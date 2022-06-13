@@ -14,7 +14,6 @@ require("dotenv").config() // use environmental variables
 require("./db")() // connect to database
 require("./socketio")(server) // use socket.io
 
-app.use(express.static(path.join(__dirname, "./public/dist")))
 // middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -42,6 +41,7 @@ app.get("/uploads/:file", function (req, res) {
 	res.sendFile(path.join(__dirname + "/public/uploads/" + req.params.file))
 })
 
+app.use(express.static(path.join(__dirname, "./public/dist")))
 // unknown routes
 app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname + "/public/dist/index.html"))
