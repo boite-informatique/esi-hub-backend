@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema({
 		required: true,
 		lowercase: true,
 		trim: true,
+		validate: {
+		    validator: v => v.endsWith('@esi-sba.dz'),
+		    message: 'This email is not valid'
+       		 },
 	},
 	password: {
 		type: String,
