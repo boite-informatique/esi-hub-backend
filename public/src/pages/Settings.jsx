@@ -160,14 +160,6 @@ const Settings = () => {
 							padding: 2,
 						}}
 					>
-						Sexe: {data.sexe}
-					</Typography>
-					<Typography
-						color="text.primary"
-						sx={{
-							padding: 2,
-						}}
-					>
 						Groups :{" "}
 						{data.groups.map((group, index) => (
 							<Chip
