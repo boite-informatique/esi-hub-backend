@@ -182,7 +182,7 @@ export const Wspace = ({ W }) => {
 
 	return (
 		<div>
-			<div className="Wspace">
+			<div className="Wspace" onClick={() => navigate(`/workspaces/${W._id}`)}>
 				<div className="WsC">
 					<div className="WspaceIcon">
 						<Workspaces sx={{ marginTop: "5px" }} />
@@ -190,7 +190,6 @@ export const Wspace = ({ W }) => {
 
 					<div
 						className="WspaceName"
-						onClick={() => navigate(`/workspaces/${W._id}`)}
 					>
 						{W.name}
 					</div>

@@ -104,7 +104,7 @@ function Announcement() {
 				{data !== null && (
 					<Card sx={{ maxWidth: "95%" }}>
 						<CardHeader
-							avatar={<Avatar alt={data.user.name} src={data.user.avatar} />}
+							avatar={<Avatar alt={data.user.name} src={"/uploads/" + data.user.avatar?.filename} />}
 							title={data.title}
 							subheader={"by : " + data.user.name}
 							action={

@@ -38,25 +38,26 @@ function Verify() {
 			}
 			console.log({ res })
 		} catch (error) {
-			switch (error.status) {
-				case 404:
-					setalert({ severity: "error", text: "Account does not exist" })
-					break
-				case 200:
-					setalert({
-						severity: "success",
-						text: (
-							<Typography>
-								'Account is now verified, ' +{" "}
-								<Link to="/login" style={{ textDecoration: "none" }}>
-									Click here to login
-								</Link>
-							</Typography>
-						),
-					})
-				default:
-					break
-			}
+// 			switch (error.status) {
+// 				case 404:
+// 					setalert({ severity: "error", text: "Account does not exist" })
+// 					break
+// 				case 200:
+// 					setalert({
+// 						severity: "success",
+// 						text: (
+// 							<Typography>
+// 								'Account is now verified, ' +{" "}
+// 								<Link to="/login" style={{ textDecoration: "none" }}>
+// 									Click here to login
+// 								</Link>
+// 							</Typography>
+// 						),
+// 					})
+// 				default:
+// 					break
+// 			}
+		  					setalert({ severity: "error", text: error?.response?.data?.error ? error.response.data.error : 'Error verifying your account' })
 		}
 	}
 

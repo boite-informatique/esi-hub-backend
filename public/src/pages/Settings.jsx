@@ -85,7 +85,7 @@ const Settings = () => {
 						src={"/uploads/" + data.avatar?.filename}
 						sx={{ height: 96, width: 96, mx: "auto", my: 2 }}
 					/>
-					{/* <Button
+					<Button
 						onClick={handleOpenAvatar}
 						component="span"
 						sx={{ mx: "35%" }}
@@ -93,7 +93,7 @@ const Settings = () => {
 						startIcon={<EditIcon />}
 					>
 						Edit Avatar
-					</Button> */}
+					</Button>
 					<EditAvatar
 						data={data}
 						open={openAvatar}

@@ -4,7 +4,7 @@ const Announcement = require("../models/announcement/announceModel")
 const Announcement_User = require("../models/announcement/announcement_user")
 
 const getAnnouncementAll = asyncHandler(async (req, res) => {
-	let { tags, s: search, limit = 10, page = 0 } = req.query
+	let { tags, s: search, limit = 10, page = 0, nolost = false } = req.query
 
 	// define our query conditions
 	let query = {
@@ -13,14 +13,20 @@ const getAnnouncementAll = asyncHandler(async (req, res) => {
 			{ user: req.user.id },
 			{ visibility: { $elemMatch: { $in: req.user.groups } } },
 		],
+		$and : [{$ne : null}]
 	}
 
 	// check if tags or search params exist and if so add to query
 	tags = tags ? JSON.parse(tags) : []
-	if (tags.length > 0) query.tags = { $elemMatch: { $in: tags } }
+	if (nolost && nolost == 'true') query.$and.push({$or : [
+	  {tags : {$elemMatch : {$nin : ['Lost And Found']}}},
+	  {tags : []}
+	]})
+	if (tags.length > 0) query.$and.push({tags : { $elemMatch: { $in: tags } }})
 	if (search) query.title = new RegExp(search, "i") // perform case insensitive search on title
 	let announcements = []
 
+	console.log(query.$and[1])
 	// perform query
 	await Announcement.find(query)
 		.sort({ createdAt: -1 })

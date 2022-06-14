@@ -20,7 +20,7 @@ const registerUser = asyncHandler(async (req, res) => {
 	const salt = await bcrypt.genSalt(10)
 	body.password = await bcrypt.hash(body.password, salt)
 
-	body.verified = true
+// 	body.verified = true
 
 	const user = await User.create(body)
 	await user.populate("groups")
@@ -189,7 +189,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 })
 
 const verifyAccount = asyncHandler(async (req, res) => {
-	const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET)
+	const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET_EMAIL_VERIFICATION)
 
 	if (!decoded) {
 		res.status(401)
@@ -214,7 +214,7 @@ const verifyAccountSend = asyncHandler(async (req, res) => {
 
 	if (!email) {
 		res.status(400)
-		throw new Error('You must enter an "email" field')
+		throw new Error('You must enter an email')
 	}
 
 	const user = await User.findOne({ email })

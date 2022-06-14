@@ -6,7 +6,7 @@ import SettingsIcon from "@mui/icons-material/Settings"
 import ArrowDropDownCircleTwoToneIcon from "@mui/icons-material/ArrowDropDownCircleTwoTone"
 import Avatar from "@mui/material/Avatar"
 import ArrowCircleUpTwoToneIcon from "@mui/icons-material/ArrowCircleUpTwoTone"
-// import Losts from "./Losts"
+import Losts from "./Losts"
 
 export const RightBar = () => {
 	let navigate = useNavigate()
@@ -128,12 +128,12 @@ export const RightBar = () => {
 								</div>
 							)}
 
-							{/* {!focus3 && (
+							 {!focus3 && (
 								<div className="iconR " onMouseEnter={onmouseover3}>
 									<InfoIcon sx={{ fontSize: 30 }} />
 								</div>
-							)} */}
-							{/* {focus3 && (
+							)}
+							 {focus3 && (
 								<div
 									className="iconR OpenR "
 									onClick={handleOpen}
@@ -143,7 +143,7 @@ export const RightBar = () => {
 									<InfoIcon sx={{ marginLeft: 2.1, fontSize: 30 }} />
 								</div>
 							)}
-							<Losts open={open} handleClose={handleClose} /> */}
+							<Losts open={open} handleClose={handleClose} />
 						</div>
 					</div>
 				</div>

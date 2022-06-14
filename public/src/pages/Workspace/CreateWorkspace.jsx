@@ -90,7 +90,7 @@ const CreateWorkspace = ({ open, handleClose }) => {
 					<Typography>
 						{error?.response?.error
 							? error.response.error
-							: "Error creating announcement"}
+							: "Error creating workspace"}
 					</Typography>
 				),
 			})

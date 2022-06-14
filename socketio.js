@@ -51,7 +51,11 @@ module.exports = (server) => {
 			///////OPEARTIONS AFTER CLIENT HAS CONNECTED
 			const rooms = await ChatRoom.find({
 				participants: { $elemMatch: { $in: [socket?.user?.id] } },
-			}).populate("participants", "name avatar")
+			}).populate({
+			  path : "participants",
+			   select : "name avatar",
+			   populate : {path : "avatar"}
+			})
 			// .cursor()
 			// .eachAsync(async (doc) => {
 			// 	doc._doc.messages = await ChatMessage.find({ room: doc.id })
@@ -71,7 +75,11 @@ module.exports = (server) => {
 			console.log("beep boop request room messages")
 			try {
 				const messages = await ChatMessage.find({ room })
-					.populate("user", "name avatar")
+				.populate({
+			  path : "user",
+			   select : "name avatar",
+			   populate : {path : "avatar"}
+			})
 					.sort({ createdAt: 1 })
 
 				socket.emit("room-messages", {
@@ -92,7 +100,11 @@ module.exports = (server) => {
 					room: msg.room,
 					user: socket.user.id,
 				})
-				await newMessage.populate("user", "name avatar")
+				await newMessage.populate({
+			  path : "user",
+			   select : "name avatar",
+			   populate : {path : "avatar"}
+			})
 				io.to(msg.room._id.toString()).emit("new-message-room", newMessage)
 			} catch (err) {
 				console.log("new-message error", err)
@@ -126,10 +138,11 @@ module.exports = (server) => {
 			try {
 				if (!room.participants.find((val) => val == socket.user.id)) return
 				socket.join(room.id)
-				const roomQueried = await ChatRoom.findById(room.id).populate(
-					"participants",
-					"name avatar"
-				)
+				const roomQueried = await ChatRoom.findById(room.id).populate({
+			  path : "participants",
+			   select : "name avatar",
+			   populate : {path : "avatar"}
+			})
 				roomQueried._doc.messages = []
 				socket.emit("room-joined", roomQueried)
 			} catch (err) {

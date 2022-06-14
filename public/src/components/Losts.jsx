@@ -19,14 +19,18 @@ import {
 	Modal,
 	Box,
 	Input,
+	ListItemIcon,
+	ListItem,
+	ListItemButton,
+	ListItemText,
 } from "@mui/material"
 
 const Losts = ({ open, handleClose }) => {
 	const fetchAnnouncements = async () =>
-		await axios.get(`/api/announcement?lost=4`, {
+		await axios.get(`/api/announcement?tags=["Lost And Found"]`, {
 			withCredentials: true,
 		})
-	const { data, error, status } = useQuery("announcements", fetchAnnouncements)
+	const { data, error, status } = useQuery("lostAnnouncements", fetchAnnouncements)
 
 	const style = {
 		position: "absolute",
@@ -42,7 +46,7 @@ const Losts = ({ open, handleClose }) => {
 		p: 4,
 	}
 	let navigate = useNavigate()
-
+  console.log(data)
 	return (
 		<div>
 			{open && (
@@ -63,10 +67,12 @@ const Losts = ({ open, handleClose }) => {
 						</Typography>
 						<div className="lostsC">
 							<div className="">
-								{status === "sucecss" &&
+								{error && <Typography>No Lost & Found announcements found</Typography>}
+								{data?.data?.data &&
 									data.data.data.map((announcement, index) => (
 										<LostCard data={announcement} key={index} />
 									))}
+
 							</div>
 						</div>
 					</Box>
@@ -77,19 +83,19 @@ const Losts = ({ open, handleClose }) => {
 }
 
 const LostCard = ({ data }) => {
+  const navigate = useNavigate()
 	const VisitLost = () => {
 		navigate(`/announcements/${data._id}`)
 	}
 	return (
-		<div className="LostCard" onClick={() => VisitLost()}>
-			<div className="LostCard1">
-				<div className="LostCardLogo">
-					<InfoIcon />{" "}
-				</div>
-				<div className="LostCardTitle">{data.title}</div>
-			</div>
-			<div className="LostCard2">by : {data.user.name}</div>
-		</div>
+	  <ListItem>
+				<ListItemButton onClick={() => VisitLost()}>
+					<ListItemIcon>
+						<InfoIcon />
+					</ListItemIcon>
+					<ListItemText primary={data.title} secondary={"by : " + data.user.name} />
+				</ListItemButton>
+			</ListItem>
 	)
 }
 

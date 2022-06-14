@@ -26,7 +26,7 @@ function Home() {
 		await axios.get(`/api/announcement?limit=4`, {
 			withCredentials: true,
 		})
-	const { data, error, status } = useQuery("announcements", fetchAnnouncements)
+	const { data, error, status } = useQuery("homeAnnouncements", fetchAnnouncements)
 
 	const fetchWorkspaces = async () =>
 		await axios.get(`/api/workspace?limit=6`, {
@@ -36,7 +36,7 @@ function Home() {
 		data: dataWorkspace,
 		error: errorWorkspace,
 		status: statusWorkspace,
-	} = useQuery("workspaces", fetchWorkspaces)
+	} = useQuery("homeWorkspaces", fetchWorkspaces)
 
 	const fetchRooms = async () =>
 		await axios.get(`/api/room`, {
@@ -46,7 +46,7 @@ function Home() {
 		data: dataRoom,
 		error: errorRoom,
 		status: statusRoom,
-	} = useQuery("rooms", fetchRooms)
+	} = useQuery("homeRooms", fetchRooms)
 
 	if (status === "sucesss") console.log("success", data.data)
 	return (

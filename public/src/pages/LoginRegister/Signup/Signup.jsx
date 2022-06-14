@@ -60,12 +60,12 @@ function Signup() {
 				})
 			} else {
 				setalert({
-					severity: "success",
+					severity: "info",
 					text: (
 						<Typography>
 							'Account created, ' +{" "}
-							<Link to="/login" style={{ textDecoration: "none" }}>
-								Click here to login
+							<Link to="/verify" style={{ textDecoration: "none" }}>
+								Click here to verify your account
 							</Link>
 						</Typography>
 					),

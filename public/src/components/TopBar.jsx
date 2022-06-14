@@ -15,10 +15,13 @@ export default function TopBar({openRightBar}) {
       <div className="TopbarRight">
         <div className="iconsC">
         
-        <div className="search-box ">
-        <button className="btn-search" ><div className="sicon-c"><SearchIcon/></div></button>
-        <input type="text" className="input-search" placeholder="         Type here to Search ..."/>
-        </div>
+        {
+//           <div className="search-box ">
+//         <button className="btn-search" ><div className="sicon-c"><SearchIcon/></div></button>
+//         <input type="text" className="input-search" placeholder="         Type here to Search ..."/>
+//         </div>
+//
+        }
         
         </div>
      

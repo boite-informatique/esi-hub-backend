@@ -11,6 +11,8 @@ import {
 	Chip,
 	Button,
 	TextField,
+	Checkbox,
+	FormControlLabel
 } from "@mui/material"
 import axios from "../../axios"
 import React, { useState } from "react"
@@ -19,7 +21,8 @@ import { Link, useNavigate } from "react-router-dom"
 import AnnouncementCard from "../../components/AnnouncementCard"
 import { red, yellow } from "@mui/material/colors"
 import { useEffect } from "react"
-
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 const TAGS = [
 	{ t: "Important", C: "#F79C93" },
 	{ t: "Club Event", C: "#5F6095" },
@@ -30,25 +33,26 @@ const TAGS = [
 ]
 
 export default function Announcements() {
-	const [query, setQuery] = useState({ tags: [], search: "" })
+	const [query, setQuery] = useState({ tags: [], search: "", nolost : false })
 	// const [tags, setTags] = useState("")
 	// const [data, setData] = useState([])
 	// const [refresh, setRefresh] = useState(false)
 	// const [error, setError] = useState(null)
 
-	const fetchAnnouncements = async (tags = [], search = "") =>
+	const fetchAnnouncements = async (query) =>
 		await axios.get(
-			`/api/announcement/?limit=50&tags=${JSON.stringify(tags)}&s=${search}`,
+			`/api/announcement/?limit=50&tags=${JSON.stringify(query.tags)}&s=${query.search}&nolost=${query.nolost}`,
 			{
 				withCredentials: true,
 			}
 		)
-	const { data, error, status, refetch, isFetching } = useQuery(
-		"announcements",
-		() => fetchAnnouncements(query.tags, query.search),
-		{ enabled: false }
+	const { data, error, status, refetch, failureCount, ...otherStuff } = useQuery(
+		["announcements", query],
+		() => fetchAnnouncements(query),
+// 		{ enabled: false }
 	)
 
+	console.log({error, ...otherStuff}, data?.data?.data?.length)
 	useEffect(() => {
 		refetch()
 	}, [])
@@ -85,8 +89,12 @@ export default function Announcements() {
 		console.log(query.tags)
 	}
 
+	const handleNoLost = (event) => {
+	  setQuery((prev) => ({...prev, nolost : event.target.checked}))
+	}
 	const handleFilterApply = () => {
 		console.log("refresh")
+		refetch()
 		refetch()
 		// setRefresh(!refresh)
 	}
@@ -96,6 +104,7 @@ export default function Announcements() {
 		console.log("clear refresh")
 		// setRefresh(!refresh)
 		refetch()
+ 		refetch()
 	}
 
 	return (
@@ -151,6 +160,7 @@ export default function Announcements() {
 									Filters :
 								</Typography>
 								<Grid container gap={1}>
+								<FormControlLabel control={<Checkbox checked={query.nolost} onChange={handleNoLost} />} label="Disable announcements with Lost & Found tag" />
 									<TextField
 										label="Search"
 										type="text"
@@ -167,14 +177,16 @@ export default function Announcements() {
 											<div
 												key={index}
 												className="Tag"
-												style={{ backgroundColor: tag.C }}
 											>
 												<Chip
 													label={tag.t}
-													variant={
-														query.tags.includes(tag.t) ? "filled" : "outlined"
-													}
+													icon={query.tags.includes(tag.t) ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon/>}
+													sx={{backgroundColor : tag.C, }}
+// 													variant={
+// 														query.tags.includes(tag.t) ? "filled" : "outlined"
+// 													}
 													onClick={() => handleTag(tag.t)}
+													variant="filled"
 												/>
 											</div>
 										))}
@@ -188,13 +200,13 @@ export default function Announcements() {
 									>
 										Clear filters
 									</Button>
-									<Button
+									{/*<Button
 										variant="contained"
 										fullWidth
 										onClick={() => handleFilterApply()}
 									>
 										Apply filters
-									</Button>
+									</Button> */}
 								</Grid>
 							</Container>
 						</div>

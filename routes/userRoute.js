@@ -21,11 +21,11 @@ router.post("/login", dataValidator(loginSchema), c.loginUser)
 router.put("/", authorize, dataValidator(updateSchema), c.updateUser)
 router.put("/:id", authorize, dataValidator(updateSchema), c.updateUser)
 router.delete("/:id", authorize, c.deleteUser)
-router.get("/current", authorize, c.getCurrentUser)
-router.get("/:id", authorize, c.getUserById)
 router.get("/logout", authorize, c.logout)
+router.get("/current", authorize, c.getCurrentUser)
 
 // verify account
 router.get("/verifyAccount/:token", c.verifyAccount)
 router.post("/verifyAccount", c.verifyAccountSend)
+router.get("/:id", authorize, c.getUserById)
 module.exports = router

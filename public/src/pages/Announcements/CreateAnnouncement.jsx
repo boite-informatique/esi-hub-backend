@@ -154,8 +154,6 @@ export default function CreateAnnouncement() {
 							</Alert>
 						)}
 						<TextField
-							color="warning"
-							focused
 							name="title"
 							label="Title"
 							type="text"

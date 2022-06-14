@@ -34,22 +34,11 @@ import axios from "../axios"
 function AnnouncementCard({ data }) {
 	const { auth } = useContext(AuthContext)
 
-	const color = (user) => {
-		let color
-		switch (user) {
-			case "Alphabit":
-				color = "#4096d1"
-				break
-			case "Ingeniums":
-				color = "#101012"
-				break
-			case "ObjetPerdu":
-				color = "#ffb900"
-				break
-			default:
-				color = "#ab2f78"
-		}
-		return color
+	const color = (tags) => {
+		if (tags.includes("Administrative Announcement")) return "#efd345"
+		if (tags.includes("Club Event")) return "#5F6095"
+		if (tags.includes("Lost And Found")) "#16825d"
+		  return "#ab2f78"
 	}
 	/******************* */
 	let navigate = useNavigate()
@@ -88,7 +77,7 @@ function AnnouncementCard({ data }) {
 	return (
 		<div
 			className="AnnouncementCard"
-			style={{ borderLeftColor: color(data.user.name) }}
+			style={{ borderLeftColor: color(data.tags) }}
 		>
 			<div className="CardHeader " style={{ display: "flex" }}>
 				<CardHeader
@@ -100,7 +89,7 @@ function AnnouncementCard({ data }) {
 					avatar={
 						<Avatar
 							alt={data.user.name}
-							src={data.user.avatar}
+							src={"/uploads/" + data.user.avatar?.filename}
 							sx={{ cursor: "pointer" }}
 							onClick={handleopenProfil}
 						/>

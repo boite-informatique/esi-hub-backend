@@ -64,7 +64,7 @@ export default function Chat() {
 	})
 
 	useEffect(() => {
-		// socket = io("http://localhost:3005", { withCredentials: true })
+// 		socket = io("http://localhost:3005", { withCredentials: true })
 		socket = io({ withCredentials: true })
 
 		socket.on("connected", () => {
@@ -297,7 +297,7 @@ function Message({ data }) {
 		data && (
 			<ListItem alignItems="flex-start">
 				<ListItemAvatar>
-					<Avatar alt={data.user.name || "username"} src={data.user.avatar} />
+					<Avatar alt={data.user.name || "username"} src={"/uploads/" + data.user.avatar?.filename} />
 				</ListItemAvatar>
 				<ListItemText
 					primary={data.user.name}
@@ -321,7 +321,7 @@ function Participant({ data }) {
 	return (
 		<ListItem>
 			<ListItemAvatar>
-				<Avatar alt={data.name} src={data.avatar} />
+				<Avatar alt={data.name} src={"/uploads/" + data.avatar?.filename} />
 			</ListItemAvatar>
 			<ListItemText primary={data.name} />
 		</ListItem>

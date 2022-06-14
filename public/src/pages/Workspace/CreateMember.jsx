@@ -40,11 +40,11 @@ const CreateMember = ({ Ws, open, handleClose }) => {
 			)
 			.then((res) => {
 				console.log("added members", res.data)
-				windows.location.reload()
+				window.location.reload()
 			})
 			.catch((err) => {
 				console.log("err")
-				windows.location.reload()
+				window.location.reload()
 			})
 	}
 	return (
