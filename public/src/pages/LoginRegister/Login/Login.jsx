@@ -12,14 +12,13 @@ import {
 } from "@mui/material"
 import axios from "../../../axios"
 import React, { useContext, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { AuthContext } from "../../../AuthProvider"
 import Background from "../Background/Background"
 import logo from "./logo2(1).svg"
 import "./Login.css"
 
 function Login() {
-	const baseURL = "http://:3005"
 
 	const { auth, setAuth } = useContext(AuthContext)
 	const [formData, setFormData] = useState({

@@ -102,7 +102,7 @@ function Announcement() {
 					<Typography>{data && data.title}</Typography>
 				</Breadcrumbs>
 				{data !== null && (
-					<Card sx={{ maxWidth: "95%" }}>
+					<Card sx={{ maxWidth: "92%" }}>
 						<CardHeader
 							avatar={<Avatar alt={data.user.name} src={"/uploads/" + data.user.avatar?.filename} />}
 							title={data.title}
@@ -133,12 +133,11 @@ function Announcement() {
 										// add onClick event
 										<Chip
 											key={index}
-											label={file.name}
-											onClick={() => navigate(file.path)}
+											label={file.filename}
+											onClick={() => location.href = 'http://localhost:3005/uploads/'+file.filename}
 											color="primary"
 											variant="outlined"
 											size="small"
-											icon={<Image />}
 										/>
 									))}
 								</Stack>

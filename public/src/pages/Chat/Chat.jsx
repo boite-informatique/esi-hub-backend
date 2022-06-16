@@ -64,8 +64,8 @@ export default function Chat() {
 	})
 
 	useEffect(() => {
-// 		socket = io("http://localhost:3005", { withCredentials: true })
-		socket = io({ withCredentials: true })
+		socket = io("http://localhost:3005", { withCredentials: true })
+// 		socket = io({ withCredentials: true })
 
 		socket.on("connected", () => {
 			setConnected(true)

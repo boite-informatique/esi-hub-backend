@@ -70,7 +70,7 @@ const Losts = ({ open, handleClose }) => {
 								{error && <Typography>No Lost & Found announcements found</Typography>}
 								{data?.data?.data &&
 									data.data.data.map((announcement, index) => (
-										<LostCard data={announcement} key={index} />
+										<LostCard data={announcement} key={index} handleClose={handleClose} />
 									))}
 
 							</div>
@@ -82,14 +82,17 @@ const Losts = ({ open, handleClose }) => {
 	)
 }
 
-const LostCard = ({ data }) => {
+const LostCard = ({ data, handleClose }) => {
   const navigate = useNavigate()
 	const VisitLost = () => {
 		navigate(`/announcements/${data._id}`)
 	}
 	return (
 	  <ListItem>
-				<ListItemButton onClick={() => VisitLost()}>
+				<ListItemButton onClick={() => {
+				  VisitLost()
+				  handleClose()
+				}}>
 					<ListItemIcon>
 						<InfoIcon />
 					</ListItemIcon>

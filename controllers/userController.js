@@ -20,7 +20,7 @@ const registerUser = asyncHandler(async (req, res) => {
 	const salt = await bcrypt.genSalt(10)
 	body.password = await bcrypt.hash(body.password, salt)
 
-// 	body.verified = true
+	body.verified = true
 
 	const user = await User.create(body)
 	await user.populate("groups")
@@ -206,7 +206,7 @@ const verifyAccount = asyncHandler(async (req, res) => {
 	user.verified = true
 	await user.save()
 
-	res.status(200).redirect("/login")
+	res.status(200).redirect("http://localhost:3000/login?verified=true")
 })
 
 const verifyAccountSend = asyncHandler(async (req, res) => {

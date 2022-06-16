@@ -6,3 +6,4 @@ rest-client
 *.rest
 uploads
 db.json
+dist
